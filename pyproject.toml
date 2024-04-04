@@ -9,7 +9,7 @@ version = "0.0.1"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Carlos Bornes", email = "carlos.bornes@natur.cuni.cz" }]
-keywords = ["NMR", "Simulation"]
+keywords = ["NMR", "Plot"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -41,7 +41,7 @@ docs = [
 [project.urls]
 repository = "https://github.com/carlosbornes/spinplots"
 documentation = "https://carlosbornes.github.io/spinplots/"
-changelog = "https://github.com/spinplots/spinplots/blob/main/CHANGELOG.md"
+changelog = "https://github.com/carlosbornes/spinplots/blob/main/CHANGELOG.md"
 
 [tool.setuptools.package-data]
 spinplots = ["py.typed"]
