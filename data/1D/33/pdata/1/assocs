@@ -1,0 +1,11 @@
+##TITLE= Parameter file, TopSpin 4.1.4
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 8	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= lm3
+$$ 2022-12-20 14:59:02.703 +0000  franc@LAPTOP-AAMB12PO
+$$ D:/universidade/SPEC/RMN/Dados/Crab_CO2_4mm_10.11.2022.2/Crab_CO2_4mm/33/pdata/1/assocs
+$$ process C:\Bruker\TopSpin4.1.4\prog\mod\dataserver.exe
+##$MULTDISP= <D:/universidade/SPEC/RMN/Dados/Crab_CO2_4mm_10.11.2022.2/Crab_CO2_4mm/20/pdata/1>
+##END=

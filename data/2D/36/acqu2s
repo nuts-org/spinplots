@@ -1,0 +1,27 @@
+##TITLE= Parameter file, TopSpin 3.6.1
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 92	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= lm3
+$$ 2022-03-04 10:28:51.591 +0000  lm3@rmn700.clients.ua.pt
+$$ /opt/topspin3.6.1/data/IMM/nmr/Crab_CO2_4mm/36/acqu2s
+$$ process /opt/topspin3.6.1/prog/mod/dataserver
+##$ACQT0= 0
+##$BF1= 700.13
+##$DE= 9.497083
+##$DECIM= 1
+##$DR= 16
+##$FW= 41600
+##$FnMODE= 5
+##$NUC1= <1H>
+##$NusJSP= 0
+##$NusT2= 1
+##$NusTD= 70
+##$O1= -9000
+##$ProjAngle= 0
+##$SFO1= 176.064433
+##$SW= 47
+##$SW_h= 32904.8405809945
+##$TD= 61
+##END=

@@ -1,0 +1,194 @@
+# 1 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+;lgcphetfq.lu (TopSpin 2.1)
+;
+;HETCOR with FLSG during t1 and option for LG-CP
+;by LM 2014 
+;
+;Avance III version
+;parameters:
+;d1 : recycle delay
+;pl1 : not used (0 W)
+;sp0 : X power level during contact
+;pl2 : not used (0 W)
+;pl12: for decoupling and excitation 1H
+;pl13: for homonuclear decoupling
+;p3 : 90 degree 1H pulse excitation
+;p5 : FSLG 2pi pulse set by lgcalc.incl
+;p15 : contact pulse - short 50 - 200 us
+;pcpd2 : pulse length in decoupling sequence
+;cpdprg2: tppm15, SPINAL64
+;cnst20: LG-RF field as adjusted, in Hz used to calculate cnst22 and cnst23 +and - LG frequency
+;cnst22: +LG frequency offset for FSLG decoupling
+;cnst23: -LG frequency offset for FSLG decoupling
+;cnst24: offset for proton evolution under LG, usually 0 - -2000
+;cnst25: LG-RF field as adjusted, in Hz used to calculate cnst26 (- LG frequency)
+;cnst26: -LG frequency offset for LGCP
+;cnst16 : power level required for X channel at the 1H LG condition
+;cnst5: 1H 90 pulse needed for pl22 (1H LGCP RF field)
+;spnam0 : shape for contact pulse ramp.100
+;l3 : for dwell in t1 = 4*p5*l3*0.578
+;in0 : t1 increment
+;ns : 2 or n*4
+;FnMODE: undefined
+;mc2	: STATES-TPPI
+;nd0  : 1
+;WDW  : QSINE 
+;SSB  : 3 
+;zgoptns : -Dlacq, -Dlcp15 or blank
+;
+;
+;$COMMENT=HETCOR (CP based), FLSG during t1
+;$CLASS=Solids
+;$DIM=2D
+;$TYPE=cross polarisation
+;$SUBTYPE=heteronuclear correlation
+
+
+define loopcounter count
+"count=td1/2"
+# 1 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/lgcalc.incl" 1
+;$CLASS=Solids INCL
+;$COMMENT=calculation of FSLG parameters
+
+
+"cnst21=0"			;make sure cp ist done with proton freq.
+				;set by O2
+"cnst22=cnst20/sqrt(2)+cnst24"		;cnst20=desired RF field in Hz
+"cnst23=-cnst20/sqrt(2)+cnst24"	;negative offset is cnst23
+# 10 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/lgcalc.incl"
+"p5=((294/360)/(cnst20))*1e6"		;calculate 294 degree pulse from cnst20
+
+;$Id: lgcalc.incl,v 1.6.2.1 2017/02/22 17:02:21 ber Exp $
+# 49 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu" 2
+
+			;calculate p5 and frequency offsets cnst22 and 23
+define pulse pul54
+"pul54=(p3*54736)/90000"
+# 54 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+define delay dwellf1
+"in0=(0.578*l3*4*294/360)/cnst20"
+"dwellf1=in0"
+"inf1=in0"
+"l0=0"
+"blktr2=1u"
+"blktr1=2u"
+;cnst11 : to adjust t=0 for acquisition, if digmod = baseopt
+"acqt0=1u*cnst11"
+
+"cnst16=sqrt(cnst25*cnst25+cnst26*cnst26)"
+"cnst5=(1000*250/cnst20)"
+
+"cnst26=-cnst25/sqrt(2)"
+;"cnst26=-cnst25/sqrt(2)+cnst24"
+"p7=(35264/90000)*p3"		;90-MA pulse
+# 1 "mc_line 72 file /opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu dc-measurement inserted automatically"
+
+    dccorr
+# 72 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+# 72 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+1 ze                             ; zero data
+"cnst16=sqrt(cnst25*cnst25+cnst26*cnst26)"
+"cnst5=(1000*250/cnst20)"
+"cnst26=-cnst25/sqrt(2)"
+2 d1 do:f2                       ; recycle time, decoupler off
+
+
+# 1 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/p15_prot.incl" 1
+;p15_prot.incl
+;avance-version (13/01/29)
+;Test the rf on-time and duty cycle
+;protect against too long contact time
+;Test the rf on-time and duty cycle 
+;
+;$CLASS=Solids INCL
+;$COMMENT=protect against too long contact time
+
+
+1m
+if "p15 < 10.1m" goto Passp15
+2u
+print "contact time exceeds 10msec limit!"
+goto HaltAcqu
+Passp15, 1m
+# 20 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/p15_prot.incl"
+;$Id: p15_prot.incl,v 1.8 2013/01/29 15:40:14 ber Exp $
+# 80 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu" 2
+
+			;make sure p15 does not exceed 10 msec 
+			;let supervisor change this pulseprogram if 
+			;more is needed
+
+# 86 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+			;disable protection file for long acquisition change decoupling power !!! or you risk probe damage
+			;if you set the label lacq (ZGOPTNS -Dlacq), the protection is disabled
+
+# 1 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/aq_prot.incl" 1
+;aq_prot.incl
+;avance-version (13/01/28)
+;Test the rf on-time and duty cycle
+;protect against too long acquisition time
+
+;$CLASS=Solids INCL
+;$COMMENT=protect against too long acquisition time
+# 9 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/aq_prot.incl"
+1m
+if "aq < 50.1m" goto Passaq
+2u 
+print "acquisition time exceeds 50m limit!"
+goto HaltAcqu
+Passaq, 1m
+
+;$Id: aq_prot.incl,v 1.8 2013/01/28 17:39:02 ber Exp $
+# 89 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu" 2
+
+			;allows max. 50 msec acquisition time, supervisor
+			;may change  to max. 1s at less than 5 % duty cycle
+			;and reduced decoupling field
+# 96 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+  1u fq=cnst21:f2                    ; set on-resonance freq. for f2
+  dwellf1
+  (p3 pl12 ph0):f2		 ; first 1H 90 deg pulse
+  (pul54 ph1):f2               	 ; magic angle excitation pulse
+
+;start FSLG decoupling
+
+3 (p5 ph3 fq=cnst22 pl13):f2	;fslg loop at pl13, LG frequ. 1
+  (p5 ph4 fq=cnst23):f2		;fslg loop at pl13, LG frequ. 2
+  (p5 ph3 fq=cnst22):f2 		;fslg loop at pl13, LG frequ. 1
+  (p5 ph4 fq=cnst23):f2		;2 LG periods total
+  lo to 3 times l0	
+# 118 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+# 119 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+
+  (p7 pl12 fq=cnst21 ph6):f2
+  d4
+  (pul54 ph7):f2 
+  (p15:sp0 ph2):f1 (p15 ph10 pl22 fq=cnst26):f2 	;LG-CP step with shape pulse on obs
+  ;(p7 ph7 fq=cnst21):f2     ;90-MA pulse -> flip polarization to transversal plane
+ 
+
+# 135 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+# 139 "/opt/topspin3.6.1/exp/stan/nmr/lists/pp/user/lgcphetfq.lu"
+  1u cpds2:f2                  ;start decoupling with tppm at pl12 and at cnst21
+  go=2 ph31 			;acquire
+  1m                  
+  10u do:f2                   	;switch off decoupler
+  100m wr #0 if #0 zd
+  1m ip0
+  lo to 2 times 2
+4 1m iu0
+  lo to 4 times l3
+  ;1m rp0 			; for STATES method
+  lo to 2 times count
+HaltAcqu, 1m		;jump address for protection files
+exit   
+                	;exit
+ph0=1 3
+ph1=1
+ph2=0 0 2 2 1 1 3 3  
+ph3=0
+ph4=2
+ph6=1
+ph7=3 
+ph10=0
+ph31=0 2 2 0 1 3 3 1

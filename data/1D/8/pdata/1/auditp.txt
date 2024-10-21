@@ -1,0 +1,147 @@
+##TITLE= Audit trail, TopSpin 3.6.1
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= lm3
+$$ /opt/topspin3.6.1/data/IMM/nmr/Crab_CO2_4mm/8/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2021-11-10 04:17:37.011 +0000>,<lm3>,<rmn700.clients.ua.pt>,<go4>,<TopSpin 3.6.1>,
+      <created by zg
+	started at 2021-11-09 13:09:10.339 +0000,
+	POWCHK disabled, PULCHK disabled,
+       configuration hash MD5:
+       57 E0 F6 0E 70 37 4B BB 82 1E 65 87 5E C8 6A E8
+       data hash MD5: 4K
+       05 F8 B1 93 F3 85 DD AB 59 B2 7B 85 B4 95 99 1F>)
+(   2,<2021-12-16 09:46:34.900 +0000>,<lm3>,<rmn700.clients.ua.pt>,<proc1d>,<TopSpin 3.6.1>,
+      <Start of raw data processing
+       efp LB = 15 FT_mod = 6 PKNL = 1 PHC0 = 0 PHC1 = 0 SI = 8K 
+       data hash MD5: 8K
+       25 AB 2C 4D 35 FE A0 F5 92 43 C1 3C 6A 46 33 86>)
+(   3,<2021-12-16 09:47:05.468 +0000>,<lm3>,<rmn700.clients.ua.pt>,<proc1d>,<TopSpin 3.6.1>,
+      <pk fgphup PHC0 = 163.1955 PHC1 = -106.8 
+       data hash MD5: 8K
+       C7 91 CC AC D9 55 87 6A 8E 39 22 75 C4 84 59 20>)
+(   4,<2021-12-16 09:47:48.448 +0000>,<lm3>,<rmn700.clients.ua.pt>,<proc1d>,<TopSpin 3.6.1>,
+      <bcm 0 0 8192 -3.504958e+07 0.000000e+00 8.035067e-02 0.000000e+00 0.000000e+00 
+       data hash MD5: 8K
+       A0 4C 98 60 79 8F 32 7A D1 16 BA 7B 9E 36 A6 54>)
+(   5,<2021-12-16 09:49:09.235 +0000>,<lm3>,<rmn700.clients.ua.pt>,<audit>,<TopSpin 3.6.1>,
+      <user comment:
+       TITLE=13C CPMAS @ 2 X acid treatment (He- 760.0 torr)
+       
+       MAS=10 kHz
+       
+       
+       4mm probe
+       28-10-2021
+       n=9k p15=4000us
+       
+       90 deg 13C @ 4.0 usTITLE_END
+       data hash MD5: 8K
+       A0 4C 98 60 79 8F 32 7A D1 16 BA 7B 9E 36 A6 54>)
+(   6,<2021-12-16 09:49:10.396 +0000>,<lm3>,<rmn700.clients.ua.pt>,<audit>,<TopSpin 3.6.1>,
+      <user comment:
+       TITLE=13C CPMAS @ 2 X acid treatment (He- 760.0 torr)
+       
+       MAS=10 kHz
+       
+       
+       4mm probe
+       28-10-2021
+       n=9k p15=4000us
+       
+       90 deg 13C @ 4.0 usTITLE_END
+       data hash MD5: 8K
+       A0 4C 98 60 79 8F 32 7A D1 16 BA 7B 9E 36 A6 54>)
+(   7,<2021-12-16 14:43:29.137 +0000>,<lm3>,<rmn700.clients.ua.pt>,<audit>,<TopSpin 3.6.1>,
+      <user comment:
+       TITLE=13C CPMAS @ crab shell (He- 760.0 torr)
+       
+       MAS=10 kHz
+       
+       
+       4mm probe
+       28-10-2021
+       n=9k p15=4000us
+       
+       90 deg 13C @ 4.0 usTITLE_END
+       data hash MD5: 8K
+       A0 4C 98 60 79 8F 32 7A D1 16 BA 7B 9E 36 A6 54>)
+(   8,<2021-12-20 10:27:22.781 +0000>,<lm3>,<rmn700.clients.ua.pt>,<audit>,<TopSpin 3.6.1>,
+      <user comment:
+       TITLE=13C CPMAS @ crab shell CTO (He- 760.0 torr)
+       
+       MAS=10 kHz
+       
+       
+       4mm probe
+       28-10-2021
+       n=9k p15=4000us
+       
+       90 deg 13C @ 4.0 usTITLE_END
+       data hash MD5: 8K
+       A0 4C 98 60 79 8F 32 7A D1 16 BA 7B 9E 36 A6 54>)
+$$ D:/universidade/SPEC/RMN/Dados/Crab_CO2_4mm_10.11.2022.2/Crab_CO2_4mm/8/pdata/1/auditp.txt
+(   9,<2022-12-22 09:49:56.048 +0000>,<franc>,<LAPTOP-AAMB12PO>,<cprserver>,<TopSpin 4.1.4>,
+      <changed parameter F1 LB to 50.00>)
+(  10,<2022-12-22 09:49:58.291 +0000>,<franc>,<LAPTOP-AAMB12PO>,<proc1d>,<TopSpin 4.1.4>,
+      <Start of raw data processing
+       efp LB = 50 FT_mod = 6 PKNL = 1 PHC0 = 163.1955 PHC1 = -106.8 SI = 8K 
+       data hash MD5: 8K
+       58 3C 53 6C 9D 8D C6 6C 11 A6 E9 48 BE 74 E4 03>)
+(  11,<2022-12-27 11:14:55.835 +0000>,<franc>,<LAPTOP-AAMB12PO>,<proc1d>,<TopSpin 4.1.4>,
+      <Start of raw data processing
+       efp LB = 50 FT_mod = 6 PKNL = 1 PHC0 = 163.1955 PHC1 = -106.8 SI = 8K 
+       data hash MD5: 8K
+       58 3C 53 6C 9D 8D C6 6C 11 A6 E9 48 BE 74 E4 03>)
+$$ /Users/danielpereira/NMR Data/Crab_CO2_4mm/8/pdata/1/auditp.txt
+(  12,<2023-03-16 18:49:26.420 +0000>,<danielpereira>,<MacBookdeDaniel>,<dataserver>,<TopSpin 4.1.4>,
+      <Spectrum calibrated, SF was set. Old value: 176.041020 New value: 176.041045. Peak list modified: Yes
+       data hash MD5: 8K
+       58 3C 53 6C 9D 8D C6 6C 11 A6 E9 48 BE 74 E4 03>)
+(  13,<2023-03-16 18:49:26.427 +0000>,<danielpereira>,<MacBookdeDaniel>,<dataserver>,<TopSpin 4.1.4>,
+      <Spectrum calibrated, OFFSET was set. Old value: 257.538400 New value: 257.397961. Peak list modified: Yes
+       data hash MD5: 8K
+       58 3C 53 6C 9D 8D C6 6C 11 A6 E9 48 BE 74 E4 03>)
+(  14,<2023-03-16 18:55:44.539 +0000>,<danielpereira>,<MacBookdeDaniel>,<proc1d>,<TopSpin 4.1.4>,
+      <abs ABSG = 5 
+       data hash MD5: 8K
+       8F 64 66 3B 61 A7 07 34 9A E5 23 3C 53 A9 AB 92>)
+(  15,<2023-03-17 14:05:33.805 +0000>,<danielpereira>,<staff-0358.wireless.ua.pt>,<proc1d>,<TopSpin 4.1.4>,
+      <Start of raw data processing
+       efp LB = 50 FT_mod = 6 PKNL = 1 PHC0 = 163.1955 PHC1 = -106.8 SI = 8K 
+       data hash MD5: 8K
+       58 3C 53 6C 9D 8D C6 6C 11 A6 E9 48 BE 74 E4 03>)
+(  16,<2023-03-17 14:05:47.220 +0000>,<danielpereira>,<staff-0358.wireless.ua.pt>,<proc1d>,<TopSpin 4.1.4>,
+      <pk fgphup PHC0 = 17.26016 PHC1 = -28.8 
+       data hash MD5: 8K
+       7A 0A DD 3A 39 79 0F 2B 15 B6 6C CE F0 41 0E 9B>)
+(  17,<2023-03-17 14:05:54.518 +0000>,<danielpereira>,<staff-0358.wireless.ua.pt>,<proc1d>,<TopSpin 4.1.4>,
+      <bcm 0 0 8192 -3.705694e+07 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 
+       data hash MD5: 8K
+       25 4A FA 6B 8E 76 7B 2B 64 34 5A 4A 9E BE 1B 27>)
+(  18,<2023-03-17 14:05:59.025 +0000>,<danielpereira>,<staff-0358.wireless.ua.pt>,<proc1d>,<TopSpin 4.1.4>,
+      <abs ABSG = 5 
+       data hash MD5: 8K
+       B3 D8 6A 3E 5C F7 E1 0B 45 5F 75 A0 1A 31 E2 D5>)
+(  19,<2023-03-17 14:06:00.469 +0000>,<danielpereira>,<staff-0358.wireless.ua.pt>,<proc1d>,<TopSpin 4.1.4>,
+      <Start of raw data processing
+       efp LB = 50 FT_mod = 6 PKNL = 1 PHC0 = 180.4557 PHC1 = -135.6 SI = 8K 
+       data hash MD5: 8K
+       92 5F 07 43 D0 78 37 FF 14 B9 83 47 1E F9 84 02>)
+(  20,<2023-03-17 14:10:47.270 +0000>,<danielpereira>,<staff-0358.wireless.ua.pt>,<proc1d>,<TopSpin 4.1.4>,
+      <pk fgphup PHC0 = -4.048633 PHC1 = 4 
+       data hash MD5: 8K
+       51 3F BA 77 CF B5 92 A3 8E 43 5E 8A DC 5E 32 17>)
+(  21,<2023-03-17 14:11:32.110 +0000>,<danielpereira>,<staff-0358.wireless.ua.pt>,<proc1d>,<TopSpin 4.1.4>,
+      <pk fgphup PHC0 = 1.35 PHC1 = 0 
+       data hash MD5: 8K
+       81 F5 02 7C B9 91 FC C5 12 A5 A2 32 8D 21 B4 15>)
+(  22,<2023-03-17 14:11:40.614 +0000>,<danielpereira>,<staff-0358.wireless.ua.pt>,<proc1d>,<TopSpin 4.1.4>,
+      <bcm 0 0 8192 -3.705694e+07 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 
+       data hash MD5: 8K
+       71 EC 9F C2 73 E2 54 E5 AD 60 2A 03 1D F7 15 0A>)
+##END=
+
+$$ hash MD5
+$$ 3D B4 BA C3 21 95 32 80 26 70 B0 A3 BC 48 BC 81
