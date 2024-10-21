@@ -3,7 +3,7 @@
 If you have Python and pip installed, you can easily install Spinplots with the following command:
 
 ```bash
-pip install @git+https://github.com/carlosbornes/spinplots
+pip install git+https://github.com/carlosbornes/spinplots
 ```
 
 All dependecies `pyproject.toml` file are installed automatically.
