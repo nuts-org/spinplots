@@ -31,7 +31,9 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[docs]
+          pip install uv
+          pip install mknotebooks
+          uv pip install --system "spinplots[docs] @ ."
 
       - name: Build docs
         run: mkdocs build
