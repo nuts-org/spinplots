@@ -11,5 +11,5 @@ All dependecies `pyproject.toml` file are installed automatically.
 To verify that the package has been installed successfully, open a Python console and run:
 
 ```python
-import spinsplots
+import spinplots
 ```
