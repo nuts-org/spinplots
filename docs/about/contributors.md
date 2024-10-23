@@ -29,6 +29,6 @@ Some project that served as inspiration for SpinPlots are:
   
 - [NMRglue](https://github.com/jjhelmus/nmrglue) by [Jonathan J. Helmus](https://github.com/jjhelmus) for providing Python function for reading, processing NMR data
 
-- My own frustration trying to remember NMRglue's syntax 🤪.
+- My own frustration trying to remember NMRglue's syntax and using Bruker's TopSpin 🤪.
 
 
