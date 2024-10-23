@@ -101,7 +101,7 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
 
 
 # Function to easily plot 1D NMR spectra in Bruker's format
-def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, format=None, frame=False, normalized=False):
+def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, format=None, frame=False, normalized=False, stacked=False):
     """
     Plots 1D NMR spectra from Bruker data.
 
@@ -116,6 +116,7 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
         format (str): The format to save the file in.
         frame (bool): Whether to show the frame.
         normalized (bool): Whether to normalize the spectra.
+        stacked (bool): Whether to stack the spectra.
 
     Example:
         plot_1d_nmr_spectra(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], xlim=(0, 100), save=True, filename='1d_spectra', format='png')
@@ -123,6 +124,8 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
     fig, ax = plt.subplots()
     
     nucleus_set = set()
+
+    prev_max = 0
     for i, data_path in enumerate(data_paths):
         dic, data = ng.bruker.read_pdata(data_path)
         udic = ng.bruker.guess_udic(dic, data)
@@ -144,13 +147,19 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
         # Normalize the spectrum
         if normalized:
             data = data / np.amax(data)
-        
+
+        # Stack the spectra
+        if stacked:
+            data += i * 1.1 if normalized else prev_max
+
         # Plot the spectrum
         if labels:
             ax.plot(ppm, data, label=labels[i])
             ax.legend()
         else:
             ax.plot(ppm, data)
+
+        prev_max = np.amax(data)
     
     # Set axis labels with LaTeX formatting and non-italicized letters
     ax.set_xlabel(f'$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)', fontsize=14)
