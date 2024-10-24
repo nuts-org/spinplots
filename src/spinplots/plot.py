@@ -73,8 +73,8 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
     ax['b'].axis(False)
     
     # Set axis labels with LaTeX formatting and non-italicized letters and position
-    ax['A'].set_xlabel(f'$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)', fontsize=14)
-    ax['A'].set_ylabel(f'$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)', fontsize=14)
+    ax['A'].set_xlabel(f'$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)', fontsize=13)
+    ax['A'].set_ylabel(f'$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)', fontsize=13)
     ax['A'].yaxis.set_label_position('right')
     ax['A'].yaxis.tick_right()
     ax['A'].tick_params(axis='x', labelsize=12)
@@ -101,7 +101,7 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
 
 
 # Function to easily plot 1D NMR spectra in Bruker's format
-def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, format=None, frame=False, normalized=False, stacked=False):
+def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, format=None, frame=False, normalized=False, stacked=False, color=None):
     """
     Plots 1D NMR spectra from Bruker data.
 
@@ -117,9 +117,10 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
         frame (bool): Whether to show the frame.
         normalized (bool): Whether to normalize the spectra.
         stacked (bool): Whether to stack the spectra.
+        color (str): List of colors for the spectra.
 
     Example:
-        plot_1d_nmr_spectra(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], xlim=(0, 100), save=True, filename='1d_spectra', format='png')
+        plot_1d_nmr_spectra(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], xlim=(0, 100), save=True, filename='1d_spectra', format='png', frame=False, normalized=True, stacked=True, color=['red', 'blue'])
     """
     fig, ax = plt.subplots()
     
@@ -153,16 +154,21 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
             data += i * 1.1 if normalized else prev_max
 
         # Plot the spectrum
-        if labels:
+        if labels and color:
+            ax.plot(ppm, data, label=labels[i], color=color[i])
+            ax.legend()
+        elif labels:
             ax.plot(ppm, data, label=labels[i])
             ax.legend()
+        elif color:
+            ax.plot(ppm, data, color=color[i])
         else:
             ax.plot(ppm, data)
 
         prev_max = np.amax(data)
     
     # Set axis labels with LaTeX formatting and non-italicized letters
-    ax.set_xlabel(f'$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)', fontsize=14)
+    ax.set_xlabel(f'$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)', fontsize=13)
     ax.tick_params(axis='x', labelsize=12)
 
     # Remove frame
@@ -173,7 +179,7 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
         ax.set_yticklabels([])
         ax.set_yticks([])
     else:
-        ax.set_ylabel('Intensity (a.u.)', fontsize=14)
+        ax.set_ylabel('Intensity (a.u.)', fontsize=13)
         ax.tick_params(axis='y', labelsize=12)
 
     # Set axis limits if provided
@@ -188,10 +194,10 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
             full_filename = "1d_nmr_spectra." + format
         fig.savefig(full_filename, format=format, dpi=300, bbox_inches='tight', pad_inches=0.1)
     else:
-        fig.show()
+        plt.show()
 
 # Function to easily plot 1D NMR spectra in Bruker's format in a grid
-def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=False, filename=None, format='png', frame=False, normalized=False):
+def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=False, filename=None, format='png', frame=False, normalized=False, color=None):
     """
     Plots 1D NMR spectra from Bruker data in subplots.
 
@@ -205,6 +211,7 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
         format (str): The format to save the file in.
         frame (bool): Whether to show the frame.
         normalized (bool): Whether to normalize the spectra.
+        color (str): List of colors for the spectra.
     """
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
@@ -226,13 +233,18 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
         if normalized:
             data = data / np.amax(data)
         
-        if labels:
+        if labels and color:
+            ax.plot(ppm, data, label=labels[i], color=color[i])
+            ax.legend()
+        elif labels:
             ax.plot(ppm, data, label=labels[i])
             ax.legend()
+        elif color:
+            ax.plot(ppm, data, color=color[i])
         else:
             ax.plot(ppm, data)
         
-        ax.set_xlabel(f'$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)', fontsize=14)
+        ax.set_xlabel(f'$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)', fontsize=13)
         ax.tick_params(axis='x', labelsize=12)
 
         if not frame:
@@ -242,7 +254,7 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
             ax.set_yticklabels([])
             ax.set_yticks([])
         else:
-            ax.set_ylabel('Intensity (a.u.)', fontsize=14)
+            ax.set_ylabel('Intensity (a.u.)', fontsize=13)
             ax.tick_params(axis='y', labelsize=12)
 
         if xlim:
@@ -257,4 +269,4 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
             full_filename = "1d_nmr_spectra." + format
         fig.savefig(full_filename, format=format, dpi=300, bbox_inches='tight', pad_inches=0.1)
     else:
-        fig.show()
+        plt.show()
