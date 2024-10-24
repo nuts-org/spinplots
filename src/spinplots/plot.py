@@ -88,6 +88,7 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
     if ylim:
         ax['A'].set_ylim(ylim)
         ax['b'].set_ylim(ylim)
+
     
     # Show the plot or save it
     if save:
@@ -99,6 +100,7 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
     else:
         plt.show()
 
+    return ax
 
 # Function to easily plot 1D NMR spectra in Bruker's format
 def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, format=None, frame=False, normalized=False, stacked=False, color=None):
@@ -196,6 +198,8 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
     else:
         plt.show()
 
+    return fig, ax
+
 # Function to easily plot 1D NMR spectra in Bruker's format in a grid
 def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=False, filename=None, format='png', frame=False, normalized=False, color=None):
     """
@@ -269,4 +273,6 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
             full_filename = "1d_nmr_spectra." + format
         fig.savefig(full_filename, format=format, dpi=300, bbox_inches='tight', pad_inches=0.1)
     else:
-        plt.show()
+        fig.show()
+
+    return fig, axes
