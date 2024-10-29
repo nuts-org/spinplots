@@ -1,0 +1,438 @@
+#*******************************************************************
+#
+# $Source: /sc/CvsTree/sc/gen/src/form/ased_acqu.form,v $
+#
+# Copyright (c) 1995 - 2008
+# BRUKER BioSpin GmbH
+# D-76287 Rheinstetten, Germany
+#
+# All Rights Reserved
+#
+#
+# $Id: ased_acqu.form,v 1.27.2.3 2014/05/05 13:10:49 nipo Exp $
+#*******************************************************************
+EDIT_PAR COMMAND FILE
+
+DI_MODE         LONG
+ED_ENTRY        ACQU
+ORDER           FILE
+
+
+HEADER		"====== General ======"
+NAME		PULPROG
+END
+NAME		TD
+END
+NAME		SW
+END
+T_NAME		SWH
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0.0 1e38
+		REL	"SWH=SW*SFO1"
+		INV_REL "SW=SWH/SFO1"
+		UNIT	"Hz"
+		FORMAT	"%14.2f Hz"
+		TEXT	"sweep width"
+END
+T_NAME          AQ
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0.0 1e38
+		REL	"AQ=aqcalc(SW,SFO1,TD,DIGTYP)"
+		INV_REL	"TD=tdcalc(SW,SFO1,1.0e6*AQ,DIGTYP)"
+		UNIT	"sec"
+		FORMAT	"%14.7f sec"
+                TEXT	"acquisition time"
+END
+NAME		RG
+END
+T_NAME          DW
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0.0 1e38
+		REL	"DW=1/(2*SW*SFO1)"
+		INV_REL	"SW=1000000/(2*(0.005+DW)*SFO1)"
+		UNIT	"usec"
+		FORMAT	"%14.3f usec"
+		TEXT	"dwell time "
+END
+NAME		DE
+		FORMAT	"%14.2f usec"
+END
+T_NAME		d0
+		TYPE	R32
+		SUBRANGE 0.0 1e8
+		CLASS	ACQU
+		REL	"d0=1u"
+		INV_REL	"D[0]=d0"
+		UNIT	"sec"
+		TEXT		"incremented delay (2D) [3 usec]"
+		FORMAT	"%14.8f sec"
+		NONEDIT
+END
+T_NAME		D1
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0.0 1e38
+		REL	"D1=D[1]"
+		INV_REL	"D[1]=D1"
+		UNIT	"sec"
+		FORMAT	"%14.9f sec"
+		TEXT		"recycle delay"
+END
+NAME		DS
+		TEXT	"number of dummy scans"
+END
+T_NAME		in0
+		TYPE	R32
+		SUBRANGE 0.0 1e8
+		CLASS	ACQU
+		REL	"in0=inf1"
+		INV_REL	"D[0]=in0"
+		UNIT	"sec"
+		TEXT		"IN_F1"
+		FORMAT	"%14.8f sec"
+		NONEDIT
+END
+T_NAME		INF1
+		TYPE	R64
+		CLASS	ACQU
+		SUBRANGE 0.0 1e38
+		REL	"INF1=INF[1]"
+		INV_REL	"INF[1]=INF1"
+		UNIT	"usec"
+		FORMAT	"%14.2f usec"
+		TEXT	"increment for F1"
+		NONEDIT
+END
+T_NAME		L0
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0.0 1e38
+		REL	"L0=L[0]"
+		INV_REL	"L[0]=L0"
+		FORMAT	"%14.0f"
+		TEXT		"number of composite C7 cycles for DQ excitation and DQ reconversion (multiple of 7)"
+END
+NAME		NS
+		TEXT		"16*n (full cycle is ns=32, ns=4 or ns=8 may result in artefacts)"
+END
+T_NAME		count
+		TYPE	I32
+		SUBRANGE 0 2147483647
+		CLASS	ACQU
+		REL	"count=td1/2"
+		INV_REL	"D[0]=count"
+		UNIT	"no"
+		TEXT	"count=td1/2"
+		FORMAT	"%14d"
+		NONEDIT
+END
+HEADER		"======== CHANNEL f1 ========"
+NAME		SFO1
+		FORMAT	"%14.7f MHz"
+		TEXT	"frequency of ch. 1"
+END
+NAME		O1
+		FORMAT	"%14.2f Hz"
+		TEXT	"frequency of ch. 1"
+END
+T_NAME		O1P
+		TYPE	R64
+		CLASS	ACQU
+		SUBRANGE -1e38 1e38
+		REL	"O1P=O1/BF1"
+		INV_REL	"O1=O1P*BF1"
+		UNIT	"ppm"
+		FORMAT	"%14.3f ppm"
+		TEXT	"frequency of ch. 1"
+END
+NAME		NUC1
+		NONEDIT
+		TEXT	"nucleus for channel 1"
+END
+T_NAME		CNST31
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -1e38 1e38
+		REL	"CNST31=CNST[31]"
+		INV_REL	"CNST[31]=CNST31"
+		FORMAT	"%14.7f"
+		TEXT		"spinning speed"
+END
+T_NAME		P1
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0.0 1.0e10
+		REL	"P1=P[1]"
+		INV_REL	"P[1]=P1"
+		UNIT	"usec"
+		FORMAT	"%14.3f usec"
+		TEXT		"excitation pulse at plw1"
+END
+T_NAME		P15
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0.0 1.0e10
+		REL	"P15=P[15]"
+		INV_REL	"P[15]=P15"
+		UNIT	"usec"
+		FORMAT	"%14.3f usec"
+		TEXT		"HH contact pulse"
+END
+T_NAME		PLW1
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0 1800
+		REL	"PLW1=PLW[1]"
+		INV_REL	"PLW[1]=PLW1"
+		UNIT	"W"
+		FORMAT	"%14.5g W"
+		TEXT		"f1 power level for CP and 90 degree pulses"
+END
+T_NAME		PLdB1
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -32.6527 1000
+		REL	"if(PLW[1]>0)PLdB1=-10*log(PLW[1])/LN10;else PLdB1=1000;"
+		INV_REL	"PLW[1]=0;if(PLdB1<1000)PLW[1]=pow(10.0,(-PLdB1)/10.0)"
+		UNIT	"dB"
+		FORMAT	"%14.2f dB"
+		TEXT	"power PL1 in dB"
+END
+T_NAME		PLW11
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0 1800
+		REL	"PLW11=PLW[11]"
+		INV_REL	"PLW[11]=PLW11"
+		UNIT	"W"
+		FORMAT	"%14.5g W"
+		TEXT		"for C7 recoupling sequence, B1=7*cnst31 in Hz"
+END
+T_NAME		PLdB11
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -32.6527 1000
+		REL	"if(PLW[11]>0)PLdB11=-10*log(PLW[11])/LN10;else PLdB11=1000;"
+		INV_REL	"PLW[11]=0;if(PLdB11<1000)PLW[11]=pow(10.0,(-PLdB11)/10.0)"
+		UNIT	"dB"
+		FORMAT	"%14.2f dB"
+		TEXT	"power PL11 in dB"
+END
+T_NAME		pul270
+		TYPE	R32
+		SUBRANGE -1e38 1e38
+		CLASS	ACQU
+		REL	"pul270=((0.75s/cnst31)/7)"
+		INV_REL	"D[0]=pul270"
+		UNIT	"usec"
+		TEXT	"pul270=((0.75s/cnst31)/7)"
+		FORMAT	"%14.2f usec"
+		NONEDIT
+END
+T_NAME		pul360
+		TYPE	R32
+		SUBRANGE -1e38 1e38
+		CLASS	ACQU
+		REL	"pul360=((1s/cnst31)/7)"
+		INV_REL	"D[0]=pul360"
+		UNIT	"usec"
+		TEXT	"pul360=((1s/cnst31)/7)"
+		FORMAT	"%14.2f usec"
+		NONEDIT
+END
+T_NAME		pul90
+		TYPE	R32
+		SUBRANGE -1e38 1e38
+		CLASS	ACQU
+		REL	"pul90=((0.25s/cnst31)/7)"
+		INV_REL	"D[0]=pul90"
+		UNIT	"usec"
+		TEXT	"pul90=((0.25s/cnst31)/7)"
+		FORMAT	"%14.2f usec"
+		NONEDIT
+END
+HEADER		"======== CHANNEL f2 ========"
+NAME		SFO2
+		FORMAT	"%14.7f MHz"
+		TEXT	"frequency of ch. 2"
+END
+NAME		O2
+		FORMAT	"%14.2f Hz"
+		TEXT	"frequency of ch. 2"
+END
+T_NAME		O2P
+		TYPE	R64
+		CLASS	ACQU
+		SUBRANGE -1e38 1e38
+		REL	"O2P=O2/BF2"
+		INV_REL	"O2=O2P*BF2"
+		UNIT	"ppm"
+		FORMAT	"%14.3f ppm"
+		TEXT	"frequency of ch. 2"
+END
+NAME		NUC2
+		NONEDIT
+		TEXT	"nucleus for channel 2"
+END
+T_NAME		CNST20
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -1e38 1e38
+		REL	"CNST20=CNST[20]"
+		INV_REL	"CNST[20]=CNST20"
+		FORMAT	"%14.7f"
+		TEXT		"LG-RF field as adjusted, in Hz used to calculate cnst22 and cnst23 +and - LG frequency"
+END
+T_NAME		cnst21
+		TYPE	R32
+		SUBRANGE -1e38 1e38
+		CLASS	ACQU
+		REL	"cnst21=0"
+		INV_REL	"D[0]=cnst21"
+		UNIT	"no"
+		TEXT		"=0 frequency reset on resonance (set by lgclac.incl)"
+		FORMAT	"%14.6f"
+		NONEDIT
+END
+T_NAME		cnst22
+		TYPE	R32
+		SUBRANGE -1e38 1e38
+		CLASS	ACQU
+		REL	"cnst22=cnst20/sqrt(2)+cnst24"
+		INV_REL	"D[0]=cnst22"
+		UNIT	"no"
+		TEXT		"+LG frequency offset calc. by lgcalc.incl"
+		FORMAT	"%14.6f"
+		NONEDIT
+END
+T_NAME		cnst23
+		TYPE	R32
+		SUBRANGE -1e38 1e38
+		CLASS	ACQU
+		REL	"cnst23=-cnst20/sqrt(2)+cnst24"
+		INV_REL	"D[0]=cnst23"
+		UNIT	"no"
+		TEXT		"-LG frequency offset calc. by lgcalc.incl"
+		FORMAT	"%14.6f"
+		NONEDIT
+END
+T_NAME		CNST24
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -1e38 1e38
+		REL	"CNST24=CNST[24]"
+		INV_REL	"CNST[24]=CNST24"
+		FORMAT	"%14.7f"
+		TEXT		"offset for 1H evol. during FSLG"
+END
+NAME		CPDPRG[1]
+		TEXT		"decoupling f2 during C7, e.g. cw (or cwlg) or tppm"
+END
+NAME		CPDPRG[2]
+		TEXT		"decoupling f2, e.g. tppm15, SPINAL64, during t1 and t2"
+END
+T_NAME		P3
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0.0 1.0e10
+		REL	"P3=P[3]"
+		INV_REL	"P[3]=P3"
+		UNIT	"usec"
+		FORMAT	"%14.3f usec"
+		TEXT		"1H excitation pulse at plw12"
+END
+T_NAME		PCPD2
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0 1e38
+		REL	"PCPD2=PCPD[2]"
+		INV_REL	"PCPD[2]=PCPD2"
+		UNIT	"usec"
+		FORMAT	"%14.2f usec"
+		TEXT		"decoupling pulse f2 at plw12, pcpd = 2*P3-0.2us used by TPPM and SPINAL"
+END
+T_NAME		PLW2
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0 812
+		REL	"PLW2=PLW[2]"
+		INV_REL	"PLW[2]=PLW2"
+		UNIT	"W"
+		FORMAT	"%14.5g W"
+		TEXT		"=0, not used"
+END
+T_NAME		PLdB2
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -29.1956 1000
+		REL	"if(PLW[2]>0)PLdB2=-10*log(PLW[2])/LN10;else PLdB2=1000;"
+		INV_REL	"PLW[2]=0;if(PLdB2<1000)PLW[2]=pow(10.0,(-PLdB2)/10.0)"
+		UNIT	"dB"
+		FORMAT	"%14.2f dB"
+		TEXT	"power PL2 in dB"
+END
+T_NAME		PLW12
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0 812
+		REL	"PLW12=PLW[12]"
+		INV_REL	"PLW[12]=PLW12"
+		UNIT	"W"
+		FORMAT	"%14.5g W"
+		TEXT		"for 1H excitation and decoupling"
+END
+T_NAME		PLdB12
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -29.1956 1000
+		REL	"if(PLW[12]>0)PLdB12=-10*log(PLW[12])/LN10;else PLdB12=1000;"
+		INV_REL	"PLW[12]=0;if(PLdB12<1000)PLW[12]=pow(10.0,(-PLdB12)/10.0)"
+		UNIT	"dB"
+		FORMAT	"%14.2f dB"
+		TEXT	"power PL12 in dB"
+END
+NAME		SPNAM[0]
+		TEXT		"for CP on 1H e.g. ramp.64 "
+END
+T_NAME		SPOAL0
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -1.0 1.0
+		REL	"SPOAL0=SPOAL[0]"
+		INV_REL	"SPOAL[0]=SPOAL0"
+		FORMAT	"%14.3f"
+		TEXT	"phase alignment of freq. offset in SP0"
+END
+T_NAME		SPOFFS0
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -1e38 1e38
+		REL	"SPOFFS0=SPOFFS[0]"
+		INV_REL	"SPOFFS[0]=SPOFFS0"
+		UNIT	"Hz"
+		FORMAT	"%14.2f Hz"
+		TEXT	"offset frequency for SP0"
+END
+T_NAME		SPW0
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE 0 812
+		REL	"SPW0=SPW[0]"
+		INV_REL	"SPW[0]=SPW0"
+		UNIT	"W"
+		FORMAT	"%14.5g W"
+		TEXT		"proton power level during contact"
+END
+T_NAME		SPdB0
+		TYPE	R32
+		CLASS	ACQU
+		SUBRANGE -29.1956 1000
+		REL	"if(SPW[0]>0)SPdB0=-10*log(SPW[0])/LN10;elseSPdB0=1000;"
+		INV_REL	"SPW[0]=0;if(SPdB0<1000)SPW[0]=pow(10.0,(-SPdB0)/10.0)"
+		UNIT	"dB"
+		FORMAT	"%14.2f -dBW"
+		TEXT	"power SPW0 in -dBW"
+END

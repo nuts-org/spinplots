@@ -1,0 +1,241 @@
+# 1 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu"
+;pc7cp2daswf (TopSpin 3.0)
+;
+;version 1.0 for Topspin 3.0 / July 8, 2011
+;
+;2D SQ-DQ correlation experiment with POST_C7 sequence and cross polarization
+;allows arbitrary t1 increments
+;Hohwy, M. Jakobsen, H.J. Eden, M. Levitt, M.H., Nielsen, N.C., 
+;J. Chem. Phys. 108, 2686-2694 (1998)
+;revised 09/09/03 JOS  modified by HF 09.05.08 to use floating point phases and arbitrary increments in F1
+;revised 08/07/11 GALT
+;
+;phase cycling: 	4 (double quantum filter + read pulse phase cycling) 
+;								* 4 (read pulse 90 deg phase shift) 
+;								* 2 (1H (f2) spin temperature inversion)
+; full phase cycle: ns=32
+; ns=16 should give resonably clean spectra
+; for ns=4 or ns=8 some artefacts may occur 
+; (most of these are suppressed by the read pulse cycling) and set d20=20 us (13C)
+;
+;Avance III version
+;parameters:
+;d1 : recycle delay
+;d0 : incremented delay (2D) [3 usec]
+;d31 : rotor period (calculated in pulse program)
+;pl1 : f1 power level for CP and 90 degree pulses
+;pl11 : for C7 recoupling sequence, B1=7*cnst31 in Hz
+;p1 : excitation pulse at plw1
+;sp0 : proton power level during contact
+;pl2 : =0, not used
+;pl12 : for 1H excitation and decoupling
+;pl13 : for LG decoupling cpdprg1 = cwlg or cw13 or tppm13
+;p3   : 1H excitation pulse at plw12
+;p5   : FSLG 2pi pulse set by lgcalc.incl
+;p15  : HH contact pulse
+;pcpd2 : decoupling pulse f2 at plw12, pcpd = 2*P3-0.2us used by TPPM and SPINAL
+;spnam0 : for CP on 1H e.g. ramp.64 
+;cpdprg1 : decoupling f2 during C7, e.g. cw (or cwlg) or tppm
+;cpdprg2 : decoupling f2, e.g. tppm15, SPINAL64, during t1 and t2
+;cnst20 : LG-RF field as adjusted, in Hz used to calculate cnst22 and cnst23 +and - LG frequency
+;cnst21 : =0 frequency reset on resonance (set by lgclac.incl)
+;cnst22 : +LG frequency offset calc. by lgcalc.incl
+;cnst23 : -LG frequency offset calc. by lgcalc.incl
+;cnst24 : offset for 1H evol. during FSLG
+;cnst27 : calculated in pulse program, t1 dependent reconversion pulse phase shift
+;cnst31 : spinning speed
+;l0: number of composite C7 cycles for DQ excitation and DQ reconversion (multiple of 7)
+;zgoptns : blank
+;in0   : IN_F1
+;mc2   : STATES-TPPI
+;ns    : 16*n (full cycle is ns=32, ns=4 or ns=8 may result in artefacts)
+;FnMODE: undefined
+;WDW : f1 QSINE 3,  F2 QSINE 2 or EM
+;
+;
+;$COMMENT=SQ-DQ experiment with post-C7 sequence, cp for excitation
+;$CLASS=Solids
+;$DIM=2D
+;$TYPE=cross polarisation
+;$SUBTYPE=homonuclear correlation
+
+
+define loopcounter count
+"count=td1/2"
+# 65 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu"
+define pulse pul360
+"pul360=((1s/cnst31)/7)"
+define pulse pul90
+"pul90=((0.25s/cnst31)/7)"
+define pulse pul270
+"pul270=((0.75s/cnst31)/7)"
+
+"d31=1/cnst31"
+define delay excite
+"excite=(2/7)*d31*l0"
+define delay reconv
+"reconv=(2/7)*d31*l0"
+define delay recoup
+"recoup=l0*(4/7)*d31"
+
+"d0=1u"
+;for digmod=baseopt
+"acqt0=(-2.0*p1)/3.14159"
+# 84 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu"
+;set t1 increment
+"in0=inf1"
+
+# 1 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/lgcalc.incl" 1
+;$CLASS=Solids INCL
+;$COMMENT=calculation of FSLG parameters
+
+# 5 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/lgcalc.incl"
+"cnst21=0"			;make sure cp ist done with proton freq.
+				;set by O2
+"cnst22=cnst20/sqrt(2)+cnst24"		;cnst20=desired RF field in Hz
+"cnst23=-cnst20/sqrt(2)+cnst24"	;negative offset is cnst23
+
+"p5=((294/360)/(cnst20))*1e6"		;calculate 294 degree pulse from cnst20
+
+;$Id: lgcalc.incl,v 1.6.2.1 2017/02/22 17:02:21 ber Exp $
+# 87 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu" 2
+# 88 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu"
+			;calculates cnst22 from cnst20, RF field at pl13
+
+# 1 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/rot_prot.incl" 1
+;rot_prot.incl
+;avance-version (13/01/29)
+;Test the rf on-time and duty cycle
+;protect against misset cnst31, rotation speed below 1000 Hz
+;
+;$CLASS=Solids INCL
+;$COMMENT=protect against misset cnst31, rotation speed below 1000 Hz
+
+# 10 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/rot_prot.incl"
+1m
+if "d31 < 1m" goto Passrot
+2u
+print "rotation period too long, cnst31 misset to less than 1000 Hz!"
+goto HaltAcqu
+Passrot, 1m
+
+
+# 19 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/rot_prot.incl"
+;$Id: rot_prot.incl,v 1.8 2013/01/29 15:40:14 ber Exp $
+# 90 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu" 2
+
+			;requires cnst31 to be set to 1000 Hz or larger
+# 1 "mc_line 92 file C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu dc-measurement inserted automatically"
+
+    dccorr
+# 92 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu"
+  ze
+1 10m
+  "cnst27=180*(d0+0.1u)/d31"		;calculate t1 dependent phase shift for reconversion
+  1m ip13+cnst27
+  1m ip14+cnst27
+2 d1 do:f2
+# 1 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/p15_prot.incl" 1
+;p15_prot.incl
+;avance-version (13/01/29)
+;Test the rf on-time and duty cycle
+;protect against too long contact time
+;Test the rf on-time and duty cycle 
+;
+;$CLASS=Solids INCL
+;$COMMENT=protect against too long contact time
+
+# 11 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/p15_prot.incl"
+1m
+if "p15 < 10.1m" goto Passp15
+2u
+print "contact time exceeds 10msec limit!"
+goto HaltAcqu
+Passp15, 1m
+
+
+# 20 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/p15_prot.incl"
+;$Id: p15_prot.incl,v 1.8 2013/01/29 15:40:14 ber Exp $
+# 98 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu" 2
+
+			;make sure p15 does not exceed 10 msec	
+			;let supervisor change this pulseprogram if 
+			;more is needed
+# 1 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/aq_prot.incl" 1
+;aq_prot.incl
+;avance-version (13/01/28)
+;Test the rf on-time and duty cycle
+;protect against too long acquisition time
+
+;$CLASS=Solids INCL
+;$COMMENT=protect against too long acquisition time
+# 9 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/aq_prot.incl"
+1m
+if "aq < 50.1m" goto Passaq
+2u 
+print "acquisition time exceeds 50m limit!"
+goto HaltAcqu
+Passaq, 1m
+
+;$Id: aq_prot.incl,v 1.8 2013/01/28 17:39:02 ber Exp $
+# 102 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu" 2
+
+			;allows max. 50 msec acquisition time, supervisor
+			;may change  to max. 1s at less than 5 % duty cycle
+			;and reduced decoupling field
+;#include <recoup_prot.incl>
+			;allows max. 10 ms of total (excitation and reconversion) recoupling time
+  1m rpp11
+  1m rpp12
+  1m rpp13
+  1m rpp14
+  1u fq=cnst22:f2		;show LG frequencies in ased
+  1u fq=cnst23:f2
+  1u fq=cnst21:f2
+  (p3 pl2 ph1):f2
+  (p15 pl1 ph2):f1 (p15:sp0 ph10):f2
+  (p1 pl1 ph4):f1 
+  1u pl11:f1 cpds1:f2 ; switch to C7 RF condition for cpdprg1 use cwlg with 
+											; pl13 if 1.5*(7*masr) < spin nutation 1H < 3*(7*masr)
+											; if spin nutation 1H > 3*(7*masr) then use cw13 with 
+											; plw13, plw13=0 for masr>15 kHz
+3 (pul90  ph11 ipp13 ipp14):f1	  ;c7 excitation l0*2Tr/7, 
+  (pul360 ph12  ipp12):f1
+  (pul270 ph11  ipp11):f1
+  lo to 3 times l0      ;l0 DQ excitation block = DQ reconversion block
+4 d0 cpds2:f2
+  0.1u cpds1:f2
+5 (pul90 ph13):f1 			;c7 reconversion
+  (pul360 ph14 ipp14):f1
+  (pul270 ph13 ipp13):f1
+  lo to 5 times l0 
+  (p1 pl1 ph5):f1 (1u cpds2):f2    ;cpdprg2 spinal64, @ pl12, cnst21=on resonance, pcpd=2*p3-0.2us
+  gosc ph31 		;start ADC with ph31 signal routing
+  1m do:f2
+  1m ip13
+  1m ip14
+  lo to 2 times ns
+  100m wr #0 if #0 zd
+  1m  ip11
+  1m  ip12
+  lo to 1 times 2
+  id0
+  lo to 1 times count
+HaltAcqu, 1m
+exit
+# 147 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu"
+ph1= {1}*16 {3}*16
+ph2= 0 
+ph4= {3}*16 {1}*16 
+ph5 = 1 2 3 0 2 3 0 1
+      3 0 1 2 0 1 2 3
+ph10=0
+
+ph11 = (float,45.0) 0.00 51.43 102.86 154.29 205.71 257.14 308.57 
+ph12 = (float,45.0) 180.00 231.43 282.86 334.29 385.71 437.14 488.57 
+ph13 = (float,90.0) 90.00 141.43 192.86 244.29 295.71 347.14 398.57 
+ph14 = (float,90.0) 270.00 321.43 372.86 424.29 475.71 527.14 578.57 
+
+ph31= 2 1 0 3 3 2 1 0 0 3 2 1 1 0 3 2
+# 161 "C:/Bruker/TopSpin3.6.5/exp/stan/nmr/lists/pp/user/pc7cp2d.lu"
+;$Id: pc7cp2daswf,v 1.4.4.4 2014/02/11 09:05:13 ber Exp $

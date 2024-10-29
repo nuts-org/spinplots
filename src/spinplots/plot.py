@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
 
-def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, xlim=None, ylim=None, save=False, filename=None, format=None):
+def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, xlim=None, ylim=None, save=False, filename=None, format=None, diag=None, homo=False):
     """
     Plots a 2D NMR spectrum from Bruker data.
 
@@ -22,15 +22,22 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
         save (bool): Whether to save the plot.
         filename (str): The name of the file to save the plot.
         format (str): The format to save the file in.
+        diag (float or None): Slope of the diagonal line/None.
+        homo (bool): True if doing homonuclear experiment.
 
     Example:
-        plot_2d_nmr_spectrum('data/2d_data', 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png')
+        plot_2d_nmr_spectrum('data/2d_data', 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
     """
     dic, data = ng.bruker.read_pdata(data_path)
     udic = ng.bruker.guess_udic(dic, data)
-    
-    nuclei_x = udic[1]['label']
-    nuclei_y = udic[0]['label']
+
+    # Check if homo is set to True
+    if homo:
+        nuclei_x = udic[1]['label']
+        nuclei_y = udic[1]['label']
+    else: 
+        nuclei_x = udic[1]['label']
+        nuclei_y = udic[0]['label']
     
     # Extract the number and nucleus symbol from the label
     number_x, nucleus_x = ''.join(filter(str.isdigit, nuclei_x)), ''.join(filter(str.isalpha, nuclei_x))
@@ -60,11 +67,11 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
     
     # Plot contour lines with the provided colormap if cmap is provided
     if cmap is not None:
-        contour_plot = ax['A'].contour(data, contour_levels, extent=(ppm_x_limits[0], ppm_x_limits[1], ppm_y_limits[0], ppm_y_limits[1]), cmap=cmap, linewidth=0.8)
+        contour_plot = ax['A'].contour(data, contour_levels, extent=(ppm_x_limits[0], ppm_x_limits[1], ppm_y_limits[0], ppm_y_limits[1]), cmap=cmap, linewidths=0.5)
         darkest_color = contour_plot.collections[0].get_edgecolor()[0]  # Get the color of the first contour line
     else:
         darkest_color = 'black'
-        contour_plot = ax['A'].contour(data, contour_levels, extent=(ppm_x_limits[0], ppm_x_limits[1], ppm_y_limits[0], ppm_y_limits[1]), colors = 'black', linewidth=0.8)
+        contour_plot = ax['A'].contour(data, contour_levels, extent=(ppm_x_limits[0], ppm_x_limits[1], ppm_y_limits[0], ppm_y_limits[1]), colors = 'black', linewidths=0.5)
     
     # Plot projections with the extracted color
     ax['a'].plot(ppm_x, proj_x, linewidth=0.8, color=darkest_color)
@@ -79,7 +86,12 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
     ax['A'].yaxis.tick_right()
     ax['A'].tick_params(axis='x', labelsize=12)
     ax['A'].tick_params(axis='y', labelsize=12)
-    
+
+    # Plot diagonal line if diag is provided
+    if diag is not None:
+        x_diag = np.linspace(ppm_x_limits[0], ppm_x_limits[1], 100)
+        y_diag = diag * x_diag
+        ax['A'].plot(x_diag, y_diag, linestyle='--', color='gray')
     
     # Set axis limits if provided
     if xlim:
@@ -100,10 +112,9 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
     else:
         plt.show()
 
-    return ax
 
 # Function to easily plot 1D NMR spectra in Bruker's format
-def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, format=None, frame=False, normalized=False, stacked=False, color=None):
+def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, format=None, frame=False, normalized=False, stacked=False, color=None, return_fig=False):
     """
     Plots 1D NMR spectra from Bruker data.
 
@@ -120,9 +131,10 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
         normalized (bool): Whether to normalize the spectra.
         stacked (bool): Whether to stack the spectra.
         color (str): List of colors for the spectra.
+        return_fig (bool): Whether to return the figure and axis.
 
     Example:
-        plot_1d_nmr_spectra(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], xlim=(0, 100), save=True, filename='1d_spectra', format='png', frame=False, normalized=True, stacked=True, color=['red', 'blue'])
+        bruker1d(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], xlim=(0, 100), save=True, filename='1d_spectra', format='png', frame=False, normalized=True, stacked=True, color=['red', 'blue'])
     """
     fig, ax = plt.subplots()
     
@@ -195,13 +207,15 @@ def bruker1d(data_paths, labels=None, xlim=None, save=False, filename=None, form
         else:
             full_filename = "1d_nmr_spectra." + format
         fig.savefig(full_filename, format=format, dpi=300, bbox_inches='tight', pad_inches=0.1)
+    if return_fig:
+        return fig, ax
     else:
         plt.show()
 
-    return fig, ax
+
 
 # Function to easily plot 1D NMR spectra in Bruker's format in a grid
-def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=False, filename=None, format='png', frame=False, normalized=False, color=None):
+def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=False, filename=None, format='png', frame=False, normalized=False, color=None, return_fig=False):
     """
     Plots 1D NMR spectra from Bruker data in subplots.
 
@@ -216,6 +230,10 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
         frame (bool): Whether to show the frame.
         normalized (bool): Whether to normalize the spectra.
         color (str): List of colors for the spectra.
+        return_fig (bool): Whether to return the figure and axis.
+
+    Example:
+        bruker1d_grid(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], subplot_dims=(1, 2), xlim=(0, 100), save=True, filename='1d_spectra', format='png', frame=False, normalized=True, color=['red', 'blue'])
     """
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
@@ -272,7 +290,7 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
         else:
             full_filename = "1d_nmr_spectra." + format
         fig.savefig(full_filename, format=format, dpi=300, bbox_inches='tight', pad_inches=0.1)
+    elif return_fig:
+        return fig, axes
     else:
-        fig.show()
-
-    return fig, axes
+        plt.show()

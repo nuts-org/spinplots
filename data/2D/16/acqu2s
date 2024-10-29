@@ -1,0 +1,28 @@
+##TITLE= Parameter file, TopSpin 4.1.4
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 408	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmr
+$$ 2022-12-27 17:01:27.585 +0000  danielpereira@MacBookdeDaniel
+$$ /Users/danielpereira/NMR Data/13C_4mm_Triple/16/acqu2s
+$$ process /opt/topspin4.1.4/prog/mod/dataserver
+##$ACQT0= 0
+##$BF1= 400.13
+##$DE= 0.8220974
+##$DECIM= 1
+##$DR= 32
+##$FW= 2.4e+08
+##$FnILOOP= 0
+##$FnMODE= 5
+##$NUC1= <1H>
+##$NusJSP= 0
+##$NusT2= 1
+##$NusTD= 512
+##$O1= 1880.611
+##$ProjAngle= 0
+##$SFO1= 400.131880611
+##$SW= 950
+##$SW_h= 380125.281
+##$TD= 379
+##END=

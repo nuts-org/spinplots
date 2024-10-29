@@ -1,0 +1,11 @@
+##TITLE= Parameter file, TopSpin 4.1.4
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 3	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmr
+$$ 2022-12-24 00:56:29.837 +0000  danielpereira@MacBookdeDaniel
+$$ /Users/danielpereira/NMR Data/13C_4mm_Triple/16/pdata/1/assocs
+$$ process /opt/topspin4.1.4/prog/mod/dataserver
+##$MULTDISP= </Users/danielpereira/NMR Data/4mm_LG_3D/393/pdata/1>
+##END=
