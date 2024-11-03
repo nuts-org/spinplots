@@ -8,6 +8,7 @@ nav:
       - installation/install.md
   - User Guide:
       - user_guide/easy_plots.ipynb
+      - user_guide/read_export.ipynb
   - Code Documentation: reference/
   - About:
       - about/contributors.md

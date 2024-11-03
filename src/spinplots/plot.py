@@ -26,7 +26,7 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
         homo (bool): True if doing homonuclear experiment.
 
     Example:
-        plot_2d_nmr_spectrum('data/2d_data', 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
+        bruker2d('data/2d_data', 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
     """
     dic, data = ng.bruker.read_pdata(data_path)
     udic = ng.bruker.guess_udic(dic, data)
@@ -223,7 +223,7 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
         data_paths (list): List of paths to the Bruker data directories.
         labels (list): List of labels for the spectra.
         subplot_dims (tuple): Dimensions of the subplot grid (rows, cols).
-        xlim (tuple): The limits for the x-axis.
+        xlim (list of tuples or tuple): The limits for the x-axis.
         save (bool): Whether to save the plot.
         filename (str): The name of the file to save the plot.
         format (str): The format to save the file in.
@@ -233,7 +233,7 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
         return_fig (bool): Whether to return the figure and axis.
 
     Example:
-        bruker1d_grid(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], subplot_dims=(1, 2), xlim=(0, 100), save=True, filename='1d_spectra', format='png', frame=False, normalized=True, color=['red', 'blue'])
+        bruker1d_grid(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], subplot_dims=(1, 2), xlim=[(0, 100), (0, 100)], save=True, filename='1d_spectra', format='png', frame=False, normalized=True, color=['red', 'blue'])
     """
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
@@ -279,8 +279,10 @@ def bruker1d_grid(data_paths, labels=None, subplot_dims=(1, 1), xlim=None, save=
             ax.set_ylabel('Intensity (a.u.)', fontsize=13)
             ax.tick_params(axis='y', labelsize=12)
 
-        if xlim:
+        if xlim and isinstance(xlim, tuple):
             ax.set_xlim(xlim)
+        elif xlim and isinstance(xlim, list):
+            ax.set_xlim(xlim[i])
 
     plt.tight_layout()
 

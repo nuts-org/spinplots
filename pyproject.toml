@@ -43,6 +43,9 @@ repository = "https://github.com/carlosbornes/spinplots"
 documentation = "https://carlosbornes.github.io/spinplots/"
 changelog = "https://github.com/carlosbornes/spinplots/blob/main/CHANGELOG.md"
 
+[project.scripts]
+bruker2csv = "spinplots.cli:main"
+
 [tool.setuptools.package-data]
 spinplots = ["py.typed"]
 
