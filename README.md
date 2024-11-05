@@ -1,5 +1,7 @@
 # SpinPlots: Python NMR plots made easy
 
+[![DOI](https://zenodo.org/badge/782205685.svg)](https://doi.org/10.5281/zenodo.14041925)
+
 SpinPlots is a Python package designed to streamline the process of loading and plotting NMR data. Built on top of the [NMRglue](https://www.nmrglue.com/), SpinPlots simplifies the plotting of NMR spectra. While NMRglue is a powerful tool for reading, processing, and analyzing NMR data, plotting with it can be cumbersome and code-intensive. SpinPlots addresses this by offering an intuitive interface for generating publication-ready plots with minimal effort.
 
 ## Current features 🤌
