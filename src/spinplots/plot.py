@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
 
-def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, xlim=None, ylim=None, save=False, filename=None, format=None, diag=None, homo=False):
+def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, xlim=None, ylim=None, save=False, filename=None, format=None, diag=None, homo=False, return_fig=False):
     """
     Plots a 2D NMR spectrum from Bruker data.
 
@@ -24,6 +24,7 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
         format (str): The format to save the file in.
         diag (float or None): Slope of the diagonal line/None.
         homo (bool): True if doing homonuclear experiment.
+        return_fig (bool): Whether to return the figure and axis.
 
     Example:
         bruker2d('data/2d_data', 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
@@ -109,6 +110,9 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
         else:
             full_filename = "2d_nmr_spectrum." + format
         plt.savefig(full_filename, format=format, dpi=300, bbox_inches='tight', pad_inches=0.1)
+    
+    if return_fig:
+        return ax
     else:
         plt.show()
 
