@@ -5,21 +5,46 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
 from matplotlib.colors import LogNorm
+import matplotlib.colors as mcolors
 import pandas as pd
 from spinplots.utils import calculate_projections
 
-def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, xlim=None, ylim=None, save=False, filename=None, format=None, diag=None, homo=False, return_fig=False):
+def bruker2d(data_path,
+             contour_start,
+             contour_num,
+             contour_factor,
+             cmap=None,
+             colors=None,
+             xlim=None,
+             ylim=None,
+             save=False,
+             filename=None,
+             format=None,
+             diag=None,
+             homo=False,
+             return_fig=False,
+             linewidth_contour=None,
+             linewidth_proj=None,
+             xaxislabel=None,
+             yaxislabel=None,
+             axisfont=None,
+             axisfontsize=None,
+             tickfont=None,
+             tickfontsize=None,
+             tickspacing=None,
+            ):
     """
     Plots a 2D NMR spectrum from Bruker data.
-
+    
     Parameters:
-        data_path (str): Path to the Bruker data directory.
-        contour_start (float): The starting value for the contour lines.
-        contour_num (int): The number of contour lines.
-        contour_factor (float): The factor by which the contour levels increase.
-
+        data_path (str or list): Path or list of paths to the Bruker data directories.
+        contour_start (float or list): Start value for the contour levels.
+        contour_num (int or list): Number of list of contour levels.
+        contour_factor (float or list): Factor or list of factors by which the contour levels increase.
+        
     Keyword arguments:
-        cmap (str): The colormap to use for the contour lines.
+        cmap (str or list): Colormap(s) to use for the contour lines.
+        colors (list): Colors to use when overlaying spectra.
         xlim (tuple): The limits for the x-axis.
         ylim (tuple): The limits for the y-axis.
         save (bool): Whether to save the plot.
@@ -28,84 +53,181 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
         diag (float or None): Slope of the diagonal line/None.
         homo (bool): True if doing homonuclear experiment.
         return_fig (bool): Whether to return the figure and axis.
-
+        linewidth_contour (float): Line width of the contour plot.
+        linewidth_proj (float): Line width of the projections.
+        xaxislabel (str): Label for the axis.
+        yaxislabel (str): Label for the y-axis.
+        axisfont (str): Font type for the axis label.
+        axisfontsize (int): Font size for the axis label.
+        tickfont (str): Font type for the tick labels.
+        tickfontsize (int): Font size for the tick labels.
+        tickspacing (int): Spacing between the tick labels.
+        
     Example:
         bruker2d('data/2d_data', 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
     """
-    dic, data = ng.bruker.read_pdata(data_path)
-    udic = ng.bruker.guess_udic(dic, data)
 
-    # Check if homo is set to True
-    if homo:
-        nuclei_x = udic[1]['label']
-        nuclei_y = udic[1]['label']
-    else: 
-        nuclei_x = udic[1]['label']
-        nuclei_y = udic[0]['label']
-    
-    # Extract the number and nucleus symbol from the label
-    number_x, nucleus_x = ''.join(filter(str.isdigit, nuclei_x)), ''.join(filter(str.isalpha, nuclei_x))
-    number_y, nucleus_y = ''.join(filter(str.isdigit, nuclei_y)), ''.join(filter(str.isalpha, nuclei_y))
-    
-    uc_x = ng.fileiobase.uc_from_udic(udic, dim=1)
-    ppm_x = uc_x.ppm_scale()
-    ppm_x_limits = uc_x.ppm_limits()
-    proj_x = np.amax(data, axis=0)
-    
-    uc_y = ng.fileiobase.uc_from_udic(udic, dim=0)
-    ppm_y = uc_y.ppm_scale()
-    ppm_y_limits = uc_y.ppm_limits()
-    proj_y = np.amax(data, axis=1)
-    
+    defaults = {
+        'linewidth_contour': 0.5,
+        'linewidth_proj': 0.8,
+        'xaxislabel': None,
+        'yaxislabel': None,
+        'axisfont': None,
+        'axisfontsize': 13,
+        'tickfont': None,
+        'tickfontsize': 12,
+        'tickspacing': None
+    }
+
+    params = {k: v for k, v in locals().items() if k in defaults and v is not None}
+    defaults.update(params)
+
+    if isinstance(data_path, str):
+        data_path = [data_path]
+
     # Create figure and axis
-    ax = plt.figure(constrained_layout=False).subplot_mosaic(
+    fig = plt.figure(constrained_layout=False)
+    ax = fig.subplot_mosaic(
     """
     .a
     bA
     """,
     gridspec_kw={"height_ratios": [0.9, 6.0], "width_ratios": [0.8, 6.0], 'wspace': 0.03, 'hspace': 0.04},
     )   
-    
-    # Contour levels
-    contour_levels = contour_start * contour_factor ** np.arange(contour_num)
-    
-    # Plot contour lines with the provided colormap if cmap is provided
-    if cmap is not None:
-        contour_plot = ax['A'].contour(data, contour_levels, extent=(ppm_x_limits[0], ppm_x_limits[1], ppm_y_limits[0], ppm_y_limits[1]), cmap=cmap, linewidths=0.5, norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]))
-        darkest_color = contour_plot.collections[0].get_edgecolor()[0]  # Get the color of the first contour line
-    else:
-        darkest_color = 'black'
-        contour_plot = ax['A'].contour(data, contour_levels, extent=(ppm_x_limits[0], ppm_x_limits[1], ppm_y_limits[0], ppm_y_limits[1]), colors = 'black', linewidths=0.5)
-    
-    # Plot projections with the extracted color
-    ax['a'].plot(ppm_x, proj_x, linewidth=0.8, color=darkest_color)
-    ax['a'].axis(False)
-    ax['b'].plot(-proj_y, ppm_y, linewidth=0.8, color=darkest_color)
-    ax['b'].axis(False)
-    
-    # Set axis labels with LaTeX formatting and non-italicized letters and position
-    ax['A'].set_xlabel(f'$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)', fontsize=13)
-    ax['A'].set_ylabel(f'$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)', fontsize=13)
-    ax['A'].yaxis.set_label_position('right')
-    ax['A'].yaxis.tick_right()
-    ax['A'].tick_params(axis='x', labelsize=12)
-    ax['A'].tick_params(axis='y', labelsize=12)
 
-    # Plot diagonal line if diag is provided
-    if diag is not None:
-        x_diag = np.linspace(ppm_x_limits[0], ppm_x_limits[1], 100)
-        y_diag = diag * x_diag
-        ax['A'].plot(x_diag, y_diag, linestyle='--', color='gray')
-    
-    # Set axis limits if provided
-    if xlim:
-        ax['A'].set_xlim(xlim)
-        ax['a'].set_xlim(xlim)
-    if ylim:
-        ax['A'].set_ylim(ylim)
-        ax['b'].set_ylim(ylim)
+    for i, nmr in enumerate(data_path):
+        dic, data = ng.bruker.read_pdata(nmr)
+        udic = ng.bruker.guess_udic(dic, data)
 
-    
+        # Check if homo is set to True
+        if homo:
+            nuclei_x = udic[1]['label']
+            nuclei_y = udic[1]['label']
+        else: 
+            nuclei_x = udic[1]['label']
+            nuclei_y = udic[0]['label']
+
+        # Extract the number and nucleus symbol from the label
+        number_x, nucleus_x = ''.join(filter(str.isdigit, nuclei_x)), ''.join(filter(str.isalpha, nuclei_x))
+        number_y, nucleus_y = ''.join(filter(str.isdigit, nuclei_y)), ''.join(filter(str.isalpha, nuclei_y))
+
+        uc_x = ng.fileiobase.uc_from_udic(udic, dim=1)
+        ppm_x = uc_x.ppm_scale()
+        ppm_x_limits = uc_x.ppm_limits()
+
+        uc_y = ng.fileiobase.uc_from_udic(udic, dim=0)
+        ppm_y = uc_y.ppm_scale()
+        ppm_y_limits = uc_y.ppm_limits()
+
+        # Get indices for the zoomed region if limits are specified
+        if xlim:
+            x_min_idx = np.abs(ppm_x - max(xlim)).argmin()
+            x_max_idx = np.abs(ppm_x - min(xlim)).argmin()
+            x_indices = slice(min(x_min_idx, x_max_idx), max(x_min_idx, x_max_idx))
+        else:
+            x_indices = slice(None)
+
+        if ylim:
+            y_min_idx = np.abs(ppm_y - max(ylim)).argmin()
+            y_max_idx = np.abs(ppm_y - min(ylim)).argmin()
+            y_indices = slice(min(y_min_idx, y_max_idx), max(y_min_idx, y_max_idx))
+        else:
+            y_indices = slice(None)
+
+        # Calculate projections based on the zoomed region
+        zoomed_data = data[y_indices, x_indices]
+        proj_x = np.amax(zoomed_data, axis=0)
+        proj_y = np.amax(zoomed_data, axis=1)
+
+        # Contour levels
+        contour_levels = contour_start * contour_factor ** np.arange(contour_num)
+
+        # Plot projections with the extracted color
+        # using the relevant portions of x and y ranges
+        x_proj_ppm = ppm_x[x_indices]
+        y_proj_ppm = ppm_y[y_indices]
+
+        # Plot contour lines with the provided colormap if cmap is provided
+        if cmap is not None:
+            from matplotlib.colors import LogNorm
+            if isinstance(cmap, str):
+                cmap = [cmap]
+                if len(cmap) > 1:
+                    print("Warning: Consider using colors instead of cmap"
+                    "when overlapping spectra.")
+
+            cmap_i = plt.get_cmap(cmap[i])
+            contour_plot = ax['A'].contour(data,
+                                         contour_levels,
+                                         extent=(ppm_x_limits[0],
+                                         ppm_x_limits[1],
+                                         ppm_y_limits[0],
+                                         ppm_y_limits[1]),
+                                         cmap=cmap[i],
+                                         linewidths=defaults['linewidth_contour'],
+                                         norm=LogNorm(vmin=contour_levels[0],
+                                         vmax=contour_levels[-1]))
+            darkest_color = cmap_i(mcolors.Normalize(vmin=contour_levels.min(), 
+                                              vmax=contour_levels.max())(contour_levels[0]))
+            ax['a'].plot(x_proj_ppm, proj_x, linewidth=defaults['linewidth_proj'], color=darkest_color)
+            ax['a'].axis(False)
+            ax['b'].plot(-proj_y, y_proj_ppm, linewidth=defaults['linewidth_proj'], color=darkest_color)
+            ax['b'].axis(False)
+        elif cmap is not None and colors is not None:
+            # Error. Only one of cmap or colors can be provided.
+            raise ValueError("Only one of cmap or colors can be provided.")
+        elif colors is not None and cmap is None:
+            darkest_color = colors[i]
+            contour_plot = ax['A'].contour(data,
+                                         contour_levels,
+                                         extent=(ppm_x_limits[0],
+                                                 ppm_x_limits[1],
+                                                 ppm_y_limits[0],
+                                                 ppm_y_limits[1]),
+                                                 colors=darkest_color,
+                                                 linewidths=defaults['linewidth_contour'])
+            ax['a'].plot(x_proj_ppm, proj_x, linewidth=defaults['linewidth_proj'], color=darkest_color)
+            ax['a'].axis(False)
+            ax['b'].plot(-proj_y, y_proj_ppm, linewidth=defaults['linewidth_proj'], color=darkest_color)
+            ax['b'].axis(False)                
+        else:
+            darkest_color = 'black'
+            contour_plot = ax['A'].contour(data, contour_levels, extent=(ppm_x_limits[0], ppm_x_limits[1], ppm_y_limits[0], ppm_y_limits[1]), colors = 'black', linewidths=defaults['linewidth_contour'])
+            ax['a'].plot(x_proj_ppm, proj_x, linewidth=defaults['linewidth_proj'], color=darkest_color)
+            ax['a'].axis(False)
+            ax['b'].plot(-proj_y, y_proj_ppm, linewidth=defaults['linewidth_proj'], color=darkest_color)
+            ax['b'].axis(False)
+
+        if xaxislabel:
+            defaults['xaxislabel'] = xaxislabel
+        else:
+            defaults['xaxislabel'] = f'$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)'
+        if yaxislabel:
+            defaults['yaxislabel'] = yaxislabel
+        else:
+            defaults['yaxislabel'] = f'$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)'
+
+        ax['A'].set_xlabel(defaults['xaxislabel'], fontsize=defaults['axisfontsize'], fontname=defaults['axisfont'] if defaults['axisfont'] else None)
+        ax['A'].set_ylabel(defaults['yaxislabel'], fontsize=defaults['axisfontsize'], fontname=defaults['axisfont'] if defaults['axisfont'] else None)
+        ax['A'].yaxis.set_label_position('right')
+        ax['A'].yaxis.tick_right()
+        ax['A'].tick_params(axis='x', labelsize=defaults['tickfontsize'], labelfontfamily=defaults['tickfont'] if defaults['tickfont'] else None)
+        ax['A'].tick_params(axis='y', labelsize=defaults['tickfontsize'], labelfontfamily=defaults['tickfont'] if defaults['tickfont'] else None)
+
+        # Plot diagonal line if diag is provided
+        if diag is not None:
+            x_diag = np.linspace(ppm_x_limits[0], ppm_x_limits[1], 100)
+            y_diag = diag * x_diag
+            ax['A'].plot(x_diag, y_diag, linestyle='--', color='gray')
+
+        # Set axis limits if provided
+        if xlim:
+            ax['A'].set_xlim(xlim)
+            ax['a'].set_xlim(xlim)
+        if ylim:
+            ax['A'].set_ylim(ylim)
+            ax['b'].set_ylim(ylim)
+
     # Show the plot or save it
     if save:
         if filename:
@@ -123,6 +245,7 @@ def bruker2d(data_path, contour_start, contour_num, contour_factor, cmap=None, x
 # Function to easily plot 1D NMR spectra in Bruker's format
 def bruker1d(data_paths, 
              labels=None,
+             labelsize=None,
              xlim=None,
              save=False,
              filename=None,
@@ -132,15 +255,27 @@ def bruker1d(data_paths,
              color=None,
              return_fig=False,
              background_paths=None,
-             background_factors=None):
+             background_factors=None,
+             linewidth=None,
+             linestyle=None,
+             alpha=None,
+             yaxislabel=None,
+             xaxislabel=None,
+             axisfontsize=None,
+             axisfont=None,
+             tickfontsize=None,
+             tickfont=None,
+             tickspacing=None,
+             ):
     """
     Plots 1D NMR spectra from Bruker data.
 
     Parameters:
-        data_paths (list): List of paths to the Bruker data directories.
+        data_paths (str/list): Path or list of paths to the Bruker data directories.
 
     Keyword arguments:
         labels (list): List of labels for the spectra.
+        labelsize (float): Font size for the labels.
         xlim (tuple): The limits for the x-axis.
         save (bool): Whether to save the plot.
         filename (str): The name of the file to save the plot.
@@ -152,6 +287,16 @@ def bruker1d(data_paths,
         return_fig (bool): Whether to return the figure and axis.
         background_paths (list): List of paths to the Bruker background data directories.
         background_factors (list): List of factors to multiply the background by.
+        linewidth (float): Line width of the plot.
+        linestyle (str): Style of the plot lines.
+        alpha (float): Transparency of the plot lines.
+        xaxislabel (str): Label for the axis.
+        yaxislabel (str): Label for the y-axis.
+        axisfont (str): Font type for the axis label.
+        axisfontsize (int): Font size for the axis label.
+        tickfont (str): Font type for the tick labels.
+        tickfontsize (int): Font size for the tick labels.
+        tickspacing (int): Spacing between the tick labels.
 
     Example:
         bruker1d(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], xlim=(0, 100), save=True, filename='1d_spectra', format='png', frame=False, normalized=True, stacked=True, color=['red', 'blue'])
@@ -159,6 +304,28 @@ def bruker1d(data_paths,
     fig, ax = plt.subplots()
     
     nucleus_set = set()
+
+    # Convert string to list for consistency
+    if isinstance(data_paths, str):
+        data_paths = [data_paths]
+
+    # Default values to be updated if provided
+    defaults = {
+        'labelsize': 12,
+        'linewidth': 1.0,
+        'linestyle': '-',
+        'alpha': 1.0,
+        'axisfontsize': 13,
+        'axisfont': None,
+        'tickfontsize': 12,
+        'tickfont': None,
+        'yaxislabel': 'Intensity (a.u.)',
+        'xaxislabel': None,
+        'tickspacing': None
+    }
+
+    params = {k: v for k, v in locals().items() if k in defaults and v is not None}
+    defaults.update(params)
 
     prev_max = 0
     for i, data_path in enumerate(data_paths):
@@ -197,8 +364,6 @@ def bruker1d(data_paths,
             if i >= len(background_paths):
                 raise ValueError("Number of background paths must be equal to the number of spectra.")
             
-
-
             background_path = background_paths[i]
             background_factor = background_factors[i]
             dic_bg, data_bg = ng.bruker.read_pdata(background_path)
@@ -231,22 +396,31 @@ def bruker1d(data_paths,
 
         # Plot the spectrum
         if labels and color:
-            ax.plot(ppm, data, label=labels[i], color=color[i])
-            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+            ax.plot(ppm, data, label=labels[i], color=color[i], linestyle=defaults['linestyle'], linewidth=defaults['linewidth'], alpha=defaults['alpha'])
+            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=defaults['labelsize'], prop={'family': defaults['tickfont'] if defaults['tickfont'] else None, 'size': defaults['labelsize']})
         elif labels:
-            ax.plot(ppm, data, label=labels[i])
-            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+            ax.plot(ppm, data, label=labels[i], linestyle=defaults['linestyle'], linewidth=defaults['linewidth'], alpha=defaults['alpha'])
+            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', prop={'family': defaults['tickfont'] if defaults['tickfont'] else None, 'size': defaults['labelsize']})
         elif color:
-            ax.plot(ppm, data, color=color[i])
+            ax.plot(ppm, data, color=color[i], linestyle=defaults['linestyle'], linewidth=defaults['linewidth'], alpha=defaults['alpha'])
         else:
-            ax.plot(ppm, data)
+            ax.plot(ppm, data, linestyle=defaults['linestyle'], linewidth=defaults['linewidth'], alpha=defaults['alpha'])
 
         prev_max = np.amax(data)
     
     # Set axis labels with LaTeX formatting and non-italicized letters
-    ax.set_xlabel(f'$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)', fontsize=13)
-    ax.tick_params(axis='x', labelsize=12)
-
+    if xaxislabel:
+        ax.set_xlabel(xaxislabel, fontsize=defaults['axisfontsize'], 
+                fontname=defaults['axisfont'] if defaults['axisfont'] else None)
+    else:
+        ax.set_xlabel(f'$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)', fontsize=defaults['axisfontsize'], 
+                fontname=defaults['axisfont'] if defaults['axisfont'] else None)
+    ax.tick_params(axis='x', labelsize=defaults['tickfontsize'],
+            labelfontfamily=defaults['tickfont'] if defaults['tickfont'] else None)
+    
+    if defaults['tickspacing']:
+        ax.xaxis.set_major_locator(plt.MultipleLocator(defaults['tickspacing']))
+    
     # Remove frame
     if not frame:
         ax.spines['top'].set_visible(False)
@@ -255,8 +429,10 @@ def bruker1d(data_paths,
         ax.set_yticklabels([])
         ax.set_yticks([])
     else:
-        ax.set_ylabel('Intensity (a.u.)', fontsize=13)
-        ax.tick_params(axis='y', labelsize=12)
+        ax.set_ylabel(defaults['yaxislabel'], fontsize=defaults['axisfontsize'], 
+                fontname=defaults['axisfont'] if defaults['axisfont'] else None)
+        ax.tick_params(axis='y', labelsize=defaults['tickfontsize'],
+                labelfontfamily=defaults['tickfont'] if defaults['tickfont'] else None)
 
     # Set axis limits if provided
     if xlim:
@@ -571,6 +747,6 @@ def df2d(path, contour_start, contour_num, contour_factor, cmap=None, xlim=None,
             full_filename = "2d_nmr_spectrum." + format
         plt.savefig(full_filename, format=format, dpi=300, bbox_inches='tight', pad_inches=0.1)
     elif return_fig:
-        return ax
+        return ax    
     else:
         plt.show()
