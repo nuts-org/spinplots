@@ -128,6 +128,7 @@ lint.extend-ignore = [
   "G004",   # f-string in Logging statement
   "RUF015", # Prefer next(iter())
   "RET505", # Unnecessary `elif` after `return`
+  "ISC001",
 ]
 lint.typing-modules = ["mypackage._compat.typing"]
 lint.unfixable = [
