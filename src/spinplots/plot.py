@@ -680,7 +680,6 @@ def bruker1d_background(
 
     uc_bg = ng.fileiobase.uc_from_udic(udic_bg, dim=0)
     ppm_bg = uc_bg.ppm_scale()
-    ppm_limits_bg = uc_bg.ppm_limits()
 
     if ppm.shape != ppm_bg.shape:
         raise ValueError("Data and background spectra must have the same dimensions.")
@@ -741,6 +740,7 @@ def bruker1d_background(
         fig.savefig(
             full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
         )
+        return None
     elif return_fig:
         return fig, ax
     else:
@@ -860,6 +860,7 @@ def bruker1d_grid(
         fig.savefig(
             full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
         )
+        return None
     elif return_fig:
         return fig, axes
     else:
@@ -993,6 +994,7 @@ def df2d(
         plt.savefig(
             full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
         )
+        return None
     elif return_fig:
         return ax
     else:
