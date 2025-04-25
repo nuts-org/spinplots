@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import pandas as pd
-import pytest
-from spinplots.utils import nmr_df, calculate_projections
+
+from spinplots.utils import calculate_projections, nmr_df
 
 DATA_DIR_1D = "data/1D/8/pdata/1"
 DATA_DIR_2D = "data/2D/16/pdata/1"
@@ -8,20 +10,20 @@ DATA_DIR_2D = "data/2D/16/pdata/1"
 
 def test_nmr_df_1d():
     """Test reading 1D Bruker data."""
-    df = nmr_df(DATA_DIR_1D)
-    assert isinstance(df, pd.DataFrame)
-    assert df.attrs.get("nmr_dim") == 1
-    assert "ppm" in df.columns
-    assert "intensity" in df.columns
+    df_nmr = nmr_df(DATA_DIR_1D)
+    assert isinstance(df_nmr, pd.DataFrame)
+    assert df_nmr.attrs.get("nmr_dim") == 1
+    assert "ppm" in df_nmr.columns
+    assert "intensity" in df_nmr.columns
 
 
 def test_nmr_df_2d():
     """Test reading 2D Bruker data."""
-    df = nmr_df(DATA_DIR_2D)
-    assert isinstance(df, pd.DataFrame)
-    assert df.attrs.get("nmr_dim") == 2
-    assert len(df.columns) == 3
-    assert "intensity" in df.columns
+    df_nmr = nmr_df(DATA_DIR_2D)
+    assert isinstance(df_nmr, pd.DataFrame)
+    assert df_nmr.attrs.get("nmr_dim") == 2
+    assert len(df_nmr.columns) == 3
+    assert "intensity" in df_nmr.columns
 
 
 def test_nmr_df_export(tmp_path):

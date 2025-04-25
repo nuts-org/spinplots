@@ -1,11 +1,14 @@
-import pytest
-import matplotlib
+from __future__ import annotations
+
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+import pytest
+
 from spinplots.plot import (
     bruker1d,
-    bruker2d,
-    bruker1d_grid,
     bruker1d_background,
+    bruker1d_grid,
+    bruker2d,
     df2d,
 )
 from spinplots.utils import nmr_df
@@ -20,7 +23,7 @@ def configure_matplotlib_and_close_plots():
     """Switch to non-interactive backend and close plots after each test."""
     # Added this and close to avoid stopping
     # for showing plots during test
-    matplotlib.use("Agg")
+    mpl.use("Agg")
     yield
     plt.close("all")
 
