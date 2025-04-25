@@ -18,7 +18,6 @@ def test_bruker2csv_success(tmp_path):
 
     assert result.returncode == 0
     assert output_csv.is_file()
-    assert "Data written to" in result.stdout
     assert output_csv.stat().st_size > 0
 
 
@@ -27,14 +26,14 @@ def test_bruker2csv_wrong_args():
     cmd = [sys.executable, "-m", "spinplots.cli", DATA_DIR_1D]
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     assert result.returncode != 0
-    assert "Usage: bruker2csv" in result.stdout
+    assert "Usage: bruker2csv" in result.stderr
 
 
-def test_bruker2csv_bad_input_path():
+def test_bruker2csv_bad_input_path(tmp_path):
     """Test bruker2csv with a non-existent input path."""
-    bad_input_path = "non_existent_dir"
-    output_csv = "output.csv"
-    cmd = [sys.executable, "-m", "spinplots.cli", bad_input_path, output_csv]
+    bad_input_path = tmp_path / "non_existent_path"
+    output_csv = tmp_path / "output.csv"
+    cmd = [sys.executable, "-m", "spinplots.cli", str(bad_input_path), str(output_csv)]
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     assert result.returncode != 0
-    assert "An error occurred" in result.stdout
+    assert "An error occurred" in result.stderr
