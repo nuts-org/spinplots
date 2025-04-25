@@ -716,7 +716,7 @@ def df2d(path, contour_start, contour_num, contour_factor, cmap=None, xlim=None,
     if cmap is not None:
         ax['A'].contourf(x, y, z, contour_levels, cmap=cmap, norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]))
     else:
-        ax['A'].contourf(x, y, z, contour_levels, cmap='black', norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]))
+        ax['A'].contourf(x, y, z, contour_levels, cmap='Greys', norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]))
 
     # Plot projections with the extracted color
     ax['a'].plot(proj_f2[f'{f2_nuclei} {f2_units}'], proj_f2['F2 projection'], color='black')

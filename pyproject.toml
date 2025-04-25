@@ -5,10 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "spinplots"
 description="NMR spectra in python made easy"
-version = "0.0.1"
+version = "0.1.0"
 readme = "README.md"
 license = { text = "BSD-3" }
-authors = [{ name = "Carlos Bornes", email = "carlos.bornes@natur.cuni.cz" }]
+authors = [
+    { name = "Carlos Bornes"},
+    { name = "Daniel Pereira"},
+    { name = "Márcio Soares"},
+    ]
 keywords = ["NMR", "Plot"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -28,7 +32,12 @@ requires-python = ">=3.9, <3.13"
 dependencies = ["numpy", "nmrglue", "pandas", "matplotlib"]
 
 [project.optional-dependencies]
-dev = ["codecov-cli>=0.4.1", "pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
+dev = [
+  "codecov-cli>=0.4.1",
+  "pytest>=7.4.0",
+  "pytest-cov>=3.0.0",
+  "ruff>=0.0.285"
+]
 docs = [
     "mkdocs-material>=9.4.0",
     "mkdocstrings[python]>=0.22.0",
