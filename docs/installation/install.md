@@ -1,4 +1,4 @@
-# Installation 
+# Installation
 
 If you have Python and pip installed, you can easily install Spinplots with the following command:
 

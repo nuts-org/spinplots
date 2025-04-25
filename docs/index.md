@@ -23,10 +23,10 @@ uc = ng.fileiobase.uc_from_udic(udic)
 ppm_scale = uc.ppm_scale()
 
 # Plot the spectrum
-plt.plot(ppm_scale, data, label='Sample X')
+plt.plot(ppm_scale, data, label="Sample X")
 plt.xlim(20, 0)
-plt.xlabel('$^1$H (ppm)')
-plt.ylabel('Intensity (a.u.)')
+plt.xlabel("$^1$H (ppm)")
+plt.ylabel("Intensity (a.u.)")
 plt.legend()
 
 # Save the figure
@@ -40,8 +40,12 @@ This is a lot of code for a simple 1D plot! If one wants to make a 2D plot with 
 ```python
 from spinplots.plot import bruker1d
 
-bruker1d(['Data/1/pdata/1/'], labels=['Sample X'], xlim=(20, 0), save=True, filename='spectrum', format='png')
+bruker1d(
+    ["Data/1/pdata/1/"],
+    labels=["Sample X"],
+    xlim=(20, 0),
+    save=True,
+    filename="spectrum",
+    format="png",
+)
 ```
-
-
-
