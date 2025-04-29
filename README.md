@@ -11,7 +11,7 @@ SpinPlots is a Python package designed to streamline the process of loading and 
 
 ## Documentation 📖
 
-Complete documentation for SpinPlots, including installation instructions and usage guides can be found [here](https://carlosbornes.github.io/spinplots/).
+Complete documentation for SpinPlots, including installation instructions and usage guides can be found [here](https://nuts-org.github.io/spinplots/).
 
 ## Future features 🔜
 - Extend support to non-Bruker spectra
