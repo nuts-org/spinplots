@@ -1,0 +1,27 @@
+##TITLE= Parameter file, TopSpin 4.5.0
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 262	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ 2025-05-04 17:51:48.582 +0200  danielpereira@vpn388.ras.ua.pt
+$$ /Users/danielpereira/NMR Data/NMR400DNP/HCN-Tyrosine/43/acqu2s
+$$ process /opt/topspin4.5.0/prog/mod/dataserver
+##$ACQT0= 0
+##$BF1= 400.2
+##$DE= 17.3528077925824
+##$DR= 32
+##$FW= 2.4e+08
+##$FnILOOP= 0
+##$FnMODE= 5
+##$NUC1= <1H>
+##$NusJSP= 0
+##$NusT2= 1
+##$NusTD= 256
+##$O1= -8600
+##$ProjAngle= 0
+##$SFO1= 400.1914
+##$SW= 45
+##$SW_h= 18008.613
+##$TD= 256
+##END=

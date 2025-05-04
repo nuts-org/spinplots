@@ -1,0 +1,24 @@
+##TITLE= Parameter file, TopSpin 4.3.0
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ 2025-04-08 21:54:54.457 +0100  nmrsu@CZC925CX83
+$$ /opt/topspin4.3.0/data/DP/HCN-Tyrosine/43/acqu2
+$$ process /opt/topspin4.3.0/prog/mod/edparproc
+##$ACQT0= 0
+##$BF1= 400.2
+##$FnILOOP= 0
+##$FnMODE= 5
+##$NUC1= <1H>
+##$NusJSP= 0
+##$NusT2= 1
+##$NusTD= 0
+##$O1= 1880.94
+##$ProjAngle= 0
+##$SFO1= 400.20188094
+##$SW= 24.9880432213186
+##$SW_h= 10000
+##$TD= 256
+##END=
