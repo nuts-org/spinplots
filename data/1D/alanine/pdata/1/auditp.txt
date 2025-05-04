@@ -1,0 +1,71 @@
+##TITLE= Audit trail, TOPSPIN		Version 3.1
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= msardo
+$$ /opt/topspin/data/msardo/nmr/Alanine/3/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2017-02-23 14:27:53.980 +0000>,<msardo>,<rmn400>,<go>,<TOPSPIN 3.1>,
+      <created by zg
+	started at 2017-02-23 14:27:04.087 +0000,
+	POWCHK disabled, PULCHK disabled,
+       configuration hash MD5:
+       8E DF 0C 59 A6 A1 C9 65 10 74 7F B3 C6 C0 D8 D0
+       data hash MD5: 11988
+       D2 01 52 7F 40 A5 EF C1 76 BB F9 A5 27 2F B3 DE>)
+(   2,<2017-02-23 14:29:18.880 +0000>,<msardo>,<rmn400>,<proc1d>,<TOPSPIN 3.1>,
+      <Start of raw data processing
+       fp FT_mod = 6 PKNL = 1 PHC0 = 84.38121 PHC1 = -191.5691 SI = 32K 
+       data hash MD5: 32K
+       75 31 21 A7 24 AB 30 F8 1E 57 85 8D 3B 7C 5A 7F>)
+(   3,<2017-02-23 14:30:40.973 +0000>,<msardo>,<rmn400>,<audit>,<TOPSPIN 3.1>,
+      <user comment:
+       TITLE=13C CPMAS, 10 kHz
+       Alanine
+       
+       23-02-2017
+       4mm-OLD
+       
+       1H 90 deg pulse --) 2.4 us @ -19 dB (104 kHz)
+       1H CP pulse --) -16.6 dB (79 kHz)
+       13C CP pulse --) -16.99 dB (49 kHz)
+       1H spinal64 dec. @ -16.71 dB (80 kHz) with 5.4 us
+       
+       p15=500 usTITLE_END
+       data hash MD5: 32K
+       75 31 21 A7 24 AB 30 F8 1E 57 85 8D 3B 7C 5A 7F>)
+(   4,<2017-02-23 14:30:41.147 +0000>,<msardo>,<rmn400>,<audit>,<TOPSPIN 3.1>,
+      <user comment:
+       TITLE=13C CPMAS, 10 kHz
+       Alanine
+       
+       23-02-2017
+       4mm-OLD
+       
+       1H 90 deg pulse --) 2.4 us @ -19 dB (104 kHz)
+       1H CP pulse --) -16.6 dB (79 kHz)
+       13C CP pulse --) -16.99 dB (49 kHz)
+       1H spinal64 dec. @ -16.71 dB (80 kHz) with 5.4 us
+       
+       p15=500 usTITLE_END
+       data hash MD5: 32K
+       75 31 21 A7 24 AB 30 F8 1E 57 85 8D 3B 7C 5A 7F>)
+(   5,<2017-02-23 14:30:41.324 +0000>,<msardo>,<rmn400>,<audit>,<TOPSPIN 3.1>,
+      <user comment:
+       TITLE=13C CPMAS, 10 kHz
+       Alanine
+       
+       23-02-2017
+       4mm-OLD
+       
+       1H 90 deg pulse --) 2.4 us @ -19 dB (104 kHz)
+       1H CP pulse --) -16.6 dB (79 kHz)
+       13C CP pulse --) -16.99 dB (49 kHz)
+       1H spinal64 dec. @ -16.71 dB (80 kHz) with 5.4 us
+       
+       p15=500 usTITLE_END
+       data hash MD5: 32K
+       75 31 21 A7 24 AB 30 F8 1E 57 85 8D 3B 7C 5A 7F>)
+##END=
+
+$$ hash MD5
+$$ D3 96 C4 88 A2 D1 BB 34 33 98 00 D0 AF B9 D1 09

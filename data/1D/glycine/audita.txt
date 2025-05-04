@@ -1,0 +1,737 @@
+##TITLE= Audit trail, TopSpin 4.3.0
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ /opt/topspin4.3.0/data/DP/Ashin-CNF-DP/5/audita.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2024-10-01T09:16:55.894+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <new/edc EXPNO=5 PROCNO=1>)
+(   2,<2024-10-01T08:18:39.925+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(   3,<2024-10-01T08:18:48.785+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'c3967916-7fcd-11ef-907c-00139536a87f'
+       started at 2024-10-01 08:18:39.925 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:18:48.782 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       D9 B6 B9 E5 0B 8A AE 16 66 AE 91 62 8F BD 26 2E>)
+(   4,<2024-10-01T08:19:19.662+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(   5,<2024-10-01T08:19:28.514+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'db457e5e-7fcd-11ef-af7d-00139536a87f'
+       started at 2024-10-01 08:19:19.662 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:19:28.511 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       A3 A1 26 56 80 4E 16 A7 B6 8C 09 D7 02 4A 53 76>)
+(   6,<2024-10-01T08:19:29.851+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(   7,<2024-10-01T08:19:38.649+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'e1598830-7fcd-11ef-a939-00139536a87f'
+       started at 2024-10-01 08:19:29.851 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:19:38.646 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       A9 03 0B F3 3A E1 AF 68 B4 C8 6E 8B 71 16 8E 51>)
+(   8,<2024-10-01T08:19:39.933+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(   9,<2024-10-01T08:19:48.831+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <
+       started at 2024-10-01 08:19:39.933 +0000, POWCHK enabled, PULCHK disabled,
+       terminated by command 'stop' at 2024-10-01 08:19:48.826 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0>)
+(  10,<2024-10-01T09:18:20.913+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <changed parameter 1 CPDPRG 2 to spinal64>)
+(  11,<2024-10-01T08:20:07.590+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <raw data deleted by zg>)
+(  12,<2024-10-01T08:20:07.592+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  13,<2024-10-01T08:20:16.701+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'f7d7c112-7fcd-11ef-83ea-00139536a87f'
+       started at 2024-10-01 08:20:07.591 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:20:16.697 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       5C 42 A5 32 09 28 FE 8B 14 FE 81 65 6E 31 2B 11>)
+(  14,<2024-10-01T08:20:26.278+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  15,<2024-10-01T08:20:35.150+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '02facdd2-7fce-11ef-9112-00139536a87f'
+       started at 2024-10-01 08:20:26.278 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:20:35.147 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       69 4A 89 7A 4B 7C 4A 21 3E EC DE E2 00 C6 4D C5>)
+(  16,<2024-10-01T08:20:36.490+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  17,<2024-10-01T08:20:45.355+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '0911eab6-7fce-11ef-88d0-00139536a87f'
+       started at 2024-10-01 08:20:36.490 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:20:45.352 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       EC E7 3B 64 CD 70 BE F8 E8 04 D0 00 A4 A3 1E D1>)
+(  18,<2024-10-01T08:20:46.696+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  19,<2024-10-01T08:20:55.627+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '0f2865d8-7fce-11ef-86f6-00139536a87f'
+       started at 2024-10-01 08:20:46.696 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:20:55.624 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       41 E6 AC 37 B6 42 58 F9 6D 73 77 5A 55 83 86 F4>)
+(  20,<2024-10-01T08:20:56.915+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  21,<2024-10-01T08:21:05.695+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '1540a9c6-7fce-11ef-aeca-00139536a87f'
+       started at 2024-10-01 08:20:56.915 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:21:05.693 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       54 AB 97 B2 FE EE F8 F4 E2 B3 5F 37 25 BC E7 63>)
+(  22,<2024-10-01T08:21:06.992+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  23,<2024-10-01T08:21:15.803+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '1b409886-7fce-11ef-b260-00139536a87f'
+       started at 2024-10-01 08:21:06.992 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:21:15.801 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       D3 39 36 72 9C 3C F7 99 0F 89 6D D2 AA 97 D5 55>)
+(  24,<2024-10-01T08:21:17.115+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  25,<2024-10-01T08:21:26.712+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '21492888-7fce-11ef-8a4a-00139536a87f'
+       started at 2024-10-01 08:21:17.115 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:21:26.709 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       C1 39 4C E5 A6 11 64 A3 9D 52 60 33 48 53 C8 DB>)
+(  26,<2024-10-01T08:21:28.037+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  27,<2024-10-01T08:21:36.947+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '27cc30e2-7fce-11ef-87a6-00139536a87f'
+       started at 2024-10-01 08:21:28.037 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:21:36.944 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       0F 57 FB FC AD A9 4A 78 BC AF 4A 7F 57 66 9B 2A>)
+(  28,<2024-10-01T08:21:38.258+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  29,<2024-10-01T08:21:47.072+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '2de29eee-7fce-11ef-87fe-00139536a87f'
+       started at 2024-10-01 08:21:38.258 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:21:47.069 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       8C AC 8C 38 8A F3 0E 51 31 5B C8 46 43 97 F1 99>)
+(  30,<2024-10-01T08:21:48.399+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  31,<2024-10-01T08:21:57.183+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '33f04048-7fce-11ef-9aab-00139536a87f'
+       started at 2024-10-01 08:21:48.399 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:21:57.180 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       50 31 B6 FF 4A 0C FC 85 2F AE 0F 12 53 CC 2B A2>)
+(  32,<2024-10-01T08:21:58.498+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  33,<2024-10-01T08:22:07.465+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '39f1e58c-7fce-11ef-a6bc-00139536a87f'
+       started at 2024-10-01 08:21:58.498 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:22:07.464 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       89 FC 6E 66 FB 20 F5 89 26 48 B2 31 4F 00 A8 23>)
+(  34,<2024-10-01T08:22:08.766+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  35,<2024-10-01T08:22:17.651+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '40104468-7fce-11ef-b3a9-00139536a87f'
+       started at 2024-10-01 08:22:08.766 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:22:17.647 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       96 68 96 78 96 86 4E 44 8B EC 4C CD DA 9C 79 35>)
+(  36,<2024-10-01T08:22:25.576+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <raw data deleted by zg>)
+(  37,<2024-10-01T08:22:25.578+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  38,<2024-10-01T08:22:34.413+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '4a168120-7fce-11ef-a3b9-00139536a87f'
+       started at 2024-10-01 08:22:25.578 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:22:34.410 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       DD 96 E1 07 CD 53 B8 40 72 E0 80 8B CA A8 4C 79>)
+(  39,<2024-10-01T08:23:03.321+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  40,<2024-10-01T08:23:12.224+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '60983402-7fce-11ef-8c83-00139536a87f'
+       started at 2024-10-01 08:23:03.321 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:23:12.222 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       1C 44 10 89 81 44 F8 A8 DB 98 3C 3A 1D E2 7D 6B>)
+(  41,<2024-10-01T08:23:13.524+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  42,<2024-10-01T08:23:22.335+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '66ab31a0-7fce-11ef-8090-00139536a87f'
+       started at 2024-10-01 08:23:13.524 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:23:22.332 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       9A F3 E4 CD 39 89 50 97 17 A4 3A F3 A8 69 EE 82>)
+(  43,<2024-10-01T08:23:23.646+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  44,<2024-10-01T08:23:32.499+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '6cb33228-7fce-11ef-97cb-00139536a87f'
+       started at 2024-10-01 08:23:23.646 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:23:32.495 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       4B 24 02 62 10 87 92 E2 0C E8 29 7A 35 D5 F4 9C>)
+(  45,<2024-10-01T08:23:33.814+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  46,<2024-10-01T08:23:42.726+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '72c35bca-7fce-11ef-9c18-00139536a87f'
+       started at 2024-10-01 08:23:33.814 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:23:42.722 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       87 A6 09 76 A0 AC 10 1C 6E 26 A0 4A 34 89 5B 11>)
+(  47,<2024-10-01T08:23:44.031+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  48,<2024-10-01T08:23:52.839+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '78d9aa50-7fce-11ef-84fd-00139536a87f'
+       started at 2024-10-01 08:23:44.031 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:23:52.835 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       2D 71 06 3D 99 79 9F 90 3C E4 5E 7D A1 65 9E 6E>)
+(  49,<2024-10-01T08:23:54.150+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  50,<2024-10-01T08:24:02.999+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '7ee2777e-7fce-11ef-bf3b-00139536a87f'
+       started at 2024-10-01 08:23:54.150 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:24:02.996 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       FE 8E 52 C2 CA B1 D0 DE BD A5 CB 36 01 23 A3 AB>)
+(  51,<2024-10-01T08:24:04.306+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  52,<2024-10-01T08:24:13.902+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '84efdfc6-7fce-11ef-bc5c-00139536a87f'
+       started at 2024-10-01 08:24:04.306 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:24:13.899 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       16 09 E0 2B 6C 45 C9 02 C9 18 B1 EA A3 52 8B 6A>)
+(  53,<2024-10-01T08:24:15.241+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  54,<2024-10-01T08:24:24.856+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '8b704cbe-7fce-11ef-b3bb-00139536a87f'
+       started at 2024-10-01 08:24:15.241 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:24:24.852 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       8A 74 BF 1E 98 23 68 DD D5 09 57 13 17 61 13 EB>)
+(  55,<2024-10-01T08:24:26.176+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  56,<2024-10-01T08:24:35.070+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '91f8deac-7fce-11ef-af16-00139536a87f'
+       started at 2024-10-01 08:24:26.176 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:24:35.066 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       CF 9D B8 8D EE B3 67 9E AB 0B BD 9A D0 9E 70 11>)
+(  57,<2024-10-01T08:24:36.366+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  58,<2024-10-01T08:24:45.223+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '980d1060-7fce-11ef-b627-00139536a87f'
+       started at 2024-10-01 08:24:36.366 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:24:45.221 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       C2 B7 8F 63 BE 59 03 E0 96 AC E9 47 8E 9C A4 4B>)
+(  59,<2024-10-01T08:24:46.540+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  60,<2024-10-01T08:24:55.328+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '9e1cc25c-7fce-11ef-a296-00139536a87f'
+       started at 2024-10-01 08:24:46.540 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:24:55.325 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       E0 C7 2D 1D 9D 86 5A 3B 64 28 7D D1 E2 A9 E2 85>)
+(  61,<2024-10-01T08:24:56.629+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  62,<2024-10-01T08:25:05.475+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'a421f3c0-7fce-11ef-ac86-00139536a87f'
+       started at 2024-10-01 08:24:56.628 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:25:05.473 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       60 AC 2A 6E F4 61 EC F4 79 0A DD 3A 20 C4 B1 F1>)
+(  63,<2024-10-01T08:25:06.803+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  64,<2024-10-01T08:25:15.622+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'aa30e424-7fce-11ef-9e76-00139536a87f'
+       started at 2024-10-01 08:25:06.803 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:25:15.619 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       B7 97 81 BB 90 11 A6 09 36 3E BF EA 15 50 EB 9E>)
+(  65,<2024-10-01T08:25:16.425+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <raw data deleted by zg>)
+(  66,<2024-10-01T08:25:16.428+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  67,<2024-10-01T08:25:25.249+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'afec141a-7fce-11ef-90b7-00139536a87f'
+       started at 2024-10-01 08:25:16.428 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:25:25.247 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       CF 4B EA 19 BB 3F A3 26 F0 46 C2 3F C6 4A 62 FA>)
+$$ /opt/topspin4.3.0/data/DP/Ashin-CNF-DP/4/audita.txt
+(  68,<2024-10-01T08:27:27.796+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  69,<2024-10-01T08:27:37.387+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'fe3b2886-7fce-11ef-a2be-00139536a87f'
+       started at 2024-10-01 08:27:27.796 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:27:37.383 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       CC 12 D0 26 C4 97 D6 19 7D 24 94 AD 2F BD B1 FD>)
+(  70,<2024-10-01T08:27:38.709+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  71,<2024-10-01T08:27:47.549+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '04bc5982-7fcf-11ef-84a0-00139536a87f'
+       started at 2024-10-01 08:27:38.709 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:27:47.547 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       69 70 39 56 7E E5 D2 7A 78 5D CF A5 8E 22 4C CD>)
+(  72,<2024-10-01T08:27:48.854+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  73,<2024-10-01T08:27:57.647+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '0ac75ffc-7fcf-11ef-80de-00139536a87f'
+       started at 2024-10-01 08:27:48.854 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:27:57.644 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       5D 0C D6 9B BB 96 37 7B FE 8B 79 AC 84 45 C2 E3>)
+(  74,<2024-10-01T08:27:59.256+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  75,<2024-10-01T08:28:12.529+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '10fa1018-7fcf-11ef-926c-00139536a87f'
+       started at 2024-10-01 08:27:59.256 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:28:12.526 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       73 BC EB A8 D7 82 A2 63 FB 5B 4A 9F 45 25 18 DD>)
+(  76,<2024-10-01T08:28:13.841+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  77,<2024-10-01T08:28:23.433+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '19ae3680-7fcf-11ef-9e53-00139536a87f'
+       started at 2024-10-01 08:28:13.841 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:28:23.429 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       A4 2F 6B D4 07 C0 3E D5 DC FB 59 10 8A 86 3E 5D>)
+(  78,<2024-10-01T08:28:24.789+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  79,<2024-10-01T08:28:33.620+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '20311ce8-7fcf-11ef-b5b3-00139536a87f'
+       started at 2024-10-01 08:28:24.789 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:28:33.615 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       28 75 8D C2 A5 CE 62 4C 9C 26 DE 92 A2 53 BD 1B>)
+(  80,<2024-10-01T08:28:38.426+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <raw data deleted by zg>)
+(  81,<2024-10-01T08:28:38.430+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  82,<2024-10-01T08:28:47.230+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '285300e4-7fcf-11ef-b1e6-00139536a87f'
+       started at 2024-10-01 08:28:38.429 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:28:47.228 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       62 48 26 6C 98 B8 F2 9A 69 D4 63 29 01 D4 7E FD>)
+(  83,<2024-10-01T08:29:05.930+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  84,<2024-10-01T08:29:14.983+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '38b7e6fc-7fcf-11ef-8bfe-00139536a87f'
+       started at 2024-10-01 08:29:05.930 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:29:14.980 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       EF F0 5A 6D 7A 95 C8 80 6C 75 7D D3 82 9C 61 EB>)
+(  85,<2024-10-01T08:29:16.306+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  86,<2024-10-01T08:29:25.059+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '3ee7830c-7fcf-11ef-838f-00139536a87f'
+       started at 2024-10-01 08:29:16.306 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:29:25.057 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       8C 35 8E 54 5B F3 47 DE D0 56 7B 7A 05 FA EC A7>)
+(  87,<2024-10-01T08:29:26.368+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  88,<2024-10-01T08:29:35.951+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '44e943da-7fcf-11ef-b0b8-00139536a87f'
+       started at 2024-10-01 08:29:26.368 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:29:35.948 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       A0 E2 62 7C AA FC 77 0E 4D 4A F7 9E 3B 62 FC A7>)
+(  89,<2024-10-01T08:29:37.281+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  90,<2024-10-01T08:29:46.107+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '4b67db9a-7fcf-11ef-8f5f-00139536a87f'
+       started at 2024-10-01 08:29:37.281 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:29:46.104 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       78 A7 1B AB 7B 39 C2 96 69 41 33 8E 00 85 BD 91>)
+(  91,<2024-10-01T08:29:47.409+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  92,<2024-10-01T08:29:56.208+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '5172e426-7fcf-11ef-afd0-00139536a87f'
+       started at 2024-10-01 08:29:47.409 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:29:56.204 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       F3 99 B1 88 77 31 17 72 1E 1B F3 7A 7E D6 B9 A9>)
+(  93,<2024-10-01T08:29:57.529+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  94,<2024-10-01T08:30:06.411+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '577baccc-7fcf-11ef-a8a6-00139536a87f'
+       started at 2024-10-01 08:29:57.529 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:30:06.408 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       DC FD FF 5F 5D D7 67 91 E2 60 49 D5 EF 40 85 02>)
+(  95,<2024-10-01T08:30:07.728+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  96,<2024-10-01T08:30:16.531+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '5d8d1c68-7fcf-11ef-8512-00139536a87f'
+       started at 2024-10-01 08:30:07.728 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:30:16.527 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       14 41 8F EC 36 BE 44 19 8F 68 03 DE FC 3E D5 5E>)
+(  97,<2024-10-01T08:30:17.884+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(  98,<2024-10-01T08:30:26.801+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '639d8d9a-7fcf-11ef-ae68-00139536a87f'
+       started at 2024-10-01 08:30:17.884 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:30:26.799 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       40 A6 31 34 7B 6B F5 90 53 CE CC 93 E0 2F 9D 1B>)
+(  99,<2024-10-01T08:30:28.119+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 100,<2024-10-01T08:30:36.975+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '69b435da-7fcf-11ef-b0a8-00139536a87f'
+       started at 2024-10-01 08:30:28.119 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:30:36.972 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       18 8C E4 63 BC AA E9 E3 5F 80 6D 22 42 F4 BE 4D>)
+( 101,<2024-10-01T08:30:38.282+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 102,<2024-10-01T08:30:47.077+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '6fc68a04-7fcf-11ef-8ad8-00139536a87f'
+       started at 2024-10-01 08:30:38.282 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:30:47.074 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       3C 3F 1C AA C7 C8 D8 2E DA EF B9 72 4B 07 BE 1E>)
+( 103,<2024-10-01T08:30:48.385+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 104,<2024-10-01T08:30:57.230+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '75cab70e-7fcf-11ef-ac0b-00139536a87f'
+       started at 2024-10-01 08:30:48.385 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:30:57.227 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       A3 90 16 C6 06 4E 76 95 D4 27 6B BD AF BE 3C 29>)
+( 105,<2024-10-01T08:30:58.558+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 106,<2024-10-01T08:31:07.367+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '7bd6ffc2-7fcf-11ef-b401-00139536a87f'
+       started at 2024-10-01 08:30:58.558 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:31:07.364 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       EF 1E 0F E6 02 0D A0 DC 30 3B 1D E4 FA C7 56 16>)
+( 107,<2024-10-01T08:31:08.699+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 108,<2024-10-01T08:31:17.472+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '81e6fa5c-7fcf-11ef-afbf-00139536a87f'
+       started at 2024-10-01 08:31:08.699 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:31:17.470 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       42 E1 FC 1E FF D7 66 D1 46 AD 0D 51 C3 75 B0 49>)
+( 109,<2024-10-01T08:31:18.792+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 110,<2024-10-01T08:31:27.596+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '87e7f708-7fcf-11ef-aebb-00139536a87f'
+       started at 2024-10-01 08:31:18.792 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:31:27.593 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       2D 0E F6 C0 A8 8F A4 30 9F FD 01 CF 3D DD 4C A8>)
+( 111,<2024-10-01T08:31:28.925+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 112,<2024-10-01T08:31:37.984+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '8df3fd4a-7fcf-11ef-915f-00139536a87f'
+       started at 2024-10-01 08:31:28.925 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:31:37.980 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       94 15 4A D6 AE 8E 5A 31 42 AB 0C A9 FE 76 D1 82>)
+( 113,<2024-10-01T08:31:39.302+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 114,<2024-10-01T08:31:48.103+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '94243d10-7fcf-11ef-a764-00139536a87f'
+       started at 2024-10-01 08:31:39.302 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:31:48.100 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       A5 01 71 64 A0 37 1B 75 82 4B EF 10 71 C9 2D 49>)
+( 115,<2024-10-01T08:31:49.418+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 116,<2024-10-01T08:31:58.213+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '9a2aca08-7fcf-11ef-83f9-00139536a87f'
+       started at 2024-10-01 08:31:49.418 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:31:58.209 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       73 49 57 61 D9 E6 9B 2D 82 B0 41 BF D7 36 07 1C>)
+( 117,<2024-10-01T08:31:59.545+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 118,<2024-10-01T08:32:08.348+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'a032610e-7fcf-11ef-bed2-00139536a87f'
+       started at 2024-10-01 08:31:59.545 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:32:08.345 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       D3 48 E1 2B 6A 52 05 7A DE 83 1C 28 FD 51 CD BB>)
+( 119,<2024-10-01T08:32:09.674+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 120,<2024-10-01T08:32:18.595+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'a63c08fc-7fcf-11ef-b9bf-00139536a87f'
+       started at 2024-10-01 08:32:09.674 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:32:18.591 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       C5 6C 12 83 9B A5 C1 A2 09 C1 2B 14 59 78 8B AF>)
+( 121,<2024-10-01T08:32:19.903+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 122,<2024-10-01T08:32:28.794+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'ac5542b2-7fcf-11ef-8441-00139536a87f'
+       started at 2024-10-01 08:32:19.903 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:32:28.790 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       59 54 B1 E9 83 BB B7 AD 27 82 BD A9 6D 9C 37 CF>)
+( 123,<2024-10-01T08:32:30.113+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 124,<2024-10-01T08:32:38.917+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'b26acfbe-7fcf-11ef-95da-00139536a87f'
+       started at 2024-10-01 08:32:30.113 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:32:38.913 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       7C 07 DC 8A FD 8F 4F 73 5F 1E 8D DB 81 C6 8F 10>)
+( 125,<2024-10-01T08:32:40.225+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 126,<2024-10-01T08:32:49.063+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'b87295b8-7fcf-11ef-b404-00139536a87f'
+       started at 2024-10-01 08:32:40.225 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:32:49.059 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       E9 55 73 5B F1 76 33 AE 1D F7 DC 7A F5 41 AD BF>)
+( 127,<2024-10-01T08:32:50.373+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 128,<2024-10-01T08:32:59.218+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'be80407c-7fcf-11ef-87f1-00139536a87f'
+       started at 2024-10-01 08:32:50.373 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:32:59.215 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       D2 65 41 85 D0 BF BE 77 AD C3 D3 27 DE 53 A3 85>)
+( 129,<2024-10-01T08:33:00.535+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 130,<2024-10-01T08:33:09.360+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'c48d0914-7fcf-11ef-a51c-00139536a87f'
+       started at 2024-10-01 08:33:00.535 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:33:09.356 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       2F 01 7F FA 13 D3 56 C0 4A 10 14 44 14 1D 0F 1A>)
+( 131,<2024-10-01T08:33:10.671+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 132,<2024-10-01T08:33:19.512+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'ca98d270-7fcf-11ef-86c7-00139536a87f'
+       started at 2024-10-01 08:33:10.671 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:33:19.509 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       28 E5 D0 FE 44 1C B9 DE 68 38 C0 40 2E BC EF 05>)
+( 133,<2024-10-01T08:33:20.851+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 134,<2024-10-01T08:33:29.658+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'd0a93fd8-7fcf-11ef-9743-00139536a87f'
+       started at 2024-10-01 08:33:20.851 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:33:29.656 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       D7 2F 67 C5 73 66 F4 77 50 E4 7E 18 4F 8F 77 1D>)
+( 135,<2024-10-01T08:33:33.046+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <raw data deleted by zg>)
+( 136,<2024-10-01T08:33:33.051+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+( 137,<2024-10-01T08:33:41.839+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'd7ee0fd0-7fcf-11ef-86c1-00139536a87f'
+       started at 2024-10-01 08:33:33.051 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2024-10-01 08:33:41.835 +0000
+       configuration hash MD5:
+       73 1F F1 50 29 E7 23 B2 5C EF 02 28 73 25 B9 C0
+       double data hash MD5: 9K
+       50 28 F3 82 D3 B3 EB EA 9A 63 68 42 2F 72 13 E6>)
+##END=
+
+$$ hash MD5
+$$ 63 A3 9D 42 E0 F7 80 25 9C 43 2A 51 1D 2F AD B2

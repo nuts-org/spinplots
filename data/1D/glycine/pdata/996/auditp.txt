@@ -1,0 +1,14 @@
+##TITLE= Audit trail, TopSpin 4.3.0
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ /opt/topspin4.3.0/data/DP/Ashin-CNF-DP/4/pdata/996/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2024-10-01T09:31:49.799+0100>,<nmrsu>,<CZC925CX83>,<poptau>,<TopSpin 4.3.0>,
+      <created by poptau popthalt was executed for o2, step 26
+       data hash MD5: 67896
+       4D DF FC 0B F2 00 63 5C 17 E6 F0 F7 EC 15 99 A8>)
+##END=
+
+$$ hash MD5
+$$ A2 63 E6 48 F0 8F C0 17 6D AB 4B 62 17 71 9B 62

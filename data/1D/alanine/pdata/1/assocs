@@ -1,0 +1,11 @@
+##TITLE= Parameter file, TOPSPIN		Version 3.1
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 2	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= msardo
+$$ 2017-02-23 14:51:36.980 +0000  msardo@rmn400
+$$ /opt/topspin/data/msardo/nmr/Alanine/3/pdata/1/assocs
+$$ process /opt/topspin3.1/prog/mod/dataserver
+##$MULTDISP= </opt/topspin/data/msardo/nmr/Alanine/1/pdata/1>
+##END=

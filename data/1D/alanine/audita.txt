@@ -1,0 +1,18 @@
+##TITLE= Audit trail, TOPSPIN		Version 3.1
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= msardo
+$$ /opt/topspin/data/msardo/nmr/Alanine/3/audita.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2017-02-23 14:27:53.980 +0000>,<msardo>,<rmn400>,<go>,<TOPSPIN 3.1>,
+      <created by zg
+	started at 2017-02-23 14:27:04.087 +0000,
+	POWCHK disabled, PULCHK disabled,
+       configuration hash MD5:
+       8E DF 0C 59 A6 A1 C9 65 10 74 7F B3 C6 C0 D8 D0
+       data hash MD5: 11988
+       D2 01 52 7F 40 A5 EF C1 76 BB F9 A5 27 2F B3 DE>)
+##END=
+
+$$ hash MD5
+$$ 5E 62 51 BC D2 43 16 32 4E 09 2B 1D 85 88 3B 8C

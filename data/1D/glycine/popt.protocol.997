@@ -1,0 +1,30 @@
+
+Report of AU program poptau
+# Start time: 2024-10-01 09:25:46.633 +0100
+
+Number of experiments: 61
+total experiment time will be:  7 min  7 sec
+
+F1P=75.281ppm F2P=7.777ppm
+PH_mode=1  FT_mod=6
+
+
+PROCNO=997
+
+Linear optimization of o2 in 61 steps, as Step: Group 0
+starting at -5000.000000000 endval= 10000.000000000
+OPTIMUM= POSMAX
+VARMOD= LIN
+
+popthalt was executed for o2, step 6
+
+Experiment         o2         Maximum point   Minimum point       Integral
+     1   -5000.000000000000       239047837        -4823702       3458924.345013
+     2   -4750.000000000000       229895670        -6355216       2935593.529200
+     3   -4500.000000000000       217931644        -5663550       3101458.061995
+     4   -4250.000000000000       212753161        -5075476       2992912.433064
+     5   -4000.000000000000       207898503        -5037055       2978606.767296
+     6   -3750.000000000000       197760669        -6522429       2829463.348607
+poptau for o2 finished.
+POSMAX at experiment 1:  o2 = -5000.000000  
+

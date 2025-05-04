@@ -1,0 +1,15 @@
+##TITLE= Parameter file, TopSpin 4.3.0
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ 2024-10-01 09:21:22.186 +0100  nmrsu@CZC925CX83
+$$ /opt/topspin4.3.0/data/DP/Ashin-CNF-DP/5/pdata/998/used_from
+$$ process /opt/topspin4.3.0/prog/au/bin/poptau
+##$CUREXP= <poptau>
+##$DATPATH= </opt/topspin4.3.0/data/DP>
+##$EXPNO= 5
+##$NAME= <Ashin-CNF-DP>
+##$PROCNO= 1
+##END=

@@ -1,0 +1,16 @@
+##TITLE= Parameter file, TOPSPIN		Version 3.1
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= msardo
+$$ 2017-02-23 14:18:17.996 +0000  msardo@rmn400
+$$ /opt/topspin/data/msardo/nmr/Alanine/3/pdata/1/outd
+$$ process /opt/topspin3.1/prog/mod/edparproc
+##$CURPLOT= <HP_LaserJet_P2055>
+##$CURPRIN= <$HP_LaserJet_P2055>
+##$DFORMAT= <normdp>
+##$LAYOUT= <+/1D_BB.xwp>
+##$LFORMAT= <normlp>
+##$PFORMAT= <normpl>
+##END=
