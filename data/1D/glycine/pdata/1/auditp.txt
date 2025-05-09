@@ -1,0 +1,356 @@
+##TITLE= Audit trail, TopSpin 4.3.0
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ /opt/topspin4.3.0/data/DP/Ashin-CNF-DP/5/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2024-10-01T09:16:55.894+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <new/edc PROCNO=1>)
+(   2,<2024-10-01T09:17:09.271+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 10 FT_mod = 6 PKNL = 1 PHC0 = -112.0065 PHC1 = 89.7371 SI = 16K 
+       data hash MD5: 16K
+       17 0C BA D8 6A 06 99 35 97 34 E8 FC F1 31 42 1D>)
+(   3,<2024-10-01T09:17:10.945+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <apk 
+       data hash MD5: 16K
+       48 26 B1 E2 21 85 40 DC DF F1 D0 F4 36 C6 2F 66>)
+(   4,<2024-10-01T09:17:47.693+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       9A D3 D0 6B BF 1F 5B C1 F7 26 1F 4D F6 35 89 F4>)
+(   5,<2024-10-01T09:17:57.807+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       FA C4 8B BB DE 32 04 4A 89 15 09 CB 13 7B 80 49>)
+(   6,<2024-10-01T09:18:10.169+0100>,<nmrsu>,<CZC925CX83>,<poptau>,<TopSpin 4.3.0>,
+      <created by poptau poptaustop was executed for PCPD 2, step 4>)
+(   7,<2024-10-01T09:18:36.392+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 10 FT_mod = 6 PKNL = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       DF 39 8A 2F 6B 8C B1 92 54 DA B5 94 8B F9 38 F3>)
+(   8,<2024-10-01T09:18:54.331+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       20 93 EF 97 0A E7 60 AB D6 81 66 A9 68 43 AB 0D>)
+(   9,<2024-10-01T09:19:04.508+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       3D 04 8D 0B FD B1 8B 3F FF 82 0F 62 82 8E 30 87>)
+(  10,<2024-10-01T09:19:14.783+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       1E FA 3B 77 AE 7B 31 AA 1F 73 74 64 FD 8E 36 58>)
+(  11,<2024-10-01T09:19:24.845+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       33 69 A3 56 D4 63 2B 3A CC 23 3D D2 2C 44 C4 BB>)
+(  12,<2024-10-01T09:19:34.956+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       E5 EA C9 91 6C E7 8C 50 22 83 09 31 88 E2 0C 62>)
+(  13,<2024-10-01T09:19:45.871+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       21 F9 52 A8 AE 8D 89 78 F1 63 4B C3 74 2A 2A 06>)
+(  14,<2024-10-01T09:19:56.097+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       32 8D 4A 73 6C C8 14 36 FF DC F1 8B 4D 76 15 A7>)
+(  15,<2024-10-01T09:20:06.227+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       37 CB 65 CE C2 E4 3E F7 99 8A 55 46 20 03 72 B1>)
+(  16,<2024-10-01T09:20:16.333+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       76 1F 78 0E 86 25 EF C6 5E B9 A0 47 A5 0B 9C 1C>)
+(  17,<2024-10-01T09:20:26.613+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       E8 93 F5 C9 15 3B C1 8F 06 C7 0B 18 58 CF 5D FF>)
+(  18,<2024-10-01T09:20:36.797+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       BA B5 67 DE 57 1B D3 28 02 33 9E FA 02 D1 E4 AA>)
+(  19,<2024-10-01T09:20:57.281+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 10 FT_mod = 6 PKNL = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       C3 CB F6 4D 65 30 88 BC CE 81 23 78 BF 32 D8 F2>)
+(  20,<2024-10-01T09:21:31.368+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       C6 BB C4 0D D6 50 68 DE BB C7 1B E4 33 00 8A 10>)
+(  21,<2024-10-01T09:21:41.484+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       79 55 22 8A 98 12 A4 B3 9E 6E 32 71 F4 3B C5 74>)
+(  22,<2024-10-01T09:21:51.642+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       B2 A6 5F 6C 6C D8 32 45 2F 76 06 CD 2A 17 FA 08>)
+(  23,<2024-10-01T09:22:01.871+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       6C 65 F6 36 C2 93 0B 4C AD 06 97 A0 55 C7 52 42>)
+(  24,<2024-10-01T09:22:11.984+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       E4 78 D7 A5 21 D9 79 14 76 30 DA C5 2F FD F5 2A>)
+(  25,<2024-10-01T09:22:22.143+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       A5 CD 74 C3 49 91 4D 0B 99 56 A2 7C D0 23 27 DC>)
+(  26,<2024-10-01T09:22:33.044+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       C4 4C 18 C9 35 F6 34 8C 05 40 AD 59 C1 55 15 32>)
+(  27,<2024-10-01T09:22:43.998+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       F0 D6 0F 3B 1F 00 EF C6 89 DC F9 7D EC 52 BC B2>)
+(  28,<2024-10-01T09:22:54.211+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       39 1F 84 E1 BB 2D F8 4A E9 31 17 30 09 4F 11 99>)
+(  29,<2024-10-01T09:23:04.365+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       EF 72 10 42 FA D6 DA 4C 83 25 E4 D7 34 E6 33 25>)
+(  30,<2024-10-01T09:23:14.474+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       7E A4 C2 83 98 54 F6 C5 9B 42 30 A1 08 A7 8D 3D>)
+(  31,<2024-10-01T09:23:24.638+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       09 6C 73 44 50 B5 F7 4B 3B 90 69 59 82 54 6B A5>)
+(  32,<2024-10-01T09:23:34.763+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       23 94 14 E2 C3 E1 9C 89 00 79 6F 43 76 F0 3A 74>)
+(  33,<2024-10-01T09:23:55.152+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 10 FT_mod = 6 PKNL = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       A7 80 EF 11 D1 8F 39 8A D0 61 EC E7 FD 4E 0B AB>)
+$$ /opt/topspin4.3.0/data/DP/Ashin-CNF-DP/4/pdata/1/auditp.txt
+(  34,<2024-10-01T09:25:56.538+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       33 33 A0 B5 36 02 B0 9B F9 A8 38 12 30 11 CF AC>)
+(  35,<2024-10-01T09:26:06.684+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       81 09 B9 96 36 91 0D CF 33 4C 90 9A 80 15 96 96>)
+(  36,<2024-10-01T09:26:16.781+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       B2 1E 9B 09 E9 AE D7 DA 36 9D 59 D1 01 9E 3E A9>)
+(  37,<2024-10-01T09:26:31.662+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       CE D4 85 FE F7 92 45 BD 6C 8F B1 0B 8A 62 85 AD>)
+(  38,<2024-10-01T09:26:42.564+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       43 05 E2 36 AF 73 0A 7B 03 6F 62 72 18 53 02 A6>)
+(  39,<2024-10-01T09:26:52.747+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       43 3E F1 55 92 7A 08 E1 F3 B1 3C FB DB BA 80 4A>)
+(  40,<2024-10-01T09:27:10.024+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 10 FT_mod = 6 PKNL = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       F1 62 93 8F 31 E2 B2 5B AF D2 A1 75 79 47 EB CB>)
+(  41,<2024-10-01T09:27:34.138+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       FF AB AE 98 CC E8 14 25 81 C9 BB E2 60 7F 42 9C>)
+(  42,<2024-10-01T09:27:44.187+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       D8 74 EE D7 6F 43 A9 A6 9F 22 46 1D 60 0D 3B 75>)
+(  43,<2024-10-01T09:27:55.077+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       87 5B 88 8B 5D 75 C8 22 F9 F4 D7 16 21 63 57 07>)
+(  44,<2024-10-01T09:28:05.232+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       F6 95 78 5C 66 96 6E 93 9E 18 74 80 CB 2F FC EE>)
+(  45,<2024-10-01T09:28:15.338+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       14 8A E1 FA F2 84 66 FF 25 9A 0F 6A 55 4D 05 53>)
+(  46,<2024-10-01T09:28:25.536+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       DB AF 03 CC 02 75 3A CB 29 30 56 77 26 B9 40 10>)
+(  47,<2024-10-01T09:28:35.655+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       8D 77 5C 07 0C B0 F2 12 10 34 9A 6F E7 55 00 A5>)
+(  48,<2024-10-01T09:28:45.923+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       29 62 E3 2D FD F5 DE 45 D8 B4 2C E6 F3 73 02 1D>)
+(  49,<2024-10-01T09:28:56.100+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       1E C7 EA BE 87 65 48 9F 8A 25 AD 91 74 C4 FF 11>)
+(  50,<2024-10-01T09:29:06.201+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       F3 B1 52 F6 F4 4B DC 6C A5 54 B4 74 32 BB A4 AB>)
+(  51,<2024-10-01T09:29:16.353+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       F5 92 50 E6 6C 06 9A 2C 74 05 90 7E FB D1 CF 8E>)
+(  52,<2024-10-01T09:29:26.491+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       8E 65 F1 46 1B 12 33 70 D2 57 8D 5E 4D B3 9D 82>)
+(  53,<2024-10-01T09:29:36.593+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       D5 91 C8 53 FE 39 14 40 DA 74 FC 5F 37 DB 24 80>)
+(  54,<2024-10-01T09:29:46.729+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       DC E2 26 83 1D 70 CD E7 55 CF E5 1F 97 23 3C 5B>)
+(  55,<2024-10-01T09:29:57.105+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       24 E6 E0 11 C3 03 FC 84 EB 51 EC A0 26 E6 88 A8>)
+(  56,<2024-10-01T09:30:07.226+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       C0 AB FC 3C 21 B0 66 BA DE B6 FE 14 72 30 06 D7>)
+(  57,<2024-10-01T09:30:17.331+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       B2 0E 62 AB 14 DB 4C 2C E5 47 C4 EF B1 99 C1 E2>)
+(  58,<2024-10-01T09:30:27.467+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       B9 F0 9D AD 4C AF 4F AD 9D 3C 7C 1B 69 21 19 8A>)
+(  59,<2024-10-01T09:30:37.713+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       7A 78 99 A3 52 85 87 51 D2 C0 F0 09 E2 9E E9 A5>)
+(  60,<2024-10-01T09:30:47.912+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       2F C9 21 33 B7 43 77 6A E3 30 BD E5 77 B4 F8 7F>)
+(  61,<2024-10-01T09:30:58.031+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       70 F3 53 98 96 90 8E 36 87 62 E2 C4 DF 4C 8B C5>)
+(  62,<2024-10-01T09:31:08.183+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       EF D3 DE 2C 0E 6F 23 E9 C3 89 48 6C A0 CC 88 3F>)
+(  63,<2024-10-01T09:31:18.337+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       04 55 42 A6 8F CE 57 7F A8 E9 47 BC 8E BC CD AA>)
+(  64,<2024-10-01T09:31:28.478+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       FA E9 6D 61 F8 8B 55 5F 0F 2F E3 4E 40 DD 65 AB>)
+(  65,<2024-10-01T09:31:38.629+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       96 9C 1F B1 71 B9 75 F4 02 99 6D 04 47 09 E5 2B>)
+(  66,<2024-10-01T09:31:48.780+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       trf WDW = 1 LB = 10 FT_mod = 6 PKNL = 1 PH_mod = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       51 8D 51 C4 7F AC 3B 9E BE 3E 49 43 0F 01 6D D5>)
+(  67,<2024-10-01T09:32:04.057+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 10 FT_mod = 6 PKNL = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 16K 
+       data hash MD5: 16K
+       67 04 A2 03 AE DA 34 F7 36 4B 92 C2 03 C8 7B 5D>)
+$$ /Users/danielpereira/NMR Data/A-CNF-project/Ashin-CNF-DP-400MHz/4/pdata/1/auditp.txt
+(  68,<2025-05-04T16:20:19.699+0200>,<danielpereira>,<vpn388.ras.ua.pt>,<cprserver>,<TopSpin 4.5.0>,
+      <changed parameter F1 SI to 65536>)
+(  69,<2025-05-04T16:20:21.438+0200>,<danielpereira>,<vpn388.ras.ua.pt>,<proc1d>,<TopSpin 4.5.0>,
+      <Start of raw data processing
+       efp LB = 10 FT_mod = 6 PKNL = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 64K
+       fid double data hash MD5: 9K
+       50 28 F3 82 D3 B3 EB EA 9A 63 68 42 2F 72 13 E6
+       data hash MD5: 64K
+       2A 39 DC 13 AE C4 BA D2 DE 1E DA B3 33 DF DB 5F>)
+(  70,<2025-05-04T16:20:23.797+0200>,<danielpereira>,<vpn388.ras.ua.pt>,<proc1d>,<TopSpin 4.5.0>,
+      <Start of raw data processing
+       fp FT_mod = 6 PKNL = 1 PHC0 = -65.93221 PHC1 = 1.954536 SI = 64K
+       fid double data hash MD5: 9K
+       50 28 F3 82 D3 B3 EB EA 9A 63 68 42 2F 72 13 E6
+       data hash MD5: 64K
+       A3 8F 9E 6B D0 54 0D C9 0B 39 7F 7C 8D 25 18 A9>)
+##END=
+
+$$ hash MD5
+$$ 18 F6 ED 9B 7F 3C 7C EA AA AD 36 B0 AA B8 B4 CE

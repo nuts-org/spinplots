@@ -1,0 +1,35 @@
+##TITLE= Audit trail, TopSpin 4.3.0
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ /opt/topspin4.3.0/data/DP/HCN-Tyrosine/20/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2025-04-08T11:49:45.797+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <new/edc PROCNO=1>)
+(   2,<2025-04-08T11:50:19.105+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 0 FT_mod = 6 PKNL = 1 PHC0 = -74.4988 PHC1 = 10.31301 SI = 64K 
+       data hash MD5: 64K
+       A4 5F 17 F3 33 AA B4 02 AD C2 2B D3 D8 B2 F3 F4>)
+(   3,<2025-04-08T11:50:20.060+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <apk 
+       data hash MD5: 64K
+       87 A6 4C E7 63 4D 54 05 66 66 4D 3C 61 26 2D EF>)
+(   4,<2025-04-08T11:50:39.959+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 0 FT_mod = 6 PKNL = 1 PHC0 = -99.14977 PHC1 = 8.790056 SI = 64K 
+       data hash MD5: 64K
+       09 76 92 F6 34 78 1B 53 B9 04 10 B9 21 77 CC 03>)
+(   5,<2025-04-08T11:50:51.531+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       efp LB = 0 FT_mod = 6 PKNL = 1 PHC0 = -99.14977 PHC1 = 8.790056 SI = 64K 
+       data hash MD5: 64K
+       09 76 92 F6 34 78 1B 53 B9 04 10 B9 21 77 CC 03>)
+(   6,<2025-04-08T11:50:53.946+0100>,<nmrsu>,<CZC925CX83>,<proc1d>,<TopSpin 4.3.0>,
+      <apk 
+       data hash MD5: 64K
+       1E 17 27 48 73 33 27 42 47 B1 B0 B2 8B 98 90 66>)
+##END=
+
+$$ hash MD5
+$$ 66 9B 75 E5 4D D6 7F EA 16 8C 9E 41 E0 A1 0B A9

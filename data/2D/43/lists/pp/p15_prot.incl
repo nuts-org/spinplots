@@ -1,0 +1,20 @@
+;p15_prot.incl
+;avance-version (13/01/29)
+;Test the rf on-time and duty cycle
+;protect against too long contact time
+;Test the rf on-time and duty cycle 
+;
+;$CLASS=Solids INCL
+;$COMMENT=protect against too long contact time
+
+
+1m
+if "p15 < 10.1m" goto Passp15
+2u
+print "contact time exceeds 10msec limit!"
+goto HaltAcqu
+Passp15, 1m
+
+
+
+;$Id:$

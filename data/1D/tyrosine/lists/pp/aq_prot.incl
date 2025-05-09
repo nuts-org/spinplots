@@ -1,0 +1,16 @@
+;aq_prot.incl
+;avance-version (13/01/28)
+;Test the rf on-time and duty cycle
+;protect against too long acquisition time
+
+;$CLASS=Solids INCL
+;$COMMENT=protect against too long acquisition time
+
+1m
+if "aq < 50.1m" goto Passaq
+2u 
+print "acquisition time exceeds 50m limit!"
+goto HaltAcqu
+Passaq, 1m
+
+;$Id:$

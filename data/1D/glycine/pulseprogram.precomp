@@ -1,0 +1,150 @@
+# 1 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp"
+;cp
+;avance-version (20/11/23)
+;
+;TS3 / 03.06.2011
+;
+;basic cp experiment
+;written by HF 1.3.2001
+;changed by JOS 05/06/03
+;comments added by STE 4.4.2006 and HF 16.06.2010
+;checked by SEWE 03.06.2011
+;
+;Avance III version
+;parameters: 
+;p3 : proton 90 at power level PLW12
+;p15 : contact time at PLW1(f1) and SPW0(f2)
+;pl1 : X power level during contact
+;pl2 : =0W, not used
+;pl12 : decoupling power level (if not PLW13)
+;pl13 : special decoupling power level
+;sp0 : proton power level during contact
+;cnst21 : on resonance, usually = 0
+;cpdprg2 : e.g. cw, spinal64 (at PLW12)
+;d1 : recycle delay
+;pcpd2 : pulse length in decoupling sequence (e.g. 180deg)
+;spnam0 : use e.g. ramp.100 or ramp90100.100 for variable amplitude CP
+;zgoptns : -Dfslg, -Dlacq, -Dlcp15, or blank
+;
+;
+;$CLASS=Solids
+;$DIM=1D
+;$TYPE=cross polarisation
+;$SUBTYPE=simple 1D
+;$COMMENT=basic cp experiment, arbitrary contact and decoupling schemes
+
+
+prosol relations=<solids_cp>
+# 1 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl" 1
+;Avance4.incl
+;   for AV 4
+;
+;avance-version (16/08/18)
+;
+;$CLASS=Common Incl
+;$COMMENT=
+
+
+# 19 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl"
+;setrtp0 denotes TimingController
+
+
+# 50 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl"
+# 51 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl"
+
+
+# 63 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl"
+# 89 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl"
+# 90 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl"
+
+
+# 123 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl"
+;#define LOWQ
+;#define HIGHQ
+
+
+;#define MIX_UP
+;#define MIX_DOWN
+# 136 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/Avance.incl"
+;$Id:$
+# 39 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp" 2
+
+# 48 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp"
+
+"acqt0=0" ;defines t=0 for baseopt
+# 51 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp"
+# 51 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp"
+1 ze
+
+2 d1 do:f2
+
+# 1 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/p15_prot.incl" 1
+;p15_prot.incl
+;avance-version (13/01/29)
+;Test the rf on-time and duty cycle
+;protect against too long contact time
+;Test the rf on-time and duty cycle 
+;
+;$CLASS=Solids INCL
+;$COMMENT=protect against too long contact time
+
+
+1m
+if "p15 < 10.1m" goto Passp15
+2u
+print "contact time exceeds 10msec limit!"
+goto HaltAcqu
+Passp15, 1m
+# 20 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/p15_prot.incl"
+;$Id:$
+# 56 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp" 2
+			;make sure p15 does not exceed 10 msec 
+			;let supervisor change this pulseprogram if 
+			;more is needed
+
+
+			;disable protection file for long acquisition change decoupling power !!! or you risk probe damage
+			;if you set the label lacq (ZGOPTNS -Dlacq), the protection is disabled
+# 1 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/aq_prot.incl" 1
+;aq_prot.incl
+;avance-version (13/01/28)
+;Test the rf on-time and duty cycle
+;protect against too long acquisition time
+
+;$CLASS=Solids INCL
+;$COMMENT=protect against too long acquisition time
+
+1m
+if "aq < 50.1m" goto Passaq
+2u 
+print "acquisition time exceeds 50m limit!"
+goto HaltAcqu
+Passaq, 1m
+# 16 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/aq_prot.incl"
+;$Id:$
+# 65 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp" 2
+			;allows max. 50 msec acquisition time, supervisor
+			;may change  to max. 1s at less than 5 % duty cycle
+			;and reduced decoupling field
+
+
+  1u fq=cnst21:f2
+  (p3 pl12 ph1):f2
+  (p15 pl1 ph2):f1 (p15:sp0 ph10):f2
+  1u cpds2:f2 		;pl12 is used here with tppm, spinal, pl13 with cwlg, cwlgs
+  go=2 ph31
+  1m do:f2
+  wr #0
+HaltAcqu, 1m
+exit
+# 80 "/root/.topspin-BladeEpu/local_acqu/Ashin-CNF-DP/4/lists/pp/cp"
+ph0= 0
+ph1= 1 3
+ph2= 0 0 2 2 1 1 3 3
+ph10= 0
+ph31= 0 2 2 0 1 3 3 1
+
+;$Id:$

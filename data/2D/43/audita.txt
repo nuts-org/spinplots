@@ -1,0 +1,29 @@
+##TITLE= Audit trail, TopSpin 4.3.0
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ /opt/topspin4.3.0/data/DP/HCN-Tyrosine/43/audita.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2025-04-08T21:54:54.466+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <new/edc EXPNO=43 PROCNO=1>)
+(   2,<2025-04-08T22:24:22.794+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <changed parameter F2 NS to 32>)
+(   3,<2025-04-08T23:29:27.159+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(   4,<2025-04-09T01:30:58.265+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID '4ff13048-14d1-11f0-a532-00139536a87f'
+       started at 2025-04-08 23:29:27.159 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2025-04-09 01:30:58.264 +0000
+       configuration hash MD5:
+       EC 8B FE 92 DA D7 A8 75 96 D5 7A 3B FF 4C 55 C3
+       double data hash MD5: 2726 * 256
+       D9 7B FA 68 00 7C 37 FF 8B 3F BC C6 05 D5 D4 6E>)
+(   5,<2025-04-09T02:27:21.517+0100>,<nmrsu>,<CZC925CX83>,<sertoint>,<TopSpin 4.3.0>,
+      <sertoint
+       data hash MD5: 2726 * 256
+       18 DD 54 41 92 6C BA 0F 98 F4 4C 10 F8 F9 40 95>)
+##END=
+
+$$ hash MD5
+$$ EE F7 1B 7D 04 20 24 DE F7 59 ED 38 E5 C5 C7 2A

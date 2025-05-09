@@ -1,12 +1,6 @@
 # People
 
-SpinPlots was originally written and is actively maintained by
-
-- [Carlos Bornes](https://github.com/carlosbornes)
-
-- [Daniel Pereira](https://github.com/danielcunhapereira)
-
-- [Márcio Soares](https://github.com/msoares98)
+SpinPlots was originally written and is actively maintained by [Carlos Bornes](https://github.com/carlosbornes), [Daniel Pereira](https://github.com/danielcunhapereira) and [Márcio Soares](https://github.com/msoares98)
 
 
 ## Contributors/Contributions

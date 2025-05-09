@@ -1,0 +1,16 @@
+##TITLE= Parameter file, TOPSPIN		Version 3.1
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= msardo
+$$ 2016-10-26 09:35:14.553 +0100  msardo@rmn400
+$$ /opt/topspin/data/msardo/nmr/Arginine/5/pdata/1/outd
+$$ process /opt/topspin3.1/prog/mod/edparproc
+##$CURPLOT= <HP_LaserJet_P2055>
+##$CURPRIN= <$HP_LaserJet_P2055>
+##$DFORMAT= <normdp>
+##$LAYOUT= <+/1D_BB.xwp>
+##$LFORMAT= <normlp>
+##$PFORMAT= <normpl>
+##END=

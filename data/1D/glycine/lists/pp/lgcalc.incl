@@ -1,0 +1,12 @@
+;$CLASS=Solids INCL
+;$COMMENT=calculation of FSLG parameters
+
+
+"cnst21=0"			;make sure cp ist done with proton freq.
+				;set by O2
+"cnst22=cnst20/sqrt(2)+cnst24"		;cnst20=desired RF field in Hz
+"cnst23=-cnst20/sqrt(2)+cnst24"	;negative offset is cnst23
+
+"p5=((294/360)/(cnst20))*1e6"		;calculate 294 degree pulse from cnst20
+
+;$Id:$

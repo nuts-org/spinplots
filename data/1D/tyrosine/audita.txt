@@ -1,0 +1,40 @@
+##TITLE= Audit trail, TopSpin 4.3.0
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmrsu
+$$ /opt/topspin4.3.0/data/DP/HCN-Tyrosine/20/audita.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2025-04-08T11:49:45.798+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <new/edc EXPNO=20 PROCNO=1>)
+(   2,<2025-04-08T10:53:34.116+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(   3,<2025-04-08T10:53:49.241+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'b76c82f0-1467-11f0-80b5-00139536a87f'
+       started at 2025-04-08 10:53:34.116 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2025-04-08 10:53:49.237 +0000
+       configuration hash MD5:
+       EC 8B FE 92 DA D7 A8 75 96 D5 7A 3B FF 4C 55 C3
+       double data hash MD5: 2272
+       22 B7 7A BA 75 79 AE 5B 13 B9 D0 86 DE 17 59 7E>)
+(   4,<2025-04-08T11:50:27.364+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <changed parameter F1 AQ to 0.0299860>)
+(   5,<2025-04-08T11:50:29.948+0100>,<nmrsu>,<CZC925CX83>,<cprserver>,<TopSpin 4.3.0>,
+      <changed parameter F1 NS to 4>)
+(   6,<2025-04-08T10:54:04.245+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <raw data deleted by zg>)
+(   7,<2025-04-08T10:54:04.246+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <acquisition in progress>)
+(   8,<2025-04-08T10:54:08.764+0000>,<nmrsu>,<CZC925CX83>,<go4>,<TopSpin 4.3.0>,
+      <created by zg on 'NEO 400 WB DNP' (CZC925CX83) by user 'nmrsu'
+       on data set with UUID 'c96325b8-1467-11f0-a631-00139536a87f'
+       started at 2025-04-08 10:54:04.246 +0000, POWCHK enabled, PULCHK disabled,
+       completed at 2025-04-08 10:54:08.763 +0000
+       configuration hash MD5:
+       EC 8B FE 92 DA D7 A8 75 96 D5 7A 3B FF 4C 55 C3
+       double data hash MD5: 2726
+       0A 81 E4 4C 72 50 70 3B E9 13 34 2C B7 A3 0E 66>)
+##END=
+
+$$ hash MD5
+$$ C8 9B 93 8E 70 7F CF 81 BB F6 A5 F2 5D 37 73 CA

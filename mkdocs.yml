@@ -6,9 +6,9 @@ nav:
   - Home: index.md
   - Installation:
       - installation/install.md
-  - User Guide:
-      - user_guide/easy_plots.ipynb
-      - user_guide/read_export.ipynb
+  - Tutorials:
+      - 'Easy Plots': user_guide/easy_plots.ipynb
+      - 'Costumize and Export': user_guide/read_export.ipynb
   - Code Documentation: reference/
   - About:
       - about/contributors.md

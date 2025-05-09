@@ -1,0 +1,53 @@
+# Thu Feb 23 14:27:53 2017
+#$$PROBEID=33
+#$$PROBEINFO=4 mm HPWB BB/1H K1439/570
+#$$PICSINFO=K1439_570_33.par
+#
+# Active Shim Gradients
+#
+Z           		-11881          
+Z2          		0               
+Z3          		0               
+Z4          		0               
+Z5          		0               
+X           		20873           
+XZ          		-59319          
+XZ2         		0               
+Y           		5027            
+YZ          		0               
+YZ2         		0               
+XY          		0               
+XYZ         		0               
+(X2-Y2)     		0               
+(X2-Y2)Z    		0               
+X3          		0               
+Y3          		0               
+#
+# Lock Parameter
+#
+FIELD		8000.000
+#
+IEEE64_VERSION_CODE 1
+#
+# Shim currents 
+#
+SHIM_SETTING [1 ]  -5762.28500000  
+SHIM_SETTING [2 ]  -0.00000000     
+SHIM_SETTING [3 ]  0.00000000      
+SHIM_SETTING [4 ]  0.00000000      
+SHIM_SETTING [5 ]  0.00000000      
+SHIM_SETTING [6 ]  10979.19800000  
+SHIM_SETTING [7 ]  -31201.79400000 
+SHIM_SETTING [8 ]  0.00000000      
+SHIM_SETTING [9 ]  0.00000000      
+SHIM_SETTING [10]  0.00000000      
+SHIM_SETTING [11]  2644.20200000   
+SHIM_SETTING [12]  0.00000000      
+SHIM_SETTING [13]  0.00000000      
+SHIM_SETTING [14]  0.00000000      
+SHIM_SETTING [15]  0.00000000      
+SHIM_SETTING [16]  0.00000000      
+SHIM_SETTING [17]  0.00000000      
+SHIM_SETTING [18]  0.00000000      
+SHIM_SETTING [19]  0.00000000      
+SHIM_SETTING [20]  0.00000000      

@@ -1,0 +1,24 @@
+##TITLE= Audit trail, TOPSPIN		Version 3.1
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= msardo
+$$ /opt/topspin/data/msardo/nmr/Arginine/5/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2016-10-26 11:25:03.765 +0100>,<msardo>,<rmn400>,<go>,<TOPSPIN 3.1>,
+      <created by zg
+	started at 2016-10-26 09:41:35.440 +0100,
+	POWCHK disabled, PULCHK disabled,
+       terminated by command 'halt'
+       configuration hash MD5:
+       FF 60 CB 4E DE 3A DA 9D 6F 42 50 2C 80 F0 BA 1F
+       data hash MD5: 7988
+       59 10 A2 09 04 43 CD F6 C2 32 05 09 83 B3 B9 8D>)
+(   2,<2016-10-26 11:25:04.481 +0100>,<msardo>,<rmn400>,<proc1d>,<TOPSPIN 3.1>,
+      <Start of raw data processing
+       efp LB = 30 FT_mod = 6 PKNL = 1 PHC0 = 94.32271 PHC1 = -207.6987 SI = 16K 
+       data hash MD5: 16K
+       8F 87 86 7D 97 9D 41 A7 B5 C0 96 31 3E 67 C4 67>)
+##END=
+
+$$ hash MD5
+$$ 0A C3 0C 44 D9 D4 6E 43 03 65 CC 4E 2A 47 24 90

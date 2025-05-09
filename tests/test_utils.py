@@ -4,7 +4,7 @@ import pandas as pd
 
 from spinplots.utils import calculate_projections, nmr_df
 
-DATA_DIR_1D = "data/1D/8/pdata/1"
+DATA_DIR_1D = "data/1D/glycine/pdata/1"
 DATA_DIR_2D = "data/2D/16/pdata/1"
 
 

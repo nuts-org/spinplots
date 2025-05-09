@@ -4,7 +4,7 @@ import logging
 import subprocess
 import sys
 
-DATA_DIR_1D = "data/1D/8/pdata/1"
+DATA_DIR_1D = "data/1D/glycine/pdata/1"
 
 
 def test_bruker2csv_success(tmp_path):
