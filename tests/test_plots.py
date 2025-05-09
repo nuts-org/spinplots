@@ -45,7 +45,9 @@ def test_bruker1d_multiple():
 
 def test_bruker1d_stacked():
     """Test stacked 1D plot."""
-    fig, ax = bruker1d([DATA_DIR_1D_1, DATA_DIR_1D_2], stacked=True, return_fig=True)
+    fig, ax = bruker1d(
+        [DATA_DIR_1D_1, DATA_DIR_1D_2], stacked=True, return_fig=True
+    )
     assert fig is not None
     assert ax is not None
 
