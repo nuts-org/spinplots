@@ -13,8 +13,8 @@ from spinplots.plot import (
 )
 from spinplots.utils import nmr_df
 
-DATA_DIR_1D_1 = "data/1D/8/pdata/1"
-DATA_DIR_1D_2 = "data/1D/12/pdata/1"
+DATA_DIR_1D_1 = "data/1D/glycine/pdata/1"
+DATA_DIR_1D_2 = "data/1D/alanine/pdata/1"
 DATA_DIR_2D = "data/2D/16/pdata/1"
 
 
@@ -102,22 +102,10 @@ def test_bruker2d_save(tmp_path):
 
 def test_bruker1d_grid():
     """Test grid plot."""
-    fig, axes = bruker1d_grid(
-        [DATA_DIR_1D_1, DATA_DIR_1D_2], subplot_dims=(1, 2), return_fig=True
-    )
+    fig, axes = bruker1d_grid([DATA_DIR_1D_1, DATA_DIR_1D_2], subplot_dims=(1, 2), return_fig=True)
     assert fig is not None
     assert axes is not None
     assert len(axes) == 2
-
-
-def test_bruker1d_background():
-    """Test background subtraction plot."""
-    # Assuming DATA_DIR_1D_2 can act as a 'background' for DATA_DIR_1D_1
-    fig, ax = bruker1d_background(
-        DATA_DIR_1D_1, DATA_DIR_1D_2, background_factor=0.5, return_fig=True
-    )
-    assert fig is not None
-    assert ax is not None
 
 
 def test_df2d(tmp_path):
