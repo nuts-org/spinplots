@@ -6,7 +6,6 @@ import pytest
 
 from spinplots.plot import (
     bruker1d,
-    bruker1d_background,
     bruker1d_grid,
     bruker2d,
     df2d,
