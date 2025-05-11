@@ -30,9 +30,11 @@ def read_nmr(path: str | list[str], provider: str = "bruker", **kwargs) -> Spin:
         FileNotFoundError: If a path does not exist or data cannot be read.
         TypeError: If path is not a string or list of strings.
     """
-    if provider.lower() != "bruker":
+    provider = provider.lower()
+
+    if provider not in ["bruker", "dmfit"]:
         raise ValueError(
-            f"Unsupported provider: {provider}. Only 'bruker' is currently supported."
+            f"Unsupported provider: {provider}. Only 'bruker' and 'dmfit"
         )
 
     if isinstance(path, str):
@@ -52,12 +54,21 @@ def read_nmr(path: str | list[str], provider: str = "bruker", **kwargs) -> Spin:
             raise TypeError(
                 f"All items in the path list must be strings. Found: {type(p)}"
             )
-        if not os.path.isdir(p):
-            raise FileNotFoundError(f"Directory not found: {p}")
 
-        spectrum_data = _read_bruker_data(p, provider, **kwargs)
+        spectrum_data = {}
+        
+        if provider == "bruker":
+            if not os.path.isdir(p):
+                raise FileNotFoundError(f"Data directory not found {p}")
 
-        # Check for consistent dimensionality across all files if multiple are read
+            spectrum_data = _read_bruker_data(p, provider, **kwargs)
+        elif provider == "dmfit":
+            if not os.path.isfile(p):
+                raise FileNotFoundError(f"Data file not found {p}")
+
+            spectrum_data = _read_dmfit_data(p, **kwargs)
+
+        # Check for consistent of dimensions across files
         if first_ndim is None:
             first_ndim = spectrum_data["ndim"]
         elif spectrum_data["ndim"] != first_ndim:
@@ -170,4 +181,35 @@ def _read_bruker_data(path: str, provider: str, **kwargs) -> dict:
             f"Unsupported NMR dimensionality: {ndim} found in {path}. Only 1D and 2D are supported."
         )
 
+    return spectrum_data
+
+def _read_dmfit_data(path: str, **kwargs) -> dict:
+    """Helper function to read data of DMFit data."""
+    try:
+        dmfit_df = pd.read_csv(path, sep='\t', skiprows=2)
+        dmfit_df.columns = dmfit_df.columns.str.replace('##col_ ', '')
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Could not find DMfit data at path: {path}")
+    except Exception as e:
+        raise IOError(f"Error reading DMfit data at path {path}: {e}")
+
+    ppm_scale = dmfit_df['ppm'].to_numpy()
+    spectrum_data_values = dmfit_df['Spectrum'].to_numpy()
+    
+    ndim = 1
+
+    nuclei = "Unknown" 
+
+    spectrum_data = {
+        "path": path,
+        "metadata": {"provider_type": "dmfit"},
+        "ndim": ndim,
+        "data": spectrum_data_values,
+        "norm_max": spectrum_data_values / np.amax(spectrum_data_values) if np.amax(spectrum_data_values) != 0 else spectrum_data_values.copy(),
+        "projections": None,
+        "ppm_scale": ppm_scale,
+        "hz_scale": None,
+        "nuclei": nuclei,
+        "dmfit_dataframe": dmfit_df
+    }
     return spectrum_data

@@ -60,7 +60,7 @@ class Spin:
             ImportError: If the required plotting functions cannot be imported.
         """
         try:
-            from spinplots.plot import bruker1d, bruker2d, bruker1d_grid
+            from spinplots.plot import bruker1d, bruker2d, bruker1d_grid, dmfit1d
         except ImportError as e:
             raise ImportError(f"Could not import plotting functions: {e}")
 
@@ -89,6 +89,16 @@ class Spin:
                     raise ValueError("Grid layout is not supported for 2D spectra.")
 
                 return bruker2d(self, **kwargs)
+            else:
+                raise ValueError(
+                    f"Plotting not supported for {self.provider} data with ndim={self.ndim}"
+                )
+        elif self.provider.lower() == "dmfit":
+            if self.ndim == 1:
+                if grid is not None:
+                    raise ValueError("Grid layout is not supported for 1D DMFit spectra.")
+
+                return dmfit1d(self, **kwargs)
             else:
                 raise ValueError(
                     f"Plotting not supported for {self.provider} data with ndim={self.ndim}"

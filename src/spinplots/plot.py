@@ -898,3 +898,223 @@ def df2d(
     else:
         plt.show()
         return None
+
+# Functions for DMFit
+def dmfit1d(
+        spin_objects: Spin,
+        color='b',
+        linewidth=1,
+        linestyle='-',
+        alpha=1,
+        model_show=True,
+        model_color='red',
+        model_linewidth=1,
+        model_linestyle='--',
+        model_alpha=1,
+        deconv_show=True,
+        deconv_color=None,
+        deconv_alpha=0.3,
+        frame=False,
+        labels=None,
+        labelsize=12,
+        xlim=None,
+        save=False,
+        format=None,
+        filename=None,
+        yaxislabel=None,
+        xaxislabel=None,
+        axisfontsize=None,
+        axisfont=None,
+        tickfontsize=None,
+        tickfont=None,
+        tickspacing=None,
+        return_fig=False
+    ):
+    """
+    Read a dmfit1d file and return a DataFrame with the data.
+
+    Parameters
+    ----------
+    spin_objects : Spin
+        The Spin object containing the dmfit1d file.
+    color : str, optional
+        The color of the spectrum line. The default is 'b'.
+    linewidth : int, optional
+        The width of the spectrum line. The default is 1.
+    linestyle : str, optional
+        The style of the spectrum line. The default is '-'.
+    alpha : float, optional
+        The transparency of the spectrum line. The default is 1.
+    model_show : bool, optional
+        Whether to show the model line. The default is True.
+    model_color : str, optional
+        The color of the model line. The default is 'red'.
+    model_linewidth : int, optional
+        The width of the model line. The default is 1.
+    model_linestyle : str, optional
+        The style of the model line. The default is '--'.
+    model_alpha : float, optional
+        The transparency of the model line. The default is 1.
+    deconv_show : bool, optional
+        Whether to show the deconvoluted lines. The default is True.
+    deconv_color : str, optional
+        The color of the deconvoluted lines. The default is None.
+    deconv_alpha : float, optional
+        The transparency of the deconvoluted lines. The default is 0.3.
+
+    frame : bool, optional
+        Whether to show the frame. The default is False.
+    labels : list, optional
+        The labels for the x and y axes. The default is name of columns.
+    labelsize : int, optional
+        The size of the labels. The default is 12.
+    xlim : tuple, optional
+        The limits for the x axis. The default is None.
+    save : bool, optional
+        Whether to save the figure. The default is False.
+    format : str, optional
+        The format to save the figure. The default is None.
+    filename : str, optional
+        The name of the file to save the figure. The default is None.
+    yaxislabel : str, optional
+        The label for the y axis. The default is None.
+    xaxislabel : str, optional
+        The label for the x axis. The default is None.
+    axisfontsize : int, optional
+        The size of the axis labels. The default is None.
+    axisfont : str, optional
+        The font of the axis labels. The default is None.
+    tickfontsize : int, optional
+        The size of the tick labels. The default is None.
+    tickfont : str, optional
+        The font of the tick labels. The default is None.
+    tickspacing : int, optional
+        The spacing of the ticks. The default is None.
+    return_fig : bool, optional
+        Whether to return the figure. The default is False.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The figure object.
+    dmfit_df : pandas.DataFrame
+        The DataFrame with the data from the dmfit1d file. 
+
+    """
+
+    if not spin_objects.spectra:
+        raise ValueError("Spin object contains no spectra.")
+
+    spectrum_info = spin_objects.spectra[0] 
+    dmfit_df = spectrum_info.get('dmfit_dataframe')
+
+    if dmfit_df is None:
+        raise ValueError("DMfit DataFrame not found in Spin object. Read data with provider='dmfit'")
+    
+    n_lines = sum(col.startswith('Line#') for col in dmfit_df.columns)
+
+    defaults = {
+        'color': color,
+        'linewidth': linewidth,
+        'linestyle': linestyle,
+        'alpha': alpha,
+
+        'model_show': model_show,
+        'model_color': model_color,
+        'model_linewidth': model_linewidth,
+        'model_linestyle': model_linestyle,
+        'model_alpha': model_alpha,
+
+        'deconv_show': deconv_show,
+        'deconv_color': deconv_color,
+        'deconv_alpha': deconv_alpha,
+
+        'frame': frame,
+        'labels': labels,
+        'labelsize': labelsize,
+        'xlim': xlim,
+        'save': save,
+        'format': format,
+        'filename': filename,
+        'yaxislabel': yaxislabel,
+        'xaxislabel': xaxislabel,
+        'axisfontsize': axisfontsize,
+        'axisfont': axisfont,
+        'tickfontsize': tickfontsize,
+        'tickfont': tickfont,
+        'tickspacing': tickspacing,
+        'return_fig': return_fig
+    }
+    
+    params = {k: v for k, v in locals().items() if k in defaults and v is not None}
+    params.update(defaults)
+
+    fig, ax = plt.subplots()
+    ax.plot(dmfit_df['ppm'], dmfit_df['Spectrum'], color=params['color'],
+            linewidth=params['linewidth'], linestyle=params['linestyle'],
+            alpha=params['alpha'],
+            label=params['labels'][0] if params['labels'] and len(params['labels']) > 0 else None)
+    if params['model_show']:
+        ax.plot(dmfit_df['ppm'], dmfit_df['Model'], color=params['model_color'],
+                linewidth=params['model_linewidth'], linestyle=params['model_linestyle'],
+                alpha=params['model_alpha'],
+                label=params['labels'][1] if params['labels'] and len(params['labels']) > 1 else None)
+    if params['deconv_show']:
+        for i in range(1, n_lines + 1):
+            if params['deconv_color'] is not None:
+                ax.fill_between(dmfit_df['ppm'], dmfit_df[f'Line#{i}'],
+                                alpha=params['deconv_alpha'],
+                                color=params['deconv_color'])
+            else:
+                ax.fill_between(dmfit_df['ppm'], dmfit_df[f'Line#{i}'],
+                                alpha=params['deconv_alpha'])
+
+    if params['labels']:
+        ax.legend(
+            bbox_to_anchor=(1.05, 1),
+            loc="upper left",
+            fontsize=defaults["labelsize"],
+            prop={"family": defaults["tickfont"], "size": defaults["labelsize"]},
+        )
+    if params['xlim']:
+        ax.set_xlim(params['xlim'])
+    if params['yaxislabel']:
+        ax.set_ylabel(params['yaxislabel'], fontsize=params['labelsize'])
+    if params['xaxislabel']:
+        ax.set_xlabel(params['xaxislabel'], fontsize=params['labelsize'])
+    if params['axisfontsize']:
+        ax.xaxis.label.set_size(params['axisfontsize'])
+        ax.yaxis.label.set_size(params['axisfontsize'])
+    if params['axisfont']:
+        ax.xaxis.label.set_fontname(params['axisfont'])
+        ax.yaxis.label.set_fontname(params['axisfont'])
+    if params['tickfontsize']:
+        ax.tick_params(axis='both', which='major', labelsize=params['tickfontsize'])
+        ax.tick_params(axis='both', which='minor', labelsize=params['tickfontsize'])
+    if params['tickfont']:
+        ax.tick_params(axis='both', which='major', labelfont=params['tickfont'])
+        ax.tick_params(axis='both', which='minor', labelfont=params['tickfont'])
+    if params['tickspacing']:
+        ax.xaxis.set_major_locator(plt.MultipleLocator(params['tickspacing']))
+        ax.yaxis.set_major_locator(plt.MultipleLocator(params['tickspacing']))
+    if params['frame']:
+        ax.spines['top'].set_visible(True)
+        ax.spines['right'].set_visible(True)
+        ax.spines['left'].set_visible(True)
+    else:
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        ax.yaxis.set_ticks([])
+        ax.yaxis.set_ticklabels([])
+    if params['save']:
+        if params['format']:
+            plt.savefig(f"{params['filename']}.{params['format']}", format=params['format'])
+        else:
+            plt.savefig(params['filename'])
+
+    if params['return_fig']:
+        return fig, ax
+    else:
+        plt.show()
+        return None 
