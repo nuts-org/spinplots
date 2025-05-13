@@ -34,7 +34,7 @@ def read_nmr(path: str | list[str], provider: str = "bruker", **kwargs) -> Spin:
 
     if provider not in ["bruker", "dmfit"]:
         raise ValueError(
-            f"Unsupported provider: {provider}. Only 'bruker' and 'dmfit"
+            f"Unsupported provider: {provider}. Only 'bruker' and 'dmfit'"
         )
 
     if isinstance(path, str):
