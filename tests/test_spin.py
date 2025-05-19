@@ -1,24 +1,132 @@
 from __future__ import annotations
 
+import pytest
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
 from spinplots.io import read_nmr
-from spinplots.spin import Spin
+from spinplots.spin import Spin, SpinCollection
 
 DATA_DIR_1D_1 = "data/1D/glycine/pdata/1"
 DATA_DIR_1D_2 = "data/1D/alanine/pdata/1"
 DATA_DIR_2D = "data/2D/16/pdata/1"
+DATA_DIR_DM = "data/DMFit/overlapping_spe_fit.ppm"
 
+@pytest.fixture(autouse=True)
+def configure_matplotlib_and_close_plots():
+    """Switch to non-interactive backend and close plots after each test."""
+    mpl.use("Agg")
+    yield
+    plt.close("all")
 
-def test_two_spins():
-    """Test Spin object with spectra list"""
-    spins = read_nmr([DATA_DIR_1D_1, DATA_DIR_1D_2], 'bruker')
-    assert isinstance(spins, Spin)
-    assert spins.num_spectra == 2
-    assert spins.ndim == 1
+@pytest.fixture
+def spin_1d():
+    return read_nmr(DATA_DIR_1D_1, 'bruker')
 
-def test_2d_spin():
-    """Test Spin object with 2d spectra"""
-    spin = read_nmr([DATA_DIR_2D], 'bruker')
-    assert isinstance(spin, Spin)
-    assert spin.num_spectra == 1
-    assert spin.ndim == 2
+@pytest.fixture
+def spin_1d_2():
+    return read_nmr(DATA_DIR_1D_2, 'bruker')
+
+@pytest.fixture
+def spin_2d():
+    return read_nmr(DATA_DIR_2D, 'bruker')
+
+@pytest.fixture
+def spin_dmfit():
+    return read_nmr(DATA_DIR_DM, 'dmfit')
+
+@pytest.fixture
+def spincollection():
+    return read_nmr([DATA_DIR_1D_1, DATA_DIR_1D_2], 'bruker')
+
+def test_spin_attributes(spin_1d):
+    assert isinstance(spin_1d, Spin)
+    assert hasattr(spin_1d, "ndim")
+    assert spin_1d.ndim == 1
+    assert hasattr(spin_1d, "provider")
+    assert spin_1d.provider == "bruker"
+
+def test_spin_repr(spin_1d):
+    r = repr(spin_1d)
+    assert "Spin(" in r
+
+def test_spin_init_value_error():
+    with pytest.raises(ValueError):
+        Spin({}, 'bruker')
+    with pytest.raises(ValueError):
+        Spin({'ndim': 3, 'path': 'foo'}, 'bruker')
+    with pytest.raises(ValueError):
+        Spin({'ndim': 1, 'path': 'foo'}, 'foo')
+
+def test_spin_plot_1d(spin_1d):
+    fig, ax = spin_1d.plot(return_fig=True)
+    assert fig is not None and ax is not None
+
+def test_spin_plot_2d(spin_2d):
+    ax_dict = spin_2d.plot(contour_start=1e5, contour_num=10, contour_factor=1.5, return_fig=True)
+    assert isinstance(ax_dict, dict)
+    assert "A" in ax_dict
+
+def test_spin_plot_grid(spin_1d):
+    fig, ax = spin_1d.plot(grid='1x1', return_fig=True)
+    assert fig is not None and ax is not None
+
+def test_spin_plot_bad_grid_str(spin_1d):
+    with pytest.raises(ValueError):
+        spin_1d.plot(grid="badgrid")
+
+def test_spin_plot_bad_grid_dim(spin_2d):
+    with pytest.raises(ValueError):
+        spin_2d.plot(grid="1x2", contour_start=1e5, contour_num=5, contour_factor=1.5)
+
+def test_spin_plot_dmfit(spin_dmfit):
+    fig, ax = spin_dmfit.plot(return_fig=True)
+    assert fig is not None and ax is not None
+
+def test_spin_plot_dmfit_grid_not_supported(spin_dmfit):
+    with pytest.raises(ValueError):
+        spin_dmfit.plot(grid="1x1")
+
+def test_spin_plot_unsupported_case():
+    # Use dmfit + ndim=2
+    d = {'ndim': 2, 'path': DATA_DIR_DM}
+    s = Spin(d, provider="dmfit")
+    with pytest.raises(ValueError):
+        s.plot()
+
+def test_spincollection_construction(spin_1d, spin_1d_2):
+    coll = SpinCollection([spin_1d])
+    assert len(coll) == 1
+    coll.append(spin_1d_2)
+    assert len(coll) == 2
+
+def test_spincollection_append_invalid_ndim(spin_1d, spin_2d):
+    coll = SpinCollection([spin_1d])
+    with pytest.raises(ValueError):
+        coll.append(spin_2d)
+
+def test_spincollection_append_invalid_provider(spin_1d, spin_dmfit):
+    coll = SpinCollection([spin_1d])
+    with pytest.raises(ValueError):
+        coll.append(spin_dmfit)
+
+def test_spincollection_duplicate_tag(spin_1d):
+    spin_1d.tag = "duplicate_tag"
+    coll = SpinCollection([spin_1d])
+    with pytest.raises(ValueError):
+        coll.append(spin_1d)
+
+def test_spincollection_remove_and_delitem(spin_1d, spin_1d_2):
+    coll = SpinCollection([spin_1d, spin_1d_2])
+    # get tags:
+    tags = list(coll.spins.keys())
+    coll.remove(tags[0])
+    assert len(coll) == 1
+    coll.__delitem__(tags[1])
+    assert len(coll) == 0
+
+def test_spincollection_remove_invalid(spin_1d, spin_1d_2):
+    coll = SpinCollection([spin_1d, spin_1d_2])
+    with pytest.raises(KeyError):
+        coll.remove('invalid_tag')
 

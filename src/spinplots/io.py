@@ -1,17 +1,22 @@
 # filepath: src/spinplots/io.py
 from __future__ import annotations
 
+import warnings
+
 import nmrglue as ng
 import numpy as np
 import pandas as pd
-import os
-import warnings
 
-from spinplots.spin import Spin
+from spinplots.spin import Spin, SpinCollection
 from spinplots.utils import calculate_projections
 
 
-def read_nmr(path: str | list[str], provider: str = "bruker", **kwargs) -> Spin:
+def read_nmr(
+        path: str | list[str],
+        provider: str = "bruker",
+        tags: str | list[str] | None = None,
+        **kwargs
+) -> Spin | SpinCollection:
     """
     Reads NMR data from a specified path or list of paths and provider,
     returning a single Spin object containing all datasets.
@@ -26,81 +31,57 @@ def read_nmr(path: str | list[str], provider: str = "bruker", **kwargs) -> Spin:
         Spin: A Spin object containing the data for all successfully read spectra.
 
     Raises:
-        ValueError: If the provider is not supported or data dimensionality is invalid/mixed.
-        FileNotFoundError: If a path does not exist or data cannot be read.
-        TypeError: If path is not a string or list of strings.
+        ValueError: If the provider is not supported.
+        IOError: If there are problems processing the files.
     """
+
     provider = provider.lower()
 
-    if provider not in ["bruker", "dmfit"]:
-        raise ValueError(
-            f"Unsupported provider: {provider}. Only 'bruker' and 'dmfit'"
-        )
+    paths_to_read = path if isinstance(path, list) else [path]
 
-    if isinstance(path, str):
-        paths_to_read = [path]
-    elif isinstance(path, list):
-        paths_to_read = path
-    else:
-        raise TypeError(
-            f"Input path must be a string or a list of strings, not {type(path)}"
-        )
+    if tags is not None and len(tags) != len(paths_to_read):
+        raise ValueError("Length of tags must match the number of paths.")
 
-    all_spectra_data = []
-    first_ndim = None
+    spins = []
 
-    for p in paths_to_read:
-        if not isinstance(p, str):
-            raise TypeError(
-                f"All items in the path list must be strings. Found: {type(p)}"
-            )
+    for i, p in enumerate(paths_to_read):
+        match provider:
+            case "bruker":
+                spectrum_data = _read_bruker_data(p, **kwargs)
+            case "dmfit":
+                spectrum_data = _read_dmfit_data(p, **kwargs)
+            case _:
+                raise ValueError(
+                    f"Unsupported provider: {provider}. Only 'bruker' and 'dmfit' are supported."
+                )
 
-        spectrum_data = {}
-        
-        if provider == "bruker":
-            if not os.path.isdir(p):
-                raise FileNotFoundError(f"Data directory not found {p}")
+        tag = tags[i] if tags is not None else None
+        spin = Spin(spectrum_data=spectrum_data, provider=provider, tag=tag)
+        spins.append(spin)
 
-            spectrum_data = _read_bruker_data(p, provider, **kwargs)
-        elif provider == "dmfit":
-            if not os.path.isfile(p):
-                raise FileNotFoundError(f"Data file not found {p}")
+    if len(spins) == 1:
+        return spins[0]
 
-            spectrum_data = _read_dmfit_data(p, **kwargs)
-
-        # Check for consistent of dimensions across files
-        if first_ndim is None:
-            first_ndim = spectrum_data["ndim"]
-        elif spectrum_data["ndim"] != first_ndim:
-            raise ValueError(
-                f"Cannot load spectra with mixed dimensionalities ({first_ndim}D and {spectrum_data['ndim']}D) into a single Spin object."
-            )
-
-        all_spectra_data.append(spectrum_data)
-
-    if not all_spectra_data:
-        raise ValueError("No spectra were successfully read.")
-
-    return Spin(spectra_data=all_spectra_data, provider=provider)
+    return SpinCollection(spins)
 
 
-def _read_bruker_data(path: str, provider: str, **kwargs) -> dict:
+def _read_bruker_data(path: str, **kwargs) -> dict:
     """Helper function to read data for a single Bruker dataset."""
+
     try:
         dic, data = ng.bruker.read_pdata(path)
-        udic = ng.bruker.guess_udic(dic, data)
-        ndim = udic["ndim"]
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Could not find Bruker data at path: {path}")
-    except Exception as e:
-        raise IOError(f"Error reading Bruker data at path {path}: {e}")
+    except OSError as e:
+        raise IOError(f"Problem processing Bruker data at {path}: {e}") from e
+
+    udic = ng.bruker.guess_udic(dic, data)
+    ndim = udic["ndim"]
 
     # Handle data normalization
     norm_max_data = None
     norm_scans_data = None
 
     if ndim == 1:
-        max_val = np.amax(data)
+        max_val = np.max(data)
         if max_val != 0:
             norm_max_data = data / max_val
         else:
@@ -115,19 +96,11 @@ def _read_bruker_data(path: str, provider: str, **kwargs) -> dict:
                     f"NS parameter is zero or missing in {path}. Cannot normalize by scans.",
                     UserWarning,
                 )
-                norm_scans_data = None
         except KeyError:
             warnings.warn(
                 f"'acqus' or 'NS' key missing in metadata for {path}. Cannot normalize by scans.",
                 UserWarning,
             )
-            norm_scans_data = None
-        except Exception as e:
-            warnings.warn(
-                f"Error during 'scans' normalization calculation for {path}: {e}",
-                UserWarning,
-            )
-            norm_scans_data = None
 
     spectrum_data = {
         "path": path,
@@ -185,31 +158,35 @@ def _read_bruker_data(path: str, provider: str, **kwargs) -> dict:
 
 def _read_dmfit_data(path: str, **kwargs) -> dict:
     """Helper function to read data of DMFit data."""
+
     try:
         dmfit_df = pd.read_csv(path, sep='\t', skiprows=2)
-        dmfit_df.columns = dmfit_df.columns.str.replace('##col_ ', '')
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Could not find DMfit data at path: {path}")
     except Exception as e:
-        raise IOError(f"Error reading DMfit data at path {path}: {e}")
+        raise IOError(f"Error reading DMfit data at path {path}: {e}") from e
+
+    dmfit_df.columns = dmfit_df.columns.str.replace('##col_ ', '')
 
     ppm_scale = dmfit_df['ppm'].to_numpy()
     spectrum_data_values = dmfit_df['Spectrum'].to_numpy()
-    
+
     ndim = 1
 
-    nuclei = "Unknown" 
+    nuclei = "Unknown"
+
+    norm_max = spectrum_data_values / np.max(spectrum_data_values) \
+        if np.max(spectrum_data_values) != 0 else spectrum_data_values.copy()
 
     spectrum_data = {
         "path": path,
         "metadata": {"provider_type": "dmfit"},
         "ndim": ndim,
         "data": spectrum_data_values,
-        "norm_max": spectrum_data_values / np.amax(spectrum_data_values) if np.amax(spectrum_data_values) != 0 else spectrum_data_values.copy(),
+        "norm_max": norm_max,
         "projections": None,
         "ppm_scale": ppm_scale,
         "hz_scale": None,
         "nuclei": nuclei,
         "dmfit_dataframe": dmfit_df
     }
+
     return spectrum_data

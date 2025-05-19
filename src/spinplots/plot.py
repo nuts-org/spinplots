@@ -9,18 +9,38 @@ import numpy as np
 import pandas as pd
 from matplotlib.colors import LogNorm
 
-from spinplots.spin import Spin
 from spinplots.utils import calculate_projections
 
+# Default values
+DEFAULTS = {
+    "labelsize": 12,
+    "linewidth": 1.0,
+    "linestyle": "-",
+    "linewidth_contour": 0.5,
+    "linewidth_proj": 0.8,
+    "alpha": 1.0,
+    "axisfontsize": 13,
+    "axisfont": None,
+    "tickfontsize": 12,
+    "tickfont": None,
+    "yaxislabel": "Intensity (a.u.)",
+    "xaxislabel": None,
+    "tickspacing": None,
+    "xaxislabel": None,
+    "yaxislabel": None,
+    "axisfont": None,
+    "tickfont": None,
+    "tickspacing": None,
+}
 
 def bruker2d(
-    spin_objects: list[Spin] | Spin,
-    contour_start,
-    contour_num,
-    contour_factor,
-    cmap=None,
-    colors=None,
-    proj_colors=None,
+    spectra: dict | list[dict],
+    contour_start: float,
+    contour_num: int,
+    contour_factor: float,
+    cmap: str | list[str] | None = None,
+    colors: list[str] | None = None,
+    proj_colors = None,
     xlim=None,
     ylim=None,
     save=False,
@@ -29,15 +49,7 @@ def bruker2d(
     diag=None,
     homo=False,
     return_fig=False,
-    linewidth_contour=None,
-    linewidth_proj=None,
-    xaxislabel=None,
-    yaxislabel=None,
-    axisfont=None,
-    axisfontsize=None,
-    tickfont=None,
-    tickfontsize=None,
-    tickspacing=None,
+    **kwargs
 ):
     """
     Plots a 2D NMR spectrum from Bruker data.
@@ -74,33 +86,15 @@ def bruker2d(
         bruker2d('data/2d_data', 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
     """
 
-    defaults = {
-        "linewidth_contour": 0.5,
-        "linewidth_proj": 0.8,
-        "xaxislabel": None,
-        "yaxislabel": None,
-        "axisfont": None,
-        "axisfontsize": 13,
-        "tickfont": None,
-        "tickfontsize": 12,
-        "tickspacing": None,
-    }
+    spectra = spectra if isinstance(spectra, list) else [spectra]
 
-    params = {k: v for k, v in locals().items() if k in defaults and v is not None}
-    defaults.update(params)
+    if not all([s["ndim"] == 2 for s in spectra]):
+        raise ValueError("All spectra must be 2-dimensional for bruker2d.")
 
-    if isinstance(spin_objects, Spin):
-        spin_objects = [spin_objects]
+    defaults = DEFAULTS.copy()
+    defaults["yaxislabel"] = None
+    defaults.update({k: v for k, v in kwargs if k in defaults and v is not None})
 
-    data_path = []
-    for spin in spin_objects:
-        if spin.ndim != 2:
-            raise ValueError(
-                f"Spin object from {spin.spectra[0]['path']} has {spin.ndim}D data, expected 2D"
-            )
-        data_path.extend([s["path"] for s in spin.spectra])
-
-    # Create figure and axis
     fig = plt.figure(constrained_layout=False)
     ax = fig.subplot_mosaic(
         """
@@ -115,7 +109,7 @@ def bruker2d(
         },
     )
 
-    for i, nmr in enumerate(data_path):
+    for i, nmr in enumerate([s["path"] for s in spectra]):
         dic, data = ng.bruker.read_pdata(nmr)
         udic = ng.bruker.guess_udic(dic, data)
 
@@ -179,11 +173,12 @@ def bruker2d(
 
             if isinstance(cmap, str):
                 cmap = [cmap]
-                if len(cmap) > 1:
-                    warnings.warn(
-                        "Warning: Consider using colors instead of cmap"
-                        "when overlapping spectra."
-                    )
+
+            if len(cmap) > 1:
+                warnings.warn(
+                    "Warning: Consider using colors instead of cmap"
+                    "when overlapping spectra."
+                )
 
             cmap_i = plt.get_cmap(cmap[i])
             contour_plot = ax["A"].contour(
@@ -290,11 +285,11 @@ def bruker2d(
             )
             ax["b"].axis(False)
 
-        if xaxislabel:
+        if xaxislabel := defaults["xaxislabel"]:
             defaults["xaxislabel"] = xaxislabel
         else:
             defaults["xaxislabel"] = f"$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)"
-        if yaxislabel:
+        if yaxislabel := defaults["yaxislabel"]:
             defaults["yaxislabel"] = yaxislabel
         else:
             defaults["yaxislabel"] = f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)"
@@ -339,25 +334,24 @@ def bruker2d(
     # Show the plot or save it
     if save:
         if filename:
-            full_filename = filename + "." + format
+            full_filename = f"{filename}.{format}"
         else:
-            full_filename = "2d_nmr_spectrum." + format
+            full_filename = f"2d_nmr_spectrum.{format}"
         plt.savefig(
             full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
         )
 
     if return_fig:
         return ax
-    else:
-        plt.show()
-        return None
+    
+    plt.show()
+    return None
 
 
 # Function to easily plot 1D NMR spectra in Bruker's format
 def bruker1d(
-    nmr_plots: list[Spin],  # Keep this as list for now based on previous fix
+    spectra: dict | list[dict],  # Keep this as list for now based on previous fix
     labels: list[str] | None = None,
-    labelsize: int | None = None,
     xlim: tuple[float, float] | None = None,
     save: bool = False,
     filename: str | None = None,
@@ -367,43 +361,18 @@ def bruker1d(
     stacked: bool = False,
     color: list[str] | None = None,
     return_fig: bool = False,
-    linewidth: float | None = None,
-    linestyle: str | None = None,
-    alpha: float | None = None,
-    yaxislabel: str | None = None,
-    xaxislabel: str | None = None,
-    axisfontsize: int | None = None,
-    axisfont: str | None = None,
-    tickfontsize: int | None = None,
-    tickfont: str | None = None,
-    tickspacing: float | None = None,
+    **kwargs
 ):
     """Plots one or more 1D NMR spectra contained within Spin objects."""
 
-    if not isinstance(nmr_plots, list):
-        raise TypeError("nmr_plots must be a list of Spin objects.")
-    if not all(isinstance(p, Spin) for p in nmr_plots):
-        raise TypeError("All items in nmr_plots must be Spin objects.")
-    # Check ndim of the first spectrum in the first Spin object
-    if not nmr_plots or nmr_plots[0].ndim != 1:
-        raise ValueError("All Spin objects must contain 1-dimensional spectra.")
+    if not all([s["ndim"] == 1 for s in spectra]):
+        raise ValueError("All spectra must be 1-dimensional for bruker1d.")
 
-    # Default values
-    defaults = {
-        "labelsize": 12,
-        "linewidth": 1.0,
-        "linestyle": "-",
-        "alpha": 1.0,
-        "axisfontsize": 13,
-        "axisfont": None,
-        "tickfontsize": 12,
-        "tickfont": None,
-        "yaxislabel": "Intensity (a.u.)",
-        "xaxislabel": None,
-        "tickspacing": None,
-    }
-    params = {k: v for k, v in locals().items() if k in defaults and v is not None}
-    defaults.update(params)
+    defaults = DEFAULTS.copy()
+    defaults["yaxislabel"] = None
+    defaults.update({k: v for k, v in kwargs if k in defaults and v is not None})
+
+    spectra = spectra if isinstance(spectra, list) else [spectra]
 
     fig, ax = plt.subplots()
 
@@ -411,74 +380,68 @@ def bruker1d(
     current_stack_offset = 0.0
 
     # Determine axis label from the first spectrum
-    first_nuclei = nmr_plots[0].spectra[0]["nuclei"]
+    first_nuclei = spectra[0]["nuclei"]
     number, nucleus = (
         "".join(filter(str.isdigit, first_nuclei)),
         "".join(filter(str.isalpha, first_nuclei)),
     )
 
-    for spin_object in nmr_plots:
-        if spin_object.ndim != 1:
+    for spectrum in spectra:
+        data_to_plot = None
+        if normalize == "max":
+            data_to_plot = spectrum.get("norm_max")
+            if data_to_plot is None:
+                warnings.warn(
+                    f"Pre-calculated 'norm_max' data not found for {spectrum['path']}. Plotting raw data.",
+                    UserWarning,
+                )
+                data_to_plot = spectrum["data"]
+        elif normalize == "scans":
+            data_to_plot = spectrum.get("norm_scans")
+            if data_to_plot is None:
+                warnings.warn(
+                    f"Pre-calculated 'norm_scans' data not found or calculation failed for {spectrum['path']}. Plotting raw data.",
+                    UserWarning,
+                )
+                data_to_plot = spectrum["data"]
+        elif normalize is None or normalize is False:
+            data_to_plot = spectrum["data"]
+        else:
             raise ValueError(
-                "All spectra within a Spin object must be 1-dimensional for bruker1d."
+                f"Invalid normalize option: '{normalize}'. Choose 'max', 'scans', or None."
             )
 
-        for spectrum_dict in spin_object.spectra:
-            data_to_plot = None
-            if normalize == "max":
-                data_to_plot = spectrum_dict.get("norm_max")
-                if data_to_plot is None:
-                    warnings.warn(
-                        f"Pre-calculated 'norm_max' data not found for {spectrum_dict['path']}. Plotting raw data.",
-                        UserWarning,
-                    )
-                    data_to_plot = spectrum_dict["data"]
-            elif normalize == "scans":
-                data_to_plot = spectrum_dict.get("norm_scans")
-                if data_to_plot is None:
-                    warnings.warn(
-                        f"Pre-calculated 'norm_scans' data not found or calculation failed for {spectrum_dict['path']}. Plotting raw data.",
-                        UserWarning,
-                    )
-                    data_to_plot = spectrum_dict["data"]
-            elif normalize is None or normalize is False:
-                data_to_plot = spectrum_dict["data"]
-            else:
-                raise ValueError(
-                    f"Invalid normalize option: '{normalize}'. Choose 'max', 'scans', or None."
-                )
+        ppm = spectrum["ppm_scale"]
 
-            ppm = spectrum_dict["ppm_scale"]
+        # --- Stacking Logic (operates on selected data_to_plot) ---
+        plot_data_adjusted = data_to_plot  # Start with selected data
 
-            # --- Stacking Logic (operates on selected data_to_plot) ---
-            plot_data_adjusted = data_to_plot  # Start with selected data
+        if stacked:
+            # Apply the offset to plot_data_adjusted
+            plot_data_adjusted = data_to_plot + current_stack_offset
+            current_stack_offset += np.amax(data_to_plot) * 1.1
 
-            if stacked:
-                # Apply the offset to plot_data_adjusted
-                plot_data_adjusted = data_to_plot + current_stack_offset
-                current_stack_offset += np.amax(data_to_plot) * 1.1
+        # --- Plotting Logic ---
+        plot_kwargs = {
+            "linestyle": defaults["linestyle"],
+            "linewidth": defaults["linewidth"],
+            "alpha": defaults["alpha"],
+        }
+        if labels:
+            plot_kwargs["label"] = (
+                labels[plot_index]
+                if plot_index < len(labels)
+                else f"Spectrum {plot_index + 1}"
+            )
+        if color:
+            plot_kwargs["color"] = (
+                color[plot_index] if plot_index < len(color) else None
+            )
 
-            # --- Plotting Logic ---
-            plot_kwargs = {
-                "linestyle": defaults["linestyle"],
-                "linewidth": defaults["linewidth"],
-                "alpha": defaults["alpha"],
-            }
-            if labels:
-                plot_kwargs["label"] = (
-                    labels[plot_index]
-                    if plot_index < len(labels)
-                    else f"Spectrum {plot_index + 1}"
-                )
-            if color:
-                plot_kwargs["color"] = (
-                    color[plot_index] if plot_index < len(color) else None
-                )
+        # Use plot_data_adjusted here, not data
+        ax.plot(ppm, plot_data_adjusted, **plot_kwargs)
 
-            # Use plot_data_adjusted here, not data
-            ax.plot(ppm, plot_data_adjusted, **plot_kwargs)
-
-            plot_index += 1
+        plot_index += 1
 
     # --- Legend ---
     if labels:
@@ -490,7 +453,7 @@ def bruker1d(
         )
 
     # --- Axis Setup ---
-    if xaxislabel:
+    if xaxislabel := defaults["xaxislabel"]:
         ax.set_xlabel(
             xaxislabel, fontsize=defaults["axisfontsize"], fontname=defaults["axisfont"]
         )
@@ -549,14 +512,14 @@ def bruker1d(
 
     if return_fig:
         return fig, ax
-    else:
-        plt.show()
-        return None
+
+    plt.show()
+    return None
 
 
 # Function to easily plot 1D NMR spectra in Bruker's format in a grid
 def bruker1d_grid(
-    spin_objects: list[Spin],
+    spectra: dict | list[dict],
     labels=None,
     subplot_dims=(1, 1),
     xlim=None,
@@ -567,16 +530,7 @@ def bruker1d_grid(
     normalize=False,
     color=None,
     return_fig=False,
-    linewidth=None,
-    linestyle=None,
-    alpha=None,
-    yaxislabel=None,
-    xaxislabel=None,
-    axisfontsize=None,
-    axisfont=None,
-    tickfontsize=None,
-    tickfont=None,
-    tickspacing=None,
+    **kwargs
 ):
     """
     Plots 1D NMR spectra from Bruker data in subplots.
@@ -611,32 +565,19 @@ def bruker1d_grid(
         bruker1d_grid(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], subplot_dims=(1, 2), xlim=[(0, 100), (0, 100)], save=True, filename='1d_spectra', format='png', frame=False, normalize='max', color=['red', 'blue'])
     """
 
-    defaults = {
-        "labelsize": 12,
-        "linewidth": 1.0,
-        "linestyle": "-",
-        "alpha": 1.0,
-        "axisfontsize": 13,
-        "axisfont": None,
-        "tickfontsize": 12,
-        "tickfont": None,
-        "yaxislabel": "Intensity (a.u.)",
-        "xaxislabel": None,
-        "tickspacing": None,
-    }
+    spectra = spectra if isinstance(spectra, list) else [spectra]
 
-    # Update defaults
-    params = {k: v for k, v in locals().items() if k in defaults and v is not None}
-    defaults.update(params)
+    if not all([s["ndim"] == 1 for s in spectra]):
+        raise ValueError("All spectra must be 1-dimensional for bruker1d_grid.")
 
-    data_paths = []
-    for spin in spin_objects:
-        data_paths.extend([s["path"] for s in spin.spectra])
+    defaults = DEFAULTS.copy()
+    defaults.update({k: v for k, v in kwargs.items() if k in defaults and v is not None})
 
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
     axes = axes.flatten() if rows * cols > 1 else [axes]
 
+    data_paths = [s["path"] for s in spectra]
     for i, data_path in enumerate(data_paths):
         if i >= len(axes):
             break
@@ -693,7 +634,7 @@ def bruker1d_grid(
                 prop={"family": defaults["tickfont"], "size": defaults["labelsize"]},
             )
 
-        if xaxislabel:
+        if xaxislabel := defaults["xaxislabel"]:
             ax.set_xlabel(
                 xaxislabel,
                 fontsize=defaults["axisfontsize"],
@@ -724,7 +665,7 @@ def bruker1d_grid(
             ax.set_yticklabels([])
             ax.set_yticks([])
         else:
-            if yaxislabel:
+            if yaxislabel := defaults["yaxislabel"]:
                 ax.set_ylabel(
                     yaxislabel,
                     fontsize=defaults["axisfontsize"],
@@ -752,18 +693,18 @@ def bruker1d_grid(
 
     if save:
         if filename:
-            full_filename = filename + "." + format
+            full_filename = f"{filename}.{format}"
         else:
-            full_filename = "1d_nmr_spectra." + format
+            full_filename = f"1d_nmr_spectra.{format}"
         fig.savefig(
             full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
         )
         return None
     elif return_fig:
         return fig, axes
-    else:
-        plt.show()
-        return None
+
+    plt.show()
+    return None
 
 
 # Plot 2D NMR data from CSV or DataFrame
@@ -901,7 +842,7 @@ def df2d(
 
 # Functions for DMFit
 def dmfit1d(
-        spin_objects: Spin,
+        spin_objects,
         color='b',
         linewidth=1,
         linestyle='-',
@@ -1002,10 +943,10 @@ def dmfit1d(
 
     """
 
-    if not spin_objects.spectra:
+    if not spin_objects.spectrum:
         raise ValueError("Spin object contains no spectra.")
 
-    spectrum_info = spin_objects.spectra[0] 
+    spectrum_info = spin_objects.spectrum
     dmfit_df = spectrum_info.get('dmfit_dataframe')
 
     if dmfit_df is None:
