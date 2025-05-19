@@ -71,7 +71,7 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
     try:
         dic, data = ng.bruker.read_pdata(path)
     except OSError as e:
-        raise IOError(f"Problem processing Bruker data at {path}: {e}") from e
+        raise OSError(f"Problem processing Bruker data at {path}: {e}") from e
 
     udic = ng.bruker.guess_udic(dic, data)
     ndim = udic["ndim"]
@@ -82,10 +82,7 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
 
     if ndim == 1:
         max_val = np.max(data)
-        if max_val != 0:
-            norm_max_data = data / max_val
-        else:
-            norm_max_data = data.copy()
+        norm_max_data = data / max_val if max_val != 0 else data.copy()
 
         try:
             ns = dic["acqus"]["NS"]
@@ -154,7 +151,18 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
             f"Unsupported NMR dimensionality: {ndim} found in {path}. Only 1D and 2D are supported."
         )
 
-    return spectrum_data
+    return {
+        "path": path,
+        "metadata": dic,
+        "ndim": ndim,
+        "data": data,
+        "norm_max": norm_max_data,
+        "norm_scans": norm_scans_data,
+        "projections": spectrum_data["projections"],
+        "ppm_scale": spectrum_data["ppm_scale"],
+        "hz_scale": spectrum_data["hz_scale"],
+        "nuclei": spectrum_data["nuclei"],
+    }
 
 def _read_dmfit_data(path: str, **kwargs) -> dict:
     """Helper function to read data of DMFit data."""
@@ -162,7 +170,7 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
     try:
         dmfit_df = pd.read_csv(path, sep='\t', skiprows=2)
     except Exception as e:
-        raise IOError(f"Error reading DMfit data at path {path}: {e}") from e
+        raise OSError(f"Error reading DMfit data at path {path}: {e}") from e
 
     dmfit_df.columns = dmfit_df.columns.str.replace('##col_ ', '')
 
@@ -176,7 +184,7 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
     norm_max = spectrum_data_values / np.max(spectrum_data_values) \
         if np.max(spectrum_data_values) != 0 else spectrum_data_values.copy()
 
-    spectrum_data = {
+    return {
         "path": path,
         "metadata": {"provider_type": "dmfit"},
         "ndim": ndim,
@@ -188,5 +196,3 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
         "nuclei": nuclei,
         "dmfit_dataframe": dmfit_df
     }
-
-    return spectrum_data
