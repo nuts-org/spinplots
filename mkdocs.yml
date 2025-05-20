@@ -82,9 +82,8 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - mknotebooks:
-      input_dir: notebooks
-      output_dir: docs/notebooks
-      exclude: ['.*_checkpoint.ipynb']
+      execute: false
+      allow_errors: false
   - autorefs
   - social
   - offline
