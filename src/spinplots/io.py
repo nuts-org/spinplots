@@ -12,10 +12,10 @@ from spinplots.utils import calculate_projections
 
 
 def read_nmr(
-        path: str | list[str],
-        provider: str = "bruker",
-        tags: str | list[str] | None = None,
-        **kwargs
+    path: str | list[str],
+    provider: str = "bruker",
+    tags: str | list[str] | None = None,
+    **kwargs,
 ) -> Spin | SpinCollection:
     """
     Reads NMR data from a specified path or list of paths and provider,
@@ -164,25 +164,29 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
         "nuclei": spectrum_data["nuclei"],
     }
 
+
 def _read_dmfit_data(path: str, **kwargs) -> dict:
     """Helper function to read data of DMFit data."""
 
     try:
-        dmfit_df = pd.read_csv(path, sep='\t', skiprows=2)
+        dmfit_df = pd.read_csv(path, sep="\t", skiprows=2)
     except Exception as e:
         raise OSError(f"Error reading DMfit data at path {path}: {e}") from e
 
-    dmfit_df.columns = dmfit_df.columns.str.replace('##col_ ', '')
+    dmfit_df.columns = dmfit_df.columns.str.replace("##col_ ", "")
 
-    ppm_scale = dmfit_df['ppm'].to_numpy()
-    spectrum_data_values = dmfit_df['Spectrum'].to_numpy()
+    ppm_scale = dmfit_df["ppm"].to_numpy()
+    spectrum_data_values = dmfit_df["Spectrum"].to_numpy()
 
     ndim = 1
 
     nuclei = "Unknown"
 
-    norm_max = spectrum_data_values / np.max(spectrum_data_values) \
-        if np.max(spectrum_data_values) != 0 else spectrum_data_values.copy()
+    norm_max = (
+        spectrum_data_values / np.max(spectrum_data_values)
+        if np.max(spectrum_data_values) != 0
+        else spectrum_data_values.copy()
+    )
 
     return {
         "path": path,
@@ -194,5 +198,5 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
         "ppm_scale": ppm_scale,
         "hz_scale": None,
         "nuclei": nuclei,
-        "dmfit_dataframe": dmfit_df
+        "dmfit_dataframe": dmfit_df,
     }

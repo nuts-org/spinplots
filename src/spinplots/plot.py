@@ -27,6 +27,7 @@ DEFAULTS = {
     "tickspacing": None,
 }
 
+
 def bruker2d(
     spectra: dict | list[dict],
     contour_start: float = 1e5,
@@ -34,7 +35,7 @@ def bruker2d(
     contour_factor: float = 1.2,
     cmap: str | list[str] | None = None,
     colors: list[str] | None = None,
-    proj_colors = None,
+    proj_colors=None,
     xlim=None,
     ylim=None,
     save=False,
@@ -43,7 +44,7 @@ def bruker2d(
     diag=None,
     homo=False,
     return_fig=False,
-    **kwargs
+    **kwargs,
 ):
     """
     Plots a 2D NMR spectrum from spectrum dictionaries.
@@ -79,7 +80,9 @@ def bruker2d(
 
     defaults = DEFAULTS.copy()
     defaults["yaxislabel"] = None
-    defaults.update({k: v for k, v in kwargs.items() if k in defaults and v is not None})
+    defaults.update(
+        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
+    )
 
     fig = plt.figure(constrained_layout=False)
     ax = fig.subplot_mosaic(
@@ -133,7 +136,11 @@ def bruker2d(
         else:
             y_indices = slice(None)
 
-        if isinstance(spectrum["projections"], dict) and "x" in spectrum["projections"] and "y" in spectrum["projections"]:
+        if (
+            isinstance(spectrum["projections"], dict)
+            and "x" in spectrum["projections"]
+            and "y" in spectrum["projections"]
+        ):
             if xlim is None and ylim is None:
                 proj_x = spectrum["projections"]["x"]
                 proj_y = spectrum["projections"]["y"]
@@ -267,7 +274,14 @@ def bruker2d(
         else:
             defaults["yaxislabel"] = f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)"
 
-        if homo and "yaxislabel" not in kwargs and "xaxislabel" not in kwargs and defaults["yaxislabel"] != defaults["xaxislabel"] and number_y == number_x and nucleus_y == nucleus_x:
+        if (
+            homo
+            and "yaxislabel" not in kwargs
+            and "xaxislabel" not in kwargs
+            and defaults["yaxislabel"] != defaults["xaxislabel"]
+            and number_y == number_x
+            and nucleus_y == nucleus_x
+        ):
             defaults["yaxislabel"] = defaults["xaxislabel"]
 
         ax["A"].set_xlabel(
@@ -297,7 +311,7 @@ def bruker2d(
             x_diag = np.linspace(
                 xlim[0] if xlim else ppm_x_limits[0],
                 xlim[1] if xlim else ppm_x_limits[1],
-                100
+                100,
             )
             y_diag = diag * x_diag
             ax["A"].plot(x_diag, y_diag, linestyle="--", color="gray")
@@ -314,15 +328,14 @@ def bruker2d(
             full_filename = f"{filename}.{format}"
         else:
             full_filename = f"2d_nmr_spectrum.{format if format else 'png'}"
-        plt.savefig(
-            full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1
-        )
+        plt.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
 
     if return_fig:
         return ax
 
     plt.show()
     return None
+
 
 def bruker1d(
     spectra: dict | list[dict],
@@ -336,7 +349,7 @@ def bruker1d(
     stacked: bool = False,
     color: list[str] | None = None,
     return_fig: bool = False,
-    **kwargs
+    **kwargs,
 ):
     """
     Plots one or more 1D NMR spectra from spectrum dictionaries.
@@ -366,7 +379,9 @@ def bruker1d(
 
     defaults = DEFAULTS.copy()
     defaults["yaxislabel"] = None
-    defaults.update({k: v for k, v in kwargs.items() if k in defaults and v is not None})
+    defaults.update(
+        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
+    )
 
     fig, ax = plt.subplots()
 
@@ -418,16 +433,10 @@ def bruker1d(
         }
 
         if labels:
-            plot_kwargs["label"] = (
-                labels[i]
-                if i < len(labels)
-                else f"Spectrum {i + 1}"
-            )
+            plot_kwargs["label"] = labels[i] if i < len(labels) else f"Spectrum {i + 1}"
 
         if color:
-            plot_kwargs["color"] = (
-                color[i] if i < len(color) else None
-            )
+            plot_kwargs["color"] = color[i] if i < len(color) else None
 
         ax.plot(ppm, plot_data_adjusted, **plot_kwargs)
 
@@ -515,7 +524,7 @@ def bruker1d_grid(
     normalize=False,
     color=None,
     return_fig=False,
-    **kwargs
+    **kwargs,
 ):
     """
     Plots 1D NMR spectra from Bruker data in subplots.
@@ -547,7 +556,9 @@ def bruker1d_grid(
         raise ValueError("All spectra must be 1-dimensional for bruker1d_grid.")
 
     defaults = DEFAULTS.copy()
-    defaults.update({k: v for k, v in kwargs.items() if k in defaults and v is not None})
+    defaults.update(
+        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
+    )
 
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
@@ -813,37 +824,38 @@ def df2d(
         plt.show()
         return None
 
+
 # Functions for DMFit
 def dmfit1d(
-        spin_objects,
-        color='b',
-        linewidth=1,
-        linestyle='-',
-        alpha=1,
-        model_show=True,
-        model_color='red',
-        model_linewidth=1,
-        model_linestyle='--',
-        model_alpha=1,
-        deconv_show=True,
-        deconv_color=None,
-        deconv_alpha=0.3,
-        frame=False,
-        labels=None,
-        labelsize=12,
-        xlim=None,
-        save=False,
-        format=None,
-        filename=None,
-        yaxislabel=None,
-        xaxislabel=None,
-        axisfontsize=None,
-        axisfont=None,
-        tickfontsize=None,
-        tickfont=None,
-        tickspacing=None,
-        return_fig=False
-    ):
+    spin_objects,
+    color="b",
+    linewidth=1,
+    linestyle="-",
+    alpha=1,
+    model_show=True,
+    model_color="red",
+    model_linewidth=1,
+    model_linestyle="--",
+    model_alpha=1,
+    deconv_show=True,
+    deconv_color=None,
+    deconv_alpha=0.3,
+    frame=False,
+    labels=None,
+    labelsize=12,
+    xlim=None,
+    save=False,
+    format=None,
+    filename=None,
+    yaxislabel=None,
+    xaxislabel=None,
+    axisfontsize=None,
+    axisfont=None,
+    tickfontsize=None,
+    tickfont=None,
+    tickspacing=None,
+    return_fig=False,
+):
     """
     Read a dmfit1d file and return a DataFrame with the data.
 
@@ -920,114 +932,133 @@ def dmfit1d(
         raise ValueError("Spin object contains no spectra.")
 
     spectrum_info = spin_objects.spectrum
-    dmfit_df = spectrum_info.get('dmfit_dataframe')
+    dmfit_df = spectrum_info.get("dmfit_dataframe")
 
     if dmfit_df is None:
-        raise ValueError("DMfit DataFrame not found in Spin object. Read data with provider='dmfit'")
+        raise ValueError(
+            "DMfit DataFrame not found in Spin object. Read data with provider='dmfit'"
+        )
 
-    n_lines = sum(col.startswith('Line#') for col in dmfit_df.columns)
+    n_lines = sum(col.startswith("Line#") for col in dmfit_df.columns)
 
     defaults = {
-        'color': color,
-        'linewidth': linewidth,
-        'linestyle': linestyle,
-        'alpha': alpha,
-
-        'model_show': model_show,
-        'model_color': model_color,
-        'model_linewidth': model_linewidth,
-        'model_linestyle': model_linestyle,
-        'model_alpha': model_alpha,
-
-        'deconv_show': deconv_show,
-        'deconv_color': deconv_color,
-        'deconv_alpha': deconv_alpha,
-
-        'frame': frame,
-        'labels': labels,
-        'labelsize': labelsize,
-        'xlim': xlim,
-        'save': save,
-        'format': format,
-        'filename': filename,
-        'yaxislabel': yaxislabel,
-        'xaxislabel': xaxislabel,
-        'axisfontsize': axisfontsize,
-        'axisfont': axisfont,
-        'tickfontsize': tickfontsize,
-        'tickfont': tickfont,
-        'tickspacing': tickspacing,
-        'return_fig': return_fig
+        "color": color,
+        "linewidth": linewidth,
+        "linestyle": linestyle,
+        "alpha": alpha,
+        "model_show": model_show,
+        "model_color": model_color,
+        "model_linewidth": model_linewidth,
+        "model_linestyle": model_linestyle,
+        "model_alpha": model_alpha,
+        "deconv_show": deconv_show,
+        "deconv_color": deconv_color,
+        "deconv_alpha": deconv_alpha,
+        "frame": frame,
+        "labels": labels,
+        "labelsize": labelsize,
+        "xlim": xlim,
+        "save": save,
+        "format": format,
+        "filename": filename,
+        "yaxislabel": yaxislabel,
+        "xaxislabel": xaxislabel,
+        "axisfontsize": axisfontsize,
+        "axisfont": axisfont,
+        "tickfontsize": tickfontsize,
+        "tickfont": tickfont,
+        "tickspacing": tickspacing,
+        "return_fig": return_fig,
     }
 
     params = {k: v for k, v in locals().items() if k in defaults and v is not None}
     params.update(defaults)
 
     fig, ax = plt.subplots()
-    ax.plot(dmfit_df['ppm'], dmfit_df['Spectrum'], color=params['color'],
-            linewidth=params['linewidth'], linestyle=params['linestyle'],
-            alpha=params['alpha'],
-            label=params['labels'][0] if params['labels'] and len(params['labels']) > 0 else None)
-    if params['model_show']:
-        ax.plot(dmfit_df['ppm'], dmfit_df['Model'], color=params['model_color'],
-                linewidth=params['model_linewidth'], linestyle=params['model_linestyle'],
-                alpha=params['model_alpha'],
-                label=params['labels'][1] if params['labels'] and len(params['labels']) > 1 else None)
-    if params['deconv_show']:
+    ax.plot(
+        dmfit_df["ppm"],
+        dmfit_df["Spectrum"],
+        color=params["color"],
+        linewidth=params["linewidth"],
+        linestyle=params["linestyle"],
+        alpha=params["alpha"],
+        label=params["labels"][0]
+        if params["labels"] and len(params["labels"]) > 0
+        else None,
+    )
+    if params["model_show"]:
+        ax.plot(
+            dmfit_df["ppm"],
+            dmfit_df["Model"],
+            color=params["model_color"],
+            linewidth=params["model_linewidth"],
+            linestyle=params["model_linestyle"],
+            alpha=params["model_alpha"],
+            label=params["labels"][1]
+            if params["labels"] and len(params["labels"]) > 1
+            else None,
+        )
+    if params["deconv_show"]:
         for i in range(1, n_lines + 1):
-            if params['deconv_color'] is not None:
-                ax.fill_between(dmfit_df['ppm'], dmfit_df[f'Line#{i}'],
-                                alpha=params['deconv_alpha'],
-                                color=params['deconv_color'])
+            if params["deconv_color"] is not None:
+                ax.fill_between(
+                    dmfit_df["ppm"],
+                    dmfit_df[f"Line#{i}"],
+                    alpha=params["deconv_alpha"],
+                    color=params["deconv_color"],
+                )
             else:
-                ax.fill_between(dmfit_df['ppm'], dmfit_df[f'Line#{i}'],
-                                alpha=params['deconv_alpha'])
+                ax.fill_between(
+                    dmfit_df["ppm"], dmfit_df[f"Line#{i}"], alpha=params["deconv_alpha"]
+                )
 
-    if params['labels']:
+    if params["labels"]:
         ax.legend(
             bbox_to_anchor=(1.05, 1),
             loc="upper left",
             fontsize=defaults["labelsize"],
             prop={"family": defaults["tickfont"], "size": defaults["labelsize"]},
         )
-    if params['xlim']:
-        ax.set_xlim(params['xlim'])
-    if params['yaxislabel']:
-        ax.set_ylabel(params['yaxislabel'], fontsize=params['labelsize'])
-    if params['xaxislabel']:
-        ax.set_xlabel(params['xaxislabel'], fontsize=params['labelsize'])
-    if params['axisfontsize']:
-        ax.xaxis.label.set_size(params['axisfontsize'])
-        ax.yaxis.label.set_size(params['axisfontsize'])
-    if params['axisfont']:
-        ax.xaxis.label.set_fontname(params['axisfont'])
-        ax.yaxis.label.set_fontname(params['axisfont'])
-    if params['tickfontsize']:
-        ax.tick_params(axis='both', which='major', labelsize=params['tickfontsize'])
-        ax.tick_params(axis='both', which='minor', labelsize=params['tickfontsize'])
-    if params['tickfont']:
-        ax.tick_params(axis='both', which='major', labelfont=params['tickfont'])
-        ax.tick_params(axis='both', which='minor', labelfont=params['tickfont'])
-    if params['tickspacing']:
-        ax.xaxis.set_major_locator(plt.MultipleLocator(params['tickspacing']))
-        ax.yaxis.set_major_locator(plt.MultipleLocator(params['tickspacing']))
-    if params['frame']:
-        ax.spines['top'].set_visible(True)
-        ax.spines['right'].set_visible(True)
-        ax.spines['left'].set_visible(True)
+    if params["xlim"]:
+        ax.set_xlim(params["xlim"])
+    if params["yaxislabel"]:
+        ax.set_ylabel(params["yaxislabel"], fontsize=params["labelsize"])
+    if params["xaxislabel"]:
+        ax.set_xlabel(params["xaxislabel"], fontsize=params["labelsize"])
+    if params["axisfontsize"]:
+        ax.xaxis.label.set_size(params["axisfontsize"])
+        ax.yaxis.label.set_size(params["axisfontsize"])
+    if params["axisfont"]:
+        ax.xaxis.label.set_fontname(params["axisfont"])
+        ax.yaxis.label.set_fontname(params["axisfont"])
+    if params["tickfontsize"]:
+        ax.tick_params(axis="both", which="major", labelsize=params["tickfontsize"])
+        ax.tick_params(axis="both", which="minor", labelsize=params["tickfontsize"])
+    if params["tickfont"]:
+        ax.tick_params(axis="both", which="major", labelfont=params["tickfont"])
+        ax.tick_params(axis="both", which="minor", labelfont=params["tickfont"])
+    if params["tickspacing"]:
+        ax.xaxis.set_major_locator(plt.MultipleLocator(params["tickspacing"]))
+        ax.yaxis.set_major_locator(plt.MultipleLocator(params["tickspacing"]))
+    if params["frame"]:
+        ax.spines["top"].set_visible(True)
+        ax.spines["right"].set_visible(True)
+        ax.spines["left"].set_visible(True)
     else:
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.spines['left'].set_visible(False)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.spines["left"].set_visible(False)
         ax.yaxis.set_ticks([])
         ax.yaxis.set_ticklabels([])
-    if params['save']:
-        if params['format']:
-            plt.savefig(f"{params['filename']}.{params['format']}", format=params['format'])
+    if params["save"]:
+        if params["format"]:
+            plt.savefig(
+                f"{params['filename']}.{params['format']}", format=params["format"]
+            )
         else:
-            plt.savefig(params['filename'])
+            plt.savefig(params["filename"])
 
-    if params['return_fig']:
+    if params["return_fig"]:
         return fig, ax
     else:
         plt.show()
