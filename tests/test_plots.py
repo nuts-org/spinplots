@@ -29,7 +29,7 @@ def test_bruker1d_grid():
 
 def test_bruker2d():
     spin = read_nmr(DATA_DIR_2D, 'bruker')
-    out = bruker2d(spin.spectrum, contour_start=1e5, contour_num=5, contour_factor=1.5, return_fig=True)
+    out = bruker2d([spin.spectrum], contour_start=1e5, contour_num=5, contour_factor=1.5, return_fig=True)
     assert out is not None
 
 def test_df2d():

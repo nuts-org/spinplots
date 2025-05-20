@@ -4,7 +4,6 @@ import warnings
 
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
-import nmrglue as ng
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LogNorm
@@ -26,18 +25,13 @@ DEFAULTS = {
     "yaxislabel": "Intensity (a.u.)",
     "xaxislabel": None,
     "tickspacing": None,
-    "xaxislabel": None,
-    "yaxislabel": None,
-    "axisfont": None,
-    "tickfont": None,
-    "tickspacing": None,
 }
 
 def bruker2d(
     spectra: dict | list[dict],
-    contour_start: float,
-    contour_num: int,
-    contour_factor: float,
+    contour_start: float = 1e5,
+    contour_num: int = 10,
+    contour_factor: float = 1.2,
     cmap: str | list[str] | None = None,
     colors: list[str] | None = None,
     proj_colors = None,
@@ -52,13 +46,13 @@ def bruker2d(
     **kwargs
 ):
     """
-    Plots a 2D NMR spectrum from Bruker data.
+    Plots a 2D NMR spectrum from spectrum dictionaries.
 
     Parameters:
-        data_path (str or list): Path or list of paths to the Bruker data directories.
-        contour_start (float or list): Start value for the contour levels.
-        contour_num (int or list): Number of list of contour levels.
-        contour_factor (float or list): Factor or list of factors by which the contour levels increase.
+        spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
+        contour_start (float, optional): Start value for the contour levels. Default is 1e5.
+        contour_num (int, optional): Number of contour levels. Default is 10.
+        contour_factor (float, optional): Factor by which the contour levels increase. Default is 1.2.
 
     Keyword arguments:
         cmap (str or list): Colormap(s) to use for the contour lines.
@@ -70,30 +64,22 @@ def bruker2d(
         filename (str): The name of the file to save the plot.
         format (str): The format to save the file in.
         diag (float or None): Slope of the diagonal line/None.
-        homo (bool): True if doing homonuclear experiment.
-        return_fig (bool): Whether to return the figure and axis.
-        linewidth_contour (float): Line width of the contour plot.
-        linewidth_proj (float): Line width of the projections.
-        xaxislabel (str): Label for the axis.
-        yaxislabel (str): Label for the y-axis.
-        axisfont (str): Font type for the axis label.
-        axisfontsize (int): Font size for the axis label.
-        tickfont (str): Font type for the tick labels.
-        tickfontsize (int): Font size for the tick labels.
-        tickspacing (int): Spacing between the tick labels.
+        homo (bool): True if doing homonuclear experiment. When True, both axes will show the same nucleus.
+        return_fig (bool): Whether to return the figure and axes.
+        **kwargs: Additional keyword arguments for customizing the plot.
 
     Example:
-        bruker2d('data/2d_data', 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
+        bruker2d(spectrum, 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
     """
 
     spectra = spectra if isinstance(spectra, list) else [spectra]
 
-    if not all([s["ndim"] == 2 for s in spectra]):
+    if not all(s["ndim"] == 2 for s in spectra):
         raise ValueError("All spectra must be 2-dimensional for bruker2d.")
 
     defaults = DEFAULTS.copy()
     defaults["yaxislabel"] = None
-    defaults.update({k: v for k, v in kwargs if k in defaults and v is not None})
+    defaults.update({k: v for k, v in kwargs.items() if k in defaults and v is not None})
 
     fig = plt.figure(constrained_layout=False)
     ax = fig.subplot_mosaic(
@@ -109,19 +95,18 @@ def bruker2d(
         },
     )
 
-    for i, nmr in enumerate([s["path"] for s in spectra]):
-        dic, data = ng.bruker.read_pdata(nmr)
-        udic = ng.bruker.guess_udic(dic, data)
+    for i, spectrum in enumerate(spectra):
+        data = spectrum["data"]
 
-        # Check if homo is set to True
+        nuclei_list = spectrum["nuclei"]
+
         if homo:
-            nuclei_x = udic[1]["label"]
-            nuclei_y = udic[1]["label"]
+            nuclei_x = nuclei_list[1]
+            nuclei_y = nuclei_list[1]
         else:
-            nuclei_x = udic[1]["label"]
-            nuclei_y = udic[0]["label"]
+            nuclei_x = nuclei_list[1]
+            nuclei_y = nuclei_list[0]
 
-        # Extract the number and nucleus symbol from the label
         number_x, nucleus_x = (
             "".join(filter(str.isdigit, nuclei_x)),
             "".join(filter(str.isalpha, nuclei_x)),
@@ -130,16 +115,10 @@ def bruker2d(
             "".join(filter(str.isdigit, nuclei_y)),
             "".join(filter(str.isalpha, nuclei_y)),
         )
+        ppm_x = spectrum["ppm_scale"][1]
+        ppm_x_limits = (ppm_x[0], ppm_x[-1])
+        ppm_y = spectrum["ppm_scale"][0]
 
-        uc_x = ng.fileiobase.uc_from_udic(udic, dim=1)
-        ppm_x = uc_x.ppm_scale()
-        ppm_x_limits = uc_x.ppm_limits()
-
-        uc_y = ng.fileiobase.uc_from_udic(udic, dim=0)
-        ppm_y = uc_y.ppm_scale()
-        ppm_y_limits = uc_y.ppm_limits()
-
-        # Get indices for the zoomed region if limits are specified
         if xlim:
             x_min_idx = np.abs(ppm_x - max(xlim)).argmin()
             x_max_idx = np.abs(ppm_x - min(xlim)).argmin()
@@ -154,20 +133,24 @@ def bruker2d(
         else:
             y_indices = slice(None)
 
-        # Calculate projections based on the zoomed region
-        zoomed_data = data[y_indices, x_indices]
-        proj_x = np.amax(zoomed_data, axis=0)
-        proj_y = np.amax(zoomed_data, axis=1)
+        if isinstance(spectrum["projections"], dict) and "x" in spectrum["projections"] and "y" in spectrum["projections"]:
+            if xlim is None and ylim is None:
+                proj_x = spectrum["projections"]["x"]
+                proj_y = spectrum["projections"]["y"]
+            else:
+                zoomed_data = data[y_indices, x_indices]
+                proj_x = np.amax(zoomed_data, axis=0)
+                proj_y = np.amax(zoomed_data, axis=1)
+        else:
+            zoomed_data = data[y_indices, x_indices]
+            proj_x = np.amax(zoomed_data, axis=0)
+            proj_y = np.amax(zoomed_data, axis=1)
 
-        # Contour levels
         contour_levels = contour_start * contour_factor ** np.arange(contour_num)
 
-        # Plot projections with the extracted color
-        # using the relevant portions of x and y ranges
         x_proj_ppm = ppm_x[x_indices]
         y_proj_ppm = ppm_y[y_indices]
 
-        # Plot contour lines with the provided colormap if cmap is provided
         if cmap is not None:
             from matplotlib.colors import LogNorm
 
@@ -180,17 +163,13 @@ def bruker2d(
                     "when overlapping spectra."
                 )
 
-            cmap_i = plt.get_cmap(cmap[i])
-            contour_plot = ax["A"].contour(
-                data,
+            cmap_i = plt.get_cmap(cmap[i % len(cmap)])
+            ax["A"].contour(
+                x_proj_ppm,
+                y_proj_ppm,
+                data[y_indices, x_indices],
                 contour_levels,
-                extent=(
-                    ppm_x_limits[0],
-                    ppm_x_limits[1],
-                    ppm_y_limits[0],
-                    ppm_y_limits[1],
-                ),
-                cmap=cmap[i],
+                cmap=cmap_i,
                 linewidths=defaults["linewidth_contour"],
                 norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]),
             )
@@ -219,19 +198,14 @@ def bruker2d(
             )
             ax["b"].axis(False)
         elif cmap is not None and colors is not None:
-            # Error. Only one of cmap or colors can be provided.
             raise ValueError("Only one of cmap or colors can be provided.")
         elif colors is not None and cmap is None:
-            contour_color = colors[i]
-            contour_plot = ax["A"].contour(
-                data,
+            contour_color = colors[i % len(colors)]
+            ax["A"].contour(
+                x_proj_ppm,
+                y_proj_ppm,
+                data[y_indices, x_indices],
                 contour_levels,
-                extent=(
-                    ppm_x_limits[0],
-                    ppm_x_limits[1],
-                    ppm_y_limits[0],
-                    ppm_y_limits[1],
-                ),
                 colors=contour_color,
                 linewidths=defaults["linewidth_contour"],
             )
@@ -258,15 +232,12 @@ def bruker2d(
 
         else:
             proj_color = "black"
-            contour_plot = ax["A"].contour(
-                data,
+            # Create contour plot with basic black color
+            ax["A"].contour(
+                x_proj_ppm,
+                y_proj_ppm,
+                data[y_indices, x_indices],
                 contour_levels,
-                extent=(
-                    ppm_x_limits[0],
-                    ppm_x_limits[1],
-                    ppm_y_limits[0],
-                    ppm_y_limits[1],
-                ),
                 colors="black",
                 linewidths=defaults["linewidth_contour"],
             )
@@ -284,15 +255,20 @@ def bruker2d(
                 color=proj_color,
             )
             ax["b"].axis(False)
-
-        if xaxislabel := defaults["xaxislabel"]:
+        if xaxislabel := defaults.get("xaxislabel"):
             defaults["xaxislabel"] = xaxislabel
         else:
             defaults["xaxislabel"] = f"$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)"
-        if yaxislabel := defaults["yaxislabel"]:
+
+        if "yaxislabel" in kwargs:
+            defaults["yaxislabel"] = kwargs["yaxislabel"]
+        elif yaxislabel := defaults.get("yaxislabel"):
             defaults["yaxislabel"] = yaxislabel
         else:
             defaults["yaxislabel"] = f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)"
+
+        if homo and "yaxislabel" not in kwargs and "xaxislabel" not in kwargs and defaults["yaxislabel"] != defaults["xaxislabel"] and number_y == number_x and nucleus_y == nucleus_x:
+            defaults["yaxislabel"] = defaults["xaxislabel"]
 
         ax["A"].set_xlabel(
             defaults["xaxislabel"],
@@ -317,13 +293,15 @@ def bruker2d(
             labelfontfamily=defaults["tickfont"] if defaults["tickfont"] else None,
         )
 
-        # Plot diagonal line if diag is provided
         if diag is not None:
-            x_diag = np.linspace(ppm_x_limits[0], ppm_x_limits[1], 100)
+            x_diag = np.linspace(
+                xlim[0] if xlim else ppm_x_limits[0],
+                xlim[1] if xlim else ppm_x_limits[1],
+                100
+            )
             y_diag = diag * x_diag
             ax["A"].plot(x_diag, y_diag, linestyle="--", color="gray")
 
-        # Set axis limits if provided
         if xlim:
             ax["A"].set_xlim(xlim)
             ax["a"].set_xlim(xlim)
@@ -331,26 +309,23 @@ def bruker2d(
             ax["A"].set_ylim(ylim)
             ax["b"].set_ylim(ylim)
 
-    # Show the plot or save it
     if save:
-        if filename:
+        if filename and format:
             full_filename = f"{filename}.{format}"
         else:
-            full_filename = f"2d_nmr_spectrum.{format}"
+            full_filename = f"2d_nmr_spectrum.{format if format else 'png'}"
         plt.savefig(
-            full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
+            full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1
         )
 
     if return_fig:
         return ax
-    
+
     plt.show()
     return None
 
-
-# Function to easily plot 1D NMR spectra in Bruker's format
 def bruker1d(
-    spectra: dict | list[dict],  # Keep this as list for now based on previous fix
+    spectra: dict | list[dict],
     labels: list[str] | None = None,
     xlim: tuple[float, float] | None = None,
     save: bool = False,
@@ -363,30 +338,47 @@ def bruker1d(
     return_fig: bool = False,
     **kwargs
 ):
-    """Plots one or more 1D NMR spectra contained within Spin objects."""
+    """
+    Plots one or more 1D NMR spectra from spectrum dictionaries.
 
-    if not all([s["ndim"] == 1 for s in spectra]):
+    Parameters:
+        spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
+        labels (list, optional): List of labels for the spectra.
+        xlim (tuple, optional): The limits for the x-axis.
+        save (bool, optional): Whether to save the plot.
+        filename (str, optional): The name of the file to save the plot.
+        format (str, optional): The format to save the file in.
+        frame (bool, optional): Whether to show the frame.
+        normalize (str, optional): Normalization method ('max', 'scans', or None).
+        stacked (bool, optional): Whether to stack the spectra.
+        color (list, optional): List of colors for the spectra.
+        return_fig (bool, optional): Whether to return the figure and axes.
+        **kwargs: Additional keyword arguments for customizing the plot.
+
+    Returns:
+        None or tuple: If return_fig is True, returns the figure and axes.
+    """
+
+    spectra = spectra if isinstance(spectra, list) else [spectra]
+
+    if not all(s["ndim"] == 1 for s in spectra):
         raise ValueError("All spectra must be 1-dimensional for bruker1d.")
 
     defaults = DEFAULTS.copy()
     defaults["yaxislabel"] = None
-    defaults.update({k: v for k, v in kwargs if k in defaults and v is not None})
-
-    spectra = spectra if isinstance(spectra, list) else [spectra]
+    defaults.update({k: v for k, v in kwargs.items() if k in defaults and v is not None})
 
     fig, ax = plt.subplots()
 
-    plot_index = 0
     current_stack_offset = 0.0
 
-    # Determine axis label from the first spectrum
     first_nuclei = spectra[0]["nuclei"]
     number, nucleus = (
         "".join(filter(str.isdigit, first_nuclei)),
         "".join(filter(str.isalpha, first_nuclei)),
     )
 
-    for spectrum in spectra:
+    for i, spectrum in enumerate(spectra):
         data_to_plot = None
         if normalize == "max":
             data_to_plot = spectrum.get("norm_max")
@@ -413,37 +405,32 @@ def bruker1d(
 
         ppm = spectrum["ppm_scale"]
 
-        # --- Stacking Logic (operates on selected data_to_plot) ---
-        plot_data_adjusted = data_to_plot  # Start with selected data
-
+        plot_data_adjusted = data_to_plot
         if stacked:
-            # Apply the offset to plot_data_adjusted
+            # Apply the offset
             plot_data_adjusted = data_to_plot + current_stack_offset
             current_stack_offset += np.amax(data_to_plot) * 1.1
 
-        # --- Plotting Logic ---
         plot_kwargs = {
             "linestyle": defaults["linestyle"],
             "linewidth": defaults["linewidth"],
             "alpha": defaults["alpha"],
         }
+
         if labels:
             plot_kwargs["label"] = (
-                labels[plot_index]
-                if plot_index < len(labels)
-                else f"Spectrum {plot_index + 1}"
+                labels[i]
+                if i < len(labels)
+                else f"Spectrum {i + 1}"
             )
+
         if color:
             plot_kwargs["color"] = (
-                color[plot_index] if plot_index < len(color) else None
+                color[i] if i < len(color) else None
             )
 
-        # Use plot_data_adjusted here, not data
         ax.plot(ppm, plot_data_adjusted, **plot_kwargs)
 
-        plot_index += 1
-
-    # --- Legend ---
     if labels:
         ax.legend(
             bbox_to_anchor=(1.05, 1),
@@ -495,9 +482,8 @@ def bruker1d(
     if xlim:
         ax.set_xlim(xlim)
     else:
-        # Auto-reverse axis if it looks like standard NMR
         current_xlim = ax.get_xlim()
-        if current_xlim[0] < current_xlim[1]:  # Only reverse if not already reversed
+        if current_xlim[0] < current_xlim[1]:
             ax.set_xlim(current_xlim[::-1])
 
     if save:
@@ -517,7 +503,6 @@ def bruker1d(
     return None
 
 
-# Function to easily plot 1D NMR spectra in Bruker's format in a grid
 def bruker1d_grid(
     spectra: dict | list[dict],
     labels=None,
@@ -536,7 +521,7 @@ def bruker1d_grid(
     Plots 1D NMR spectra from Bruker data in subplots.
 
     Parameters:
-        data_paths (list): List of paths to the Bruker data directories.
+        spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
         labels (list): List of labels for the spectra.
         subplot_dims (tuple): Dimensions of the subplot grid (rows, cols).
         xlim (list of tuples or tuple): The limits for the x-axis.
@@ -547,27 +532,18 @@ def bruker1d_grid(
         normalize (str): Normalization method 'max', 'scans', or None.
         color (str): List of colors for the spectra.
         return_fig (bool): Whether to return the figure and axis.
-        linewidth (float): Line width of the plot.
-        linestyle (str): Line style of the plot.
-        alpha (float): Alpha value for the plot.
-        yaxislabel (str): Label for the y-axis.
-        xaxislabel (str): Label for the x-axis.
-        axisfontsize (int): Font size for the axis labels.
-        axisfont (str): Font type for the axis labels.
-        tickfontsize (int): Font size for the tick labels.
-        tickfont (str): Font type for the tick labels.
-        tickspacing (float): Spacing between the tick labels.
+        **kwargs: Additional keyword arguments for customizing the plot.
 
     Returns:
         None or tuple: If return_fig is True, returns the figure and axis.
 
     Example:
-        bruker1d_grid(['data/1d_data1', 'data/1d_data2'], labels=['Spectrum 1', 'Spectrum 2'], subplot_dims=(1, 2), xlim=[(0, 100), (0, 100)], save=True, filename='1d_spectra', format='png', frame=False, normalize='max', color=['red', 'blue'])
+        bruker1d_grid([spectrum1, spectrum2], labels=['Spectrum 1', 'Spectrum 2'], subplot_dims=(1, 2), xlim=[(0, 100), (0, 100)], save=True, filename='1d_spectra', format='png', frame=False, normalize='max', color=['red', 'blue'])
     """
 
     spectra = spectra if isinstance(spectra, list) else [spectra]
 
-    if not all([s["ndim"] == 1 for s in spectra]):
+    if not all(s["ndim"] == 1 for s in spectra):
         raise ValueError("All spectra must be 1-dimensional for bruker1d_grid.")
 
     defaults = DEFAULTS.copy()
@@ -577,42 +553,42 @@ def bruker1d_grid(
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
     axes = axes.flatten() if rows * cols > 1 else [axes]
 
-    data_paths = [s["path"] for s in spectra]
-    for i, data_path in enumerate(data_paths):
+    for i, spectrum in enumerate(spectra):
         if i >= len(axes):
             break
-        ax = axes[i]
-        dic, data = ng.bruker.read_pdata(data_path)
-        udic = ng.bruker.guess_udic(dic, data)
 
-        nuclei = udic[0]["label"]
+        ax = axes[i]
+
+        nuclei = spectrum["nuclei"]
         number, nucleus = (
             "".join(filter(str.isdigit, nuclei)),
             "".join(filter(str.isalpha, nuclei)),
         )
 
-        uc = ng.fileiobase.uc_from_udic(udic, dim=0)
-        ppm = uc.ppm_scale()
-
-        # Check if normalize is a list or a single value
+        ppm = spectrum["ppm_scale"]
         if isinstance(normalize, list):
-            if len(normalize) != len(data_paths):
+            if len(normalize) != len(spectra):
                 raise ValueError(
                     "The length of the normalize list must be equal to the number of spectra."
                 )
-            normalize = normalize[i]
+            normalize_option = normalize[i]
+        else:
+            normalize_option = normalize
 
-        if normalize == "max" or normalize:
-            data = data / np.amax(data)
-        elif normalize == "scans":
-            ns = dic["acqus"]["NS"]
-            if ns is None:
-                raise ValueError("Number of scans not found.")
-            data = data / ns
-        elif normalize:
-            raise ValueError(
-                "Invalid value for normalize. Please provide 'max' or 'scans'."
-            )
+        if normalize_option == "max" or normalize_option is True:
+            data = spectrum.get("norm_max")
+            if data is None:
+                data = spectrum["data"] / np.amax(spectrum["data"])
+        elif normalize_option == "scans":
+            data = spectrum.get("norm_scans")
+            if data is None:
+                warnings.warn(
+                    f"Pre-calculated 'norm_scans' data not found for {spectrum['path']}. Using raw data.",
+                    UserWarning,
+                )
+                data = spectrum["data"]
+        else:
+            data = spectrum["data"]
 
         plot_kwargs = {
             "linestyle": defaults["linestyle"],
@@ -799,7 +775,6 @@ def df2d(
             norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]),
         )
 
-    # Plot projections with the extracted color
     ax["a"].plot(
         proj_f2[f"{f2_nuclei} {f2_units}"], proj_f2["F2 projection"], color="black"
     )
@@ -809,7 +784,6 @@ def df2d(
     )
     ax["b"].axis(False)
 
-    # Set axis labels with LaTeX formatting and non-italicized letters and position
     ax["A"].set_xlabel(f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)", fontsize=13)
     ax["A"].set_ylabel(f"$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)", fontsize=13)
     ax["A"].yaxis.set_label_position("right")
@@ -817,7 +791,6 @@ def df2d(
     ax["A"].tick_params(axis="x", labelsize=12)
     ax["A"].tick_params(axis="y", labelsize=12)
 
-    # Set axis limits if provided
     if xlim:
         ax["A"].set_xlim(xlim)
         ax["a"].set_xlim(xlim)
@@ -939,7 +912,7 @@ def dmfit1d(
     fig : matplotlib.figure.Figure
         The figure object.
     dmfit_df : pandas.DataFrame
-        The DataFrame with the data from the dmfit1d file. 
+        The DataFrame with the data from the dmfit1d file.
 
     """
 
@@ -951,7 +924,7 @@ def dmfit1d(
 
     if dmfit_df is None:
         raise ValueError("DMfit DataFrame not found in Spin object. Read data with provider='dmfit'")
-    
+
     n_lines = sum(col.startswith('Line#') for col in dmfit_df.columns)
 
     defaults = {
@@ -986,7 +959,7 @@ def dmfit1d(
         'tickspacing': tickspacing,
         'return_fig': return_fig
     }
-    
+
     params = {k: v for k, v in locals().items() if k in defaults and v is not None}
     params.update(defaults)
 
@@ -1058,4 +1031,4 @@ def dmfit1d(
         return fig, ax
     else:
         plt.show()
-        return None 
+        return None

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import warnings
 
 import spinplots.plot as spinplot
@@ -29,7 +30,7 @@ class Spin:
             raise ValueError("Cannot initialize Spin object with empty spectrum data.")
 
         ndim = spectrum_data["ndim"]
-        if not ndim in [1, 2]:
+        if ndim not in [1, 2]:
             raise ValueError(
                 f"Unsupported number of dimensions in data: {ndim}. "
                 "Only 1D and 2D spectra are supported."
@@ -51,8 +52,6 @@ class Spin:
     def __repr__(self) -> str:
         path = self.spectrum["path"]
         return f"Spin(tag={self.tag}, ndim={self.ndim}, provider='{self.provider}', path={path})"
-
-
     def plot(self, grid=None, **kwargs):
         """
         Generates a plot of the NMR data stored in this object.
@@ -80,11 +79,11 @@ class Spin:
 
         match (self.provider, self.ndim, subplot_dims):
             case ("bruker", 1, None):
-                return spinplot.bruker1d([self], **kwargs)
+                return spinplot.bruker1d([self.spectrum], **kwargs)
             case ("bruker", 2, None):
-                return spinplot.bruker2d([self], **kwargs)
+                return spinplot.bruker2d([self.spectrum], **kwargs)
             case ("bruker", 1, tuple()):
-                return spinplot.bruker1d_grid([self], subplot_dims=subplot_dims, **kwargs)
+                return spinplot.bruker1d_grid([self.spectrum], subplot_dims=subplot_dims, **kwargs)
             case ("bruker", 2, tuple()):
                 raise ValueError("Grid layout is not supported for 2D spectra.")
             case ("dmfit", 1, None):
@@ -134,10 +133,10 @@ class SpinCollection:
         if isinstance(spins, Spin):
             spins = [spins]
 
-        if not all(map(lambda x: x.ndim == self.ndim, spins)):
+        if not all(x.ndim == self.ndim for x in spins):
             raise ValueError("All Spin objects must have the same dimension.")
 
-        if not all(map(lambda x: x.provider == self.provider, spins)):
+        if not all(x.provider == self.provider for x in spins):
             raise ValueError("All Spin objects must have the same provider.")
 
         for spin in spins:
@@ -203,5 +202,55 @@ class SpinCollection:
 
     def __iter__(self):
         return iter(self.spins.items())
+
+
+    def plot(self, grid=None, **kwargs):
+        """
+        Generates a plot of the NMR data stored in this collection.
+
+        Args:
+            grid (str, optional): Grid layout in format 'rows x cols' (e.g., '2x2', '1x3').
+                    If provided, spectra will be plotted in a grid layout.
+            **kwargs: Plotting keyword arguments specific to the plot type
+                    (e.g., xlim, labels, color, contour_start, etc.).
+                    These are passed to the underlying plotting function.
+
+        Returns:
+            The result from the underlying plotting function.
+        """
+        subplot_dims = None
+        if grid:
+            try:
+                rows, cols = map(int, grid.lower().split("x"))
+            except (ValueError, AttributeError, TypeError) as e:
+                raise ValueError(
+                    f"Grid format should be 'rows x cols' (e.g., '2x2', '1x3'), got {grid}"
+                ) from e
+            subplot_dims = (rows, cols)
+
+        spectra = [spin.spectrum for spin in self.spins.values()]
+
+        if 'labels' not in kwargs:
+            kwargs['labels'] = list(self.spins.keys())
+
+        match (self.provider, self.ndim, subplot_dims):
+            case ("bruker", 1, None):
+                return spinplot.bruker1d(spectra, **kwargs)
+            case ("bruker", 2, None):
+                return spinplot.bruker2d(spectra, **kwargs)
+            case ("bruker", 1, tuple()):
+                return spinplot.bruker1d_grid(spectra, subplot_dims=subplot_dims, **kwargs)
+            case ("bruker", 2, tuple()):
+                raise ValueError("Grid layout is not supported for 2D spectra.")
+            case ("dmfit", 1, None):
+                if len(self.spins) > 1:
+                    raise ValueError("DMFit plots can only handle one spectrum at a time.")
+                return spinplot.dmfit1d(list(self.spins.values())[0], **kwargs)
+            case ("dmfit", 1, tuple()):
+                raise ValueError("Grid layout is not supported for DMFit spectra.")
+            case _:
+                raise ValueError(
+                    f"Plotting not supported for provider: {self.provider} with ndim={self.ndim}"
+                )
 
 

@@ -63,7 +63,13 @@ def test_spin_plot_1d(spin_1d):
     assert fig is not None and ax is not None
 
 def test_spin_plot_2d(spin_2d):
-    ax_dict = spin_2d.plot(contour_start=1e5, contour_num=10, contour_factor=1.5, return_fig=True)
+    """Test 2D plotting with missing projections."""
+    ax_dict = spin_2d.plot(
+        contour_start=1e5, 
+        contour_num=10, 
+        contour_factor=1.5, 
+        return_fig=True
+    )
     assert isinstance(ax_dict, dict)
     assert "A" in ax_dict
 
@@ -129,4 +135,34 @@ def test_spincollection_remove_invalid(spin_1d, spin_1d_2):
     coll = SpinCollection([spin_1d, spin_1d_2])
     with pytest.raises(KeyError):
         coll.remove('invalid_tag')
+
+def test_spincollection_plot_1d(spincollection):
+    """Test plotting a 1D SpinCollection with default parameters."""
+    fig, ax = spincollection.plot(return_fig=True)
+    assert fig is not None and ax is not None
+    assert len(ax.get_lines()) == len(spincollection)
+
+def test_spincollection_plot_grid(spincollection):
+    """Test plotting a 1D SpinCollection with grid layout."""
+    fig, axes = spincollection.plot(grid='1x2', return_fig=True)
+    assert fig is not None
+    # Should have 2 subplots
+    assert len(axes) == 2
+    assert len(axes[0].get_lines()) > 0
+    assert len(axes[1].get_lines()) > 0
+
+def test_spincollection_plot_override_labels(spin_1d, spin_1d_2):
+    """Test that custom labels override tags."""    
+    spin_1d.tag = "Sample A"
+    spin_1d_2.tag = "Sample B"    
+    coll = SpinCollection([spin_1d, spin_1d_2])
+
+    # Plot with custom labels
+    custom_labels = ["Custom 1", "Custom 2"]
+    fig, ax = coll.plot(labels=custom_labels, return_fig=True)
+    legend_texts = [text.get_text() for text in ax.get_legend().get_texts()]
+    assert "Custom 1" in legend_texts
+    assert "Custom 2" in legend_texts
+    assert "Sample A" not in legend_texts
+    assert "Sample B" not in legend_texts
 
