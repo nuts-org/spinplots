@@ -1,8 +1,11 @@
-import pytest
+from __future__ import annotations
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import pytest
+
 from spinplots.io import read_nmr
-from spinplots.plot import bruker1d, bruker2d, bruker1d_grid, df2d, dmfit1d
+from spinplots.plot import bruker1d, bruker1d_grid, bruker2d, df2d, dmfit1d
 from spinplots.utils import nmr_df
 
 DATA_DIR_1D_1 = "data/1D/glycine/pdata/1"
@@ -33,8 +36,8 @@ def test_bruker2d():
     assert out is not None
 
 def test_df2d():
-    df = nmr_df(DATA_DIR_2D)
-    out = df2d(df, contour_start=1e5, contour_num=5, contour_factor=1.5, return_fig=True)
+    df_2d = nmr_df(DATA_DIR_2D)
+    out = df2d(df_2d, contour_start=1e5, contour_num=5, contour_factor=1.5, return_fig=True)
     assert out is not None
 
 def test_dmfit1d():
@@ -48,6 +51,5 @@ def test_bruker1d_typeerror():
 
 def test_bruker1d_valerror():
     spin = read_nmr(DATA_DIR_2D, 'bruker')
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="All spectra must be 1-dimensional"):
         bruker1d([spin.spectrum])
-

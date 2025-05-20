@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import pytest
+
 from spinplots.io import read_nmr
 
 DATA_DIR_1D_1 = "data/1D/glycine/pdata/1"
@@ -28,10 +31,10 @@ def test_read_nmr_dmfit():
     assert spin.provider == "dmfit"
 
 def test_read_nmr_invalid_provider():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Invalid provider"):
         read_nmr(DATA_DIR_1D_1, provider="foo")
 
 def test_read_nmr_tags_length():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Number of tags must match the number of paths"):
         read_nmr([DATA_DIR_1D_1, DATA_DIR_1D_2], provider="bruker", tags=["a"])
 

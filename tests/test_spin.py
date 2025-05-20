@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import pytest
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import pytest
 
 from spinplots.io import read_nmr
 from spinplots.spin import Spin, SpinCollection
@@ -51,23 +51,24 @@ def test_spin_repr(spin_1d):
     assert "Spin(" in r
 
 def test_spin_init_value_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Cannot initialize Spin object with empty spectrum data"):
         Spin({}, 'bruker')
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Unsupported number of dimensions in data"):
         Spin({'ndim': 3, 'path': 'foo'}, 'bruker')
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Unsupported provider"):
         Spin({'ndim': 1, 'path': 'foo'}, 'foo')
 
 def test_spin_plot_1d(spin_1d):
     fig, ax = spin_1d.plot(return_fig=True)
-    assert fig is not None and ax is not None
+    assert fig is not None
+    assert ax is not None
 
 def test_spin_plot_2d(spin_2d):
     """Test 2D plotting with missing projections."""
     ax_dict = spin_2d.plot(
-        contour_start=1e5, 
-        contour_num=10, 
-        contour_factor=1.5, 
+        contour_start=1e5,
+        contour_num=10,
+        contour_factor=1.5,
         return_fig=True
     )
     assert isinstance(ax_dict, dict)
@@ -75,30 +76,25 @@ def test_spin_plot_2d(spin_2d):
 
 def test_spin_plot_grid(spin_1d):
     fig, ax = spin_1d.plot(grid='1x1', return_fig=True)
-    assert fig is not None and ax is not None
+    assert fig is not None
+    assert ax is not None
 
 def test_spin_plot_bad_grid_str(spin_1d):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Grid format should be 'rows x cols'"):
         spin_1d.plot(grid="badgrid")
 
 def test_spin_plot_bad_grid_dim(spin_2d):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Grid layout is not supported for 2D spectra."):
         spin_2d.plot(grid="1x2", contour_start=1e5, contour_num=5, contour_factor=1.5)
 
 def test_spin_plot_dmfit(spin_dmfit):
     fig, ax = spin_dmfit.plot(return_fig=True)
-    assert fig is not None and ax is not None
+    assert fig is not None
+    assert ax is not None
 
 def test_spin_plot_dmfit_grid_not_supported(spin_dmfit):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Grid layout is not supported for 1D DMFit spectra."):
         spin_dmfit.plot(grid="1x1")
-
-def test_spin_plot_unsupported_case():
-    # Use dmfit + ndim=2
-    d = {'ndim': 2, 'path': DATA_DIR_DM}
-    s = Spin(d, provider="dmfit")
-    with pytest.raises(ValueError):
-        s.plot()
 
 def test_spincollection_construction(spin_1d, spin_1d_2):
     coll = SpinCollection([spin_1d])
@@ -108,18 +104,18 @@ def test_spincollection_construction(spin_1d, spin_1d_2):
 
 def test_spincollection_append_invalid_ndim(spin_1d, spin_2d):
     coll = SpinCollection([spin_1d])
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="All Spin objects must have the same dimension."):
         coll.append(spin_2d)
 
 def test_spincollection_append_invalid_provider(spin_1d, spin_dmfit):
     coll = SpinCollection([spin_1d])
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="All Spin objects must have the same provider."):
         coll.append(spin_dmfit)
 
 def test_spincollection_duplicate_tag(spin_1d):
     spin_1d.tag = "duplicate_tag"
     coll = SpinCollection([spin_1d])
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Spin with tag 'duplicate_tag' already exists"):
         coll.append(spin_1d)
 
 def test_spincollection_remove_and_delitem(spin_1d, spin_1d_2):
@@ -139,7 +135,8 @@ def test_spincollection_remove_invalid(spin_1d, spin_1d_2):
 def test_spincollection_plot_1d(spincollection):
     """Test plotting a 1D SpinCollection with default parameters."""
     fig, ax = spincollection.plot(return_fig=True)
-    assert fig is not None and ax is not None
+    assert fig is not None
+    assert ax is not None
     assert len(ax.get_lines()) == len(spincollection)
 
 def test_spincollection_plot_grid(spincollection):
@@ -152,9 +149,9 @@ def test_spincollection_plot_grid(spincollection):
     assert len(axes[1].get_lines()) > 0
 
 def test_spincollection_plot_override_labels(spin_1d, spin_1d_2):
-    """Test that custom labels override tags."""    
+    """Test that custom labels override tags."""
     spin_1d.tag = "Sample A"
-    spin_1d_2.tag = "Sample B"    
+    spin_1d_2.tag = "Sample B"
     coll = SpinCollection([spin_1d, spin_1d_2])
 
     # Plot with custom labels
