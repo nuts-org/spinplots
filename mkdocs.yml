@@ -5,11 +5,11 @@ site_description: >-
 nav:
   - Home: index.md
   - Installation:
-      - installation/install.md
-  - Tutorials:
+      - installation/install.md  - Tutorials:
       - 'Easy Plots': user_guide/easy_plots.ipynb
       - 'Costumize and Export': user_guide/read_export.ipynb
       - 'Plot DMFit Results': user_guide/dmfit_plots.ipynb
+      - 'The Spin object': user_guide/spin_objects.ipynb
   - Code Documentation: reference/
   - About:
       - about/contributors.md
