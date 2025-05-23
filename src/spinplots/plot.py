@@ -1157,11 +1157,11 @@ def dmfit2d(
     )
 
     if hasattr(spin_objects, "spins"):
-        spectra_dicts = [spin.spectrum for spin in spin_objects.spins]
+        spectra_dicts = [spin_obj.spectrum for spin_obj in spin_objects.spins.values()]
         if labels is None:
             plot_labels = [
-                spin.tag if spin.tag else f"Spectrum {idx + 1}"
-                for idx, spin in enumerate(spin_objects.spins)
+                spin_obj.tag if spin_obj.tag else f"Spectrum {idx + 1}"
+                for idx, spin_obj in enumerate(spin_objects.spins.values())
             ]
         else:
             plot_labels = labels
