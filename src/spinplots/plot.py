@@ -1063,3 +1063,244 @@ def dmfit1d(
     else:
         plt.show()
         return None
+
+def dmfit2d(
+    spin_objects,
+    contour_start=1e5,
+    contour_num=10,
+    contour_factor=1.2,
+    colors=None,
+    proj_colors=None,
+    xlim=None,
+    ylim=None,
+    labels=None,
+    save=False,
+    filename=None,
+    format=None,
+    axis_right=True,
+    diag=None,
+    return_fig=False,
+    **kwargs,
+):
+    """
+    Plot 2D DMFit data with 1D projections.
+
+    Parameters
+    ----------
+    spin_objects : Spin or SpinCollection
+        The Spin object or SpinCollection containing DMFit 2D data.
+    contour_start : float, optional
+        The starting contour level. Default is 1e5.
+    contour_num : int, optional
+        The number of contour levels. Default is 10.
+    contour_factor : float, optional
+        The factor by which the contour levels increase. Default is 1.2.
+    colors : str or list, optional
+        Color(s) for each spectrum's contours.
+    proj_colors : str or list, optional
+        Color(s) for each spectrum's projections.
+    xlim : tuple, optional
+        The limits for the x-axis (F2).
+    ylim : tuple, optional
+        The limits for the y-axis (F1).
+    labels : list, optional
+        Labels for the spectra in the legend.
+    save : bool, optional
+        Whether to save the plot.
+    filename : str, optional
+        Name for the saved file.
+    format : str, optional
+        Format for the saved file.
+    axis_right : bool, optional
+        Whether to put the y-axis on the right.
+    diag : float or None, optional
+        Slope of the diagonal line.
+    return_fig : bool, optional
+        Whether to return the figure and axes dictionary.
+    **kwargs : dict, optional
+        Additional keyword arguments:
+
+        - labelsize : int
+            Size of labels in the legend.
+        - linewidth_contour : float
+            Width of contour lines.
+        - linewidth_proj : float
+            Width of projection lines.
+        - alpha : float
+            Transparency of contours.
+        - xaxislabel : str
+            Custom label for x-axis (f1).
+        - yaxislabel : str
+            Custom label for y-axis (f2).
+        - axisfontsize : int
+            Font size for axis labels.
+        - axisfont : str
+            Font family for axis labels.
+        - tickfontsize : int
+            Font size for tick labels.
+        - tickfont : str
+            Font family for tick labels.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure, optional
+        The figure object, if return_fig is True.
+    ax_dict : dict of matplotlib.axes.Axes, optional
+        Dictionary of axes objects (e.g., 'A', 'a', 'b'), if return_fig is True.
+    """
+    from matplotlib.lines import Line2D
+    
+    defaults = DEFAULTS.copy()
+    defaults.update({k: v for k, v in kwargs.items() if k in defaults and v is not None})
+
+    if hasattr(spin_objects, 'spins'):
+        spectra_dicts = [spin.spectrum for spin in spin_objects.spins]
+        if labels is None:
+            plot_labels = [spin.tag if spin.tag else f'Spectrum {idx+1}' 
+                           for idx, spin in enumerate(spin_objects.spins)]
+        else:
+            plot_labels = labels
+    else:
+        spectra_dicts = [spin_objects.spectrum]
+        if labels is None:
+            plot_labels = [spin_objects.tag if spin_objects.tag else 'Spectrum']
+        else:
+            plot_labels = labels
+    
+    if not all(s["ndim"] == 2 for s in spectra_dicts):
+        raise ValueError("All spectra must be 2D.")
+    if not all(s["metadata"]["provider_type"] == "dmfit" for s in spectra_dicts):
+        raise ValueError("All spectra must be from DMFit provider.")
+
+    num_spectra = len(spectra_dicts)
+    default_colors = ['black', 'red', 'green', 'orange', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan']
+    
+    contour_colors_list = []
+    if isinstance(colors, str):
+        contour_colors_list = [colors] * num_spectra
+    elif isinstance(colors, list):
+        contour_colors_list = [colors[i % len(colors)] for i in range(num_spectra)]
+    else:
+        contour_colors_list = [default_colors[i % len(default_colors)] for i in range(num_spectra)]
+
+    projection_colors_list = []
+    if isinstance(proj_colors, str):
+        projection_colors_list = [proj_colors] * num_spectra
+    elif isinstance(proj_colors, list):
+        projection_colors_list = [proj_colors[i % len(proj_colors)] for i in range(num_spectra)]
+    else:
+        projection_colors_list = contour_colors_list
+
+    fig = plt.figure(constrained_layout=False, figsize=(8, 7)) 
+    ax_dict = fig.subplot_mosaic(
+        """
+        .a
+        bA
+        """,
+        gridspec_kw={
+            "height_ratios": [0.9, 6.0], "width_ratios": [0.8, 6.0],
+            "wspace": 0.03, "hspace": 0.04,
+        },
+    )
+    main_ax = ax_dict["A"]
+    proj_ax_f2 = ax_dict["a"]
+    proj_ax_f1 = ax_dict["b"]
+
+    legend_elements = []
+
+    for i, spectrum_dict in enumerate(spectra_dicts):
+        data = spectrum_dict["data"]
+        y_axis_f1 = spectrum_dict["ppm_scale"][0]
+        x_axis_f2 = spectrum_dict["ppm_scale"][1]
+        
+        proj_f1_data = spectrum_dict["projections"]["f1"]
+        proj_f2_data = spectrum_dict["projections"]["f2"]
+
+        current_contour_color = contour_colors_list[i]
+        current_proj_color = projection_colors_list[i]
+        
+        contour_levels = contour_start * contour_factor ** np.arange(contour_num)
+        
+        main_ax.contour(
+            x_axis_f2, y_axis_f1, data,
+            levels=contour_levels, colors=current_contour_color,
+            linewidths=defaults["linewidth_contour"], alpha=defaults["alpha"]
+        )
+        
+        proj_ax_f2.plot(x_axis_f2, proj_f2_data, color=current_proj_color, linewidth=defaults["linewidth_proj"])
+        proj_ax_f1.plot(-proj_f1_data, y_axis_f1, color=current_proj_color, linewidth=defaults["linewidth_proj"])
+
+        if i < len(plot_labels) and plot_labels[i] is not None:
+            legend_elements.append(
+                Line2D([0], [0], color=current_contour_color, lw=2, label=plot_labels[i])
+            )
+
+    first_spectrum_nuclei = spectra_dicts[0].get("nuclei", ["Unknown", "Unknown"])
+    if isinstance(first_spectrum_nuclei, str): 
+        first_spectrum_nuclei = [first_spectrum_nuclei, first_spectrum_nuclei]
+
+    f2_nuc_str = str(first_spectrum_nuclei[1])
+    f1_nuc_str = str(first_spectrum_nuclei[0])
+
+    num_f2, nuc_f2 = "".join(filter(str.isdigit, f2_nuc_str)), "".join(filter(str.isalpha, f2_nuc_str))
+    num_f1, nuc_f1 = "".join(filter(str.isdigit, f1_nuc_str)), "".join(filter(str.isalpha, f1_nuc_str))
+
+    final_xaxislabel = defaults.get("xaxislabel") if defaults.get("xaxislabel") else f"$^{{{num_f2}}}${nuc_f2} (ppm)"
+    final_yaxislabel = defaults.get("yaxislabel") if defaults.get("yaxislabel") else f"$^{{{num_f1}}}${nuc_f1} (ppm)"
+
+    main_ax.set_xlabel(final_xaxislabel, fontsize=defaults["axisfontsize"], fontname=defaults["axisfont"])
+    main_ax.set_ylabel(final_yaxislabel, fontsize=defaults["axisfontsize"], fontname=defaults["axisfont"])
+
+    main_ax.tick_params(axis='x', labelsize=defaults["tickfontsize"], labelfontfamily=defaults["tickfont"])
+    main_ax.tick_params(axis='y', labelsize=defaults["tickfontsize"], labelfontfamily=defaults["tickfont"])
+
+    if axis_right:
+        main_ax.yaxis.set_label_position("right")
+        main_ax.yaxis.tick_right()
+    
+    proj_ax_f2.axis(False)
+    proj_ax_f1.axis(False)
+
+    if xlim:
+        main_ax.set_xlim(xlim)
+    else:
+        current_xlim_main = main_ax.get_xlim()
+        if current_xlim_main[0] < current_xlim_main[1]:
+             main_ax.set_xlim(current_xlim_main[::-1])
+    proj_ax_f2.set_xlim(main_ax.get_xlim())
+
+    if ylim:
+        main_ax.set_ylim(ylim)
+    else:
+        current_ylim_main = main_ax.get_ylim()
+        if current_ylim_main[0] < current_ylim_main[1]:
+            main_ax.set_ylim(current_ylim_main[::-1])
+    proj_ax_f1.set_ylim(main_ax.get_ylim())
+
+    if diag is not None:
+        diag_xlim_eff = main_ax.get_xlim()
+        x_diag_vals = np.linspace(diag_xlim_eff[0], diag_xlim_eff[1], 100)
+        main_ax.plot(x_diag_vals, diag * x_diag_vals, 'k--', lw=1)
+
+    if legend_elements:
+        main_ax.legend(handles=legend_elements, fontsize=defaults["labelsize"], prop={"family": defaults["tickfont"]})
+
+    plt.tight_layout(pad=0.5)
+
+    # --- Save/Show ---
+    if save:
+        if filename and format:
+            full_filename = f"{filename}.{format}"
+        elif filename:
+            full_filename = f"{filename}.png"
+        else:
+            full_filename = f"dmfit_2d_projections.{format if format else 'png'}"
+        fig.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
+    
+    if return_fig:
+        return fig, ax_dict
+    
+    if not save:
+        plt.show()
+    
+    return None

@@ -22,4 +22,5 @@ __all__ = [
     "calculate_projections",
     "df2d",
     "dmfit1d",
+    "dmfit2d",
 ]

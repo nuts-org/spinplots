@@ -167,36 +167,109 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
 
 def _read_dmfit_data(path: str, **kwargs) -> dict:
     """Helper function to read data of DMFit data."""
+    import re
 
-    try:
-        dmfit_df = pd.read_csv(path, sep="\t", skiprows=2)
-    except Exception as e:
-        raise OSError(f"Error reading DMfit data at path {path}: {e}") from e
+    with open(path, 'r') as file:
+        first_lines = ''.join([file.readline() for _ in range(10)])
+        ndim_2 = '##N_F1' in first_lines or '##N_F2' in first_lines
 
-    dmfit_df.columns = dmfit_df.columns.str.replace("##col_ ", "")
+    if ndim_2:
+        with open(path, 'r') as file:
+            lines = file.readlines()
+        
+        params = {}
+        data_start_line = 0
+        for i, line in enumerate(lines):
+            if "##DATA##" in line:
+                data_start_line = i + 1
+                break
+            if line.startswith("##"):
+                parts = line.strip().split("=", 1)
+                if len(parts) == 2:
+                    params[parts[0]] = parts[1]
+        
+        n_f2 = int(float(params.get("##N_F2", "512")))
+        n_f1 = int(float(params.get("##N_F1", "512")))
+        
+        x0_f2 = float(params.get("##X0_F2", "0"))
+        dx_f2 = float(params.get("##dX_F2", "1"))
+        x0_f1 = float(params.get("##X0_F1", "0"))
+        dx_f1 = float(params.get("##dX_F1", "1"))
+        
+        x_axis = np.array([x0_f2 + i * dx_f2 for i in range(n_f2)])
+        y_axis = np.array([x0_f1 + i * dx_f1 for i in range(n_f1)])
+        
+        data_values = []
+        for line in lines[data_start_line:]:
+            if line.strip():
+                # Extract all numbers inline
+                values = [float(val) for val in re.findall(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", line)]
+                data_values.extend(values)
+        
+        expected_points = n_f1 * n_f2
+        if len(data_values) < expected_points:
+            warnings.warn(
+                f"Expected {expected_points} data points, but found {len(data_values)}. Padding with zeros.",
+                UserWarning,
+            )
+            data_values.extend([0.0] * (expected_points - len(data_values)))
+        elif len(data_values) > expected_points:
+            warnings.warn(
+                f"Found {len(data_values)} data points, but expected {expected_points}. Trimming extra values.",
+                UserWarning,
+            )
+            data_values = data_values[:expected_points]
+        
+        data_matrix = np.array(data_values).reshape(n_f1, n_f2)
+        
+        nuclei = kwargs.get('nuclei', ['Unknown', 'Unknown'])
+        if isinstance(nuclei, str):
+            nuclei = [nuclei, nuclei]
+        
+        return {
+            "path": path,
+            "metadata": {"provider_type": "dmfit", "params": params},
+            "ndim": 2,
+            "data": data_matrix,
+            "ppm_scale": (y_axis, x_axis),
+            "projections": {
+                "f1": np.max(data_matrix, axis=1),
+                "f2": np.max(data_matrix, axis=0)
+            },
+            "nuclei": nuclei,
+        }
+    
+    else:
+        try:
+            dmfit_df = pd.read_csv(path, sep="\t", skiprows=2)
+        except Exception as e:
+            raise OSError(f"Error reading DMfit data at path {path}: {e}") from e
 
-    ppm_scale = dmfit_df["ppm"].to_numpy()
-    spectrum_data_values = dmfit_df["Spectrum"].to_numpy()
+        dmfit_df.columns = dmfit_df.columns.str.replace("##col_ ", "")
 
-    ndim = 1
+        ppm_scale = dmfit_df["ppm"].to_numpy()
+        spectrum_data_values = dmfit_df["Spectrum"].to_numpy()
 
-    nuclei = "Unknown"
+        ndim = 1
 
-    norm_max = (
-        spectrum_data_values / np.max(spectrum_data_values)
-        if np.max(spectrum_data_values) != 0
-        else spectrum_data_values.copy()
-    )
+        nuclei = "Unknown"
 
-    return {
-        "path": path,
-        "metadata": {"provider_type": "dmfit"},
-        "ndim": ndim,
-        "data": spectrum_data_values,
-        "norm_max": norm_max,
-        "projections": None,
-        "ppm_scale": ppm_scale,
-        "hz_scale": None,
-        "nuclei": nuclei,
-        "dmfit_dataframe": dmfit_df,
-    }
+        norm_max = (
+            spectrum_data_values / np.max(spectrum_data_values)
+            if np.max(spectrum_data_values) != 0
+            else spectrum_data_values.copy()
+        )
+
+        return {
+            "path": path,
+            "metadata": {"provider_type": "dmfit"},
+            "ndim": ndim,
+            "data": spectrum_data_values,
+            "norm_max": norm_max,
+            "norm_scans": None,
+            "projections": None,
+            "ppm_scale": ppm_scale,
+            "hz_scale": None,
+            "nuclei": nuclei,
+            "dmfit_dataframe": dmfit_df,
+        }
