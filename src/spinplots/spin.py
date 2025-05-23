@@ -112,8 +112,10 @@ class SpinCollection:
 
     def __init__(self, spins: list[Spin]):
         if not spins:
-            raise ValueError("Cannot initialize SpinCollection with empty list of Spins.")
-        
+            raise ValueError(
+                "Cannot initialize SpinCollection with empty list of Spins."
+            )
+
         self.spins = spins
 
     def __repr__(self) -> str:
@@ -136,7 +138,9 @@ class SpinCollection:
             The result from the underlying plotting function.
         """
         # Check if all spins are of the same type (provider and ndim)
-        all_providers = all(spin.provider == self.spins[0].provider for spin in self.spins)
+        all_providers = all(
+            spin.provider == self.spins[0].provider for spin in self.spins
+        )
         all_ndim = all(spin.ndim == self.spins[0].ndim for spin in self.spins)
 
         if not (all_providers and all_ndim):
@@ -165,7 +169,9 @@ class SpinCollection:
             case ("bruker", 2, None):
                 return spinplot.bruker2d(spectra, **kwargs)
             case ("bruker", 1, tuple()):
-                return spinplot.bruker1d_grid(spectra, subplot_dims=subplot_dims, **kwargs)
+                return spinplot.bruker1d_grid(
+                    spectra, subplot_dims=subplot_dims, **kwargs
+                )
             case ("bruker", 2, tuple()):
                 raise ValueError("Grid layout is not supported for 2D spectra.")
             case ("dmfit", 1, None):

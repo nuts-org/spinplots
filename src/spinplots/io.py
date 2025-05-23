@@ -169,14 +169,14 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
     """Helper function to read data of DMFit data."""
     import re
 
-    with open(path, 'r') as file:
-        first_lines = ''.join([file.readline() for _ in range(10)])
-        ndim_2 = '##N_F1' in first_lines or '##N_F2' in first_lines
+    with open(path, "r") as file:
+        first_lines = "".join([file.readline() for _ in range(10)])
+        ndim_2 = "##N_F1" in first_lines or "##N_F2" in first_lines
 
     if ndim_2:
-        with open(path, 'r') as file:
+        with open(path, "r") as file:
             lines = file.readlines()
-        
+
         params = {}
         data_start_line = 0
         for i, line in enumerate(lines):
@@ -187,25 +187,28 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
                 parts = line.strip().split("=", 1)
                 if len(parts) == 2:
                     params[parts[0]] = parts[1]
-        
+
         n_f2 = int(float(params.get("##N_F2", "512")))
         n_f1 = int(float(params.get("##N_F1", "512")))
-        
+
         x0_f2 = float(params.get("##X0_F2", "0"))
         dx_f2 = float(params.get("##dX_F2", "1"))
         x0_f1 = float(params.get("##X0_F1", "0"))
         dx_f1 = float(params.get("##dX_F1", "1"))
-        
+
         x_axis = np.array([x0_f2 + i * dx_f2 for i in range(n_f2)])
         y_axis = np.array([x0_f1 + i * dx_f1 for i in range(n_f1)])
-        
+
         data_values = []
         for line in lines[data_start_line:]:
             if line.strip():
                 # Extract all numbers inline
-                values = [float(val) for val in re.findall(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", line)]
+                values = [
+                    float(val)
+                    for val in re.findall(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", line)
+                ]
                 data_values.extend(values)
-        
+
         expected_points = n_f1 * n_f2
         if len(data_values) < expected_points:
             warnings.warn(
@@ -219,13 +222,13 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
                 UserWarning,
             )
             data_values = data_values[:expected_points]
-        
+
         data_matrix = np.array(data_values).reshape(n_f1, n_f2)
-        
-        nuclei = kwargs.get('nuclei', ['Unknown', 'Unknown'])
+
+        nuclei = kwargs.get("nuclei", ["Unknown", "Unknown"])
         if isinstance(nuclei, str):
             nuclei = [nuclei, nuclei]
-        
+
         return {
             "path": path,
             "metadata": {"provider_type": "dmfit", "params": params},
@@ -234,11 +237,11 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
             "ppm_scale": (y_axis, x_axis),
             "projections": {
                 "f1": np.max(data_matrix, axis=1),
-                "f2": np.max(data_matrix, axis=0)
+                "f2": np.max(data_matrix, axis=0),
             },
             "nuclei": nuclei,
         }
-    
+
     else:
         try:
             dmfit_df = pd.read_csv(path, sep="\t", skiprows=2)
