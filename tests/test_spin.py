@@ -215,7 +215,9 @@ def spincollection_dmfit_2d():
 
 
 def test_spin_plot_dmfit_2d(spin_dmfit_2d):
-    """Test plotting 2D DMFit data from a Spin object."""
+    assert spin_dmfit_2d.ndim == 2
+    assert spin_dmfit_2d.provider == "dmfit"
+
     ax_dict = spin_dmfit_2d.plot(
         contour_start=10, contour_num=5, contour_factor=1.5, return_fig=True
     )
@@ -226,7 +228,6 @@ def test_spin_plot_dmfit_2d(spin_dmfit_2d):
 
 
 def test_spincollection_plot_dmfit_2d(spincollection_dmfit_2d):
-    """Test plotting 2D DMFit data from a SpinCollection."""
     ax_dict = spincollection_dmfit_2d.plot(
         contour_start=10,
         contour_num=5,
@@ -244,7 +245,7 @@ def test_spincollection_plot_dmfit_2d(spincollection_dmfit_2d):
     assert "spectrum" in legend_texts
     assert "fit" in legend_texts
 
-    # Test with custom labels
+    # Test custom labels
     ax_dict = spincollection_dmfit_2d.plot(
         contour_start=10,
         contour_num=5,
@@ -255,3 +256,10 @@ def test_spincollection_plot_dmfit_2d(spincollection_dmfit_2d):
     legend_texts = [text.get_text() for text in legend.get_texts()]
     assert "Experimental" in legend_texts
     assert "Calculated" in legend_texts
+
+
+def test_spin_plot_dmfit_2d_grid_not_supported(spin_dmfit_2d):
+    with pytest.raises(
+        ValueError, match="Grid layout is not supported for 2D spectra."
+    ):
+        spin_dmfit_2d.plot(grid="1x2")
