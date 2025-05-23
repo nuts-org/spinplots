@@ -50,9 +50,9 @@ docs = [
 ]
 
 [project.urls]
-repository = "https://github.com/carlosbornes/spinplots"
-documentation = "https://carlosbornes.github.io/spinplots/"
-changelog = "https://github.com/carlosbornes/spinplots/blob/main/CHANGELOG.md"
+repository = "https://github.com/nuts-org/spinplots"
+documentation = "https://nuts-org.github.io/spinplots/"
+changelog = "https://github.com/nuts-org/spinplots/blob/main/CHANGELOG.md"
 
 [project.scripts]
 bruker2csv = "spinplots.cli:main"

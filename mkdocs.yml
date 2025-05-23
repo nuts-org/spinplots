@@ -1,5 +1,5 @@
 site_name: spinplots
-site_author: Carlos Bornes
+site_author: NUTS
 site_description: >-
   Python NMR plots made easy.
 nav:
@@ -17,7 +17,7 @@ nav:
       - about/license.md
       - about/changelog.md
 
-repo_url: https://github.com/carlosbornes/spinplots/
+repo_url: https://github.com/nuts-org/spinplots
 edit_uri: blob/main/docs/
 
 theme:
