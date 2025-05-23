@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import warnings
-
 import spinplots.plot as spinplot
 
 

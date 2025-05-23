@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import warnings
+from pathlib import Path
 
 import nmrglue as ng
 import numpy as np
@@ -169,12 +170,12 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
     """Helper function to read data of DMFit data."""
     import re
 
-    with open(path, "r") as file:
+    with Path(path).open() as file:
         first_lines = "".join([file.readline() for _ in range(10)])
         ndim_2 = "##N_F1" in first_lines or "##N_F2" in first_lines
 
     if ndim_2:
-        with open(path, "r") as file:
+        with Path(path).open() as file:
             lines = file.readlines()
 
         params = {}
