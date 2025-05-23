@@ -38,14 +38,14 @@ This is a lot of code for a simple 1D plot! If one wants to make a 2D plot with 
 `SpinPlots` tries to simplify the process. With just one function call, you can create the same 1D plot:
 
 ```python
-from spinplots.plot import bruker1d
+from spinplots.io import read_nmr
 
-bruker1d(
-    ["Data/1/pdata/1/"],
+data = read_nmr("data/1/pdata/1/")
+data.plot(
     labels=["Sample X"],
     xlim=(20, 0),
     save=True,
     filename="spectrum",
-    format="png",
+    format="png"
 )
 ```

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "spinplots"
 description="NMR spectra in python made easy"
-version = "0.1.0"
+version = "0.2.0"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [
@@ -22,13 +22,14 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
-requires-python = ">=3.9, <3.13"
+requires-python = ">=3.9"
 dependencies = ["numpy", "nmrglue", "pandas", "matplotlib"]
 
 [project.optional-dependencies]
@@ -44,7 +45,8 @@ docs = [
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.0",
     "pillow>=10.0.0",
-    "cairosvg>=2.7.1"
+    "cairosvg>=2.7.1",
+    "mike>=2.0"
 ]
 
 [project.urls]
