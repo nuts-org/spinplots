@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `Spin` class for individual spectrum data
   - `SpinCollection` class to manage multiple spectra with efficient
 - **Enhanced default management**: Defined default plot styling with possibility to override
+- **Added read_nmr and .plot()**: Implemented unified way to read and plot data
 - **DMFit Support**: Added functionality to read and plot data from DMFit
 - **Added Testing**: Added test suite with improved coverage
 
