@@ -1370,7 +1370,7 @@ def dmfit2d(
         fig.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
 
     if return_fig:
-        return fig, ax_dict
+        return ax_dict
 
     if not save:
         plt.show()

@@ -11,6 +11,8 @@ DATA_DIR_1D_1 = "data/1D/glycine/pdata/1"
 DATA_DIR_1D_2 = "data/1D/alanine/pdata/1"
 DATA_DIR_2D = "data/2D/16/pdata/1"
 DATA_DIR_DM = "data/DMFit/overlapping_spe_fit.ppm"
+DATA_DIR_DM_2D = "data/DMFit/hetcor_spectrum.ppm"
+DATA_DIR_DM_2D_fit = "data/DMFit/hetcor_model.ppm"
 
 
 @pytest.fixture(autouse=True)
@@ -196,3 +198,60 @@ def test_spincollection_plot_override_labels(spin_1d, spin_1d_2):
     assert "Custom 2" in legend_texts
     assert "Sample A" not in legend_texts
     assert "Sample B" not in legend_texts
+
+
+@pytest.fixture
+def spin_dmfit_2d():
+    return read_nmr("data/DMFit/hetcor_spectrum.ppm", provider="dmfit")
+
+
+@pytest.fixture
+def spincollection_dmfit_2d():
+    return read_nmr(
+        ["data/DMFit/hetcor_spectrum.ppm", "data/DMFit/hetcor_model.ppm"],
+        provider="dmfit",
+        tags=["spectrum", "fit"],
+    )
+
+
+def test_spin_plot_dmfit_2d(spin_dmfit_2d):
+    """Test plotting 2D DMFit data from a Spin object."""
+    ax_dict = spin_dmfit_2d.plot(
+        contour_start=10, contour_num=5, contour_factor=1.5, return_fig=True
+    )
+    assert isinstance(ax_dict, dict)
+    assert "A" in ax_dict
+    assert "a" in ax_dict
+    assert "b" in ax_dict
+
+
+def test_spincollection_plot_dmfit_2d(spincollection_dmfit_2d):
+    """Test plotting 2D DMFit data from a SpinCollection."""
+    ax_dict = spincollection_dmfit_2d.plot(
+        contour_start=10,
+        contour_num=5,
+        contour_factor=1.5,
+        colors=["black", "red"],
+        return_fig=True,
+    )
+    assert isinstance(ax_dict, dict)
+    assert "A" in ax_dict
+
+    # Test that legends work
+    legend = ax_dict["A"].get_legend()
+    assert legend is not None
+    legend_texts = [text.get_text() for text in legend.get_texts()]
+    assert "spectrum" in legend_texts
+    assert "fit" in legend_texts
+
+    # Test with custom labels
+    ax_dict = spincollection_dmfit_2d.plot(
+        contour_start=10,
+        contour_num=5,
+        labels=["Experimental", "Calculated"],
+        return_fig=True,
+    )
+    legend = ax_dict["A"].get_legend()
+    legend_texts = [text.get_text() for text in legend.get_texts()]
+    assert "Experimental" in legend_texts
+    assert "Calculated" in legend_texts

@@ -5,13 +5,15 @@ import matplotlib.pyplot as plt
 import pytest
 
 from spinplots.io import read_nmr
-from spinplots.plot import bruker1d, bruker1d_grid, bruker2d, df2d, dmfit1d
+from spinplots.plot import bruker1d, bruker1d_grid, bruker2d, df2d, dmfit1d, dmfit2d
 from spinplots.utils import nmr_df
 
 DATA_DIR_1D_1 = "data/1D/glycine/pdata/1"
 DATA_DIR_1D_2 = "data/1D/alanine/pdata/1"
 DATA_DIR_2D = "data/2D/16/pdata/1"
 DATA_DIR_DM = "data/DMFit/overlapping_spe_fit.ppm"
+DATA_DIR_DM_2D = "data/DMFit/hetcor_spectrum.ppm"
+DATA_DIR_DM_2D_fit = "data/DMFit/hetcor_model.ppm"
 
 
 @pytest.fixture(autouse=True)
@@ -59,6 +61,25 @@ def test_df2d():
 def test_dmfit1d():
     spin = read_nmr(DATA_DIR_DM, provider="dmfit")
     fig = dmfit1d(spin, return_fig=True)
+    assert fig is not None
+
+
+def test_dmfit2d():
+    spin = read_nmr(DATA_DIR_DM_2D, provider="dmfit")
+    fig = dmfit2d(spin, return_fig=True)
+    assert fig is not None
+
+
+def test_dmfit2d_col():
+    spin = read_nmr([DATA_DIR_DM_2D, DATA_DIR_DM_2D_fit], provider="dmfit")
+    fig = dmfit2d(
+        spin,
+        contour_start=10,
+        contour_num=5,
+        contour_factor=1.5,
+        colors=["black", "red"],
+        return_fig=True,
+    )
     assert fig is not None
 
 
