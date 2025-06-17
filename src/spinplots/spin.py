@@ -205,13 +205,15 @@ class SpinCollection:
     def __iter__(self):
         return iter(self.spins.items())
 
-    def plot(self, grid=None, **kwargs):
+    def plot(self, grid=None, filter=None, **kwargs):
         """
         Generates a plot of the NMR data stored in this collection.
 
         Args:
             grid (str, optional): Grid layout in format 'rows x cols' (e.g., '2x2', '1x3').
                     If provided, spectra will be plotted in a grid layout.
+            filter (str | list[str], optional): A tag or list of tags to filter the spins
+                    to be plotted
             **kwargs: Plotting keyword arguments specific to the plot type
                     (e.g., xlim, labels, color, contour_start, etc.).
                     These are passed to the underlying plotting function.
@@ -228,11 +230,21 @@ class SpinCollection:
                     f"Grid format should be 'rows x cols' (e.g., '2x2', '1x3'), got {grid}"
                 ) from e
             subplot_dims = (rows, cols)
-
-        spectra = [spin.spectrum for spin in self.spins.values()]
+            
+        spins_to_plot = self.spins
+        if filter:
+            if isinstance(filter, str):
+                filter = [filter]
+            if not all(tag in self.spins for tag in filter):
+                raise KeyError(
+                    f"One or more tags in {filter} not found in the collection."
+                )
+            spins_to_plot = {tag: self.spins[tag] for tag in filter if tag in self.spins}
+    
+        spectra = [spin.spectrum for spin in spins_to_plot.values()]
 
         if "labels" not in kwargs:
-            kwargs["labels"] = list(self.spins.keys())
+            kwargs["labels"] = list(spins_to_plot.keys())
 
         match (self.provider, self.ndim, subplot_dims):
             case ("bruker", 1, None):
@@ -246,7 +258,7 @@ class SpinCollection:
             case ("bruker", 2, tuple()):
                 raise ValueError("Grid layout is not supported for 2D spectra.")
             case ("dmfit", 1, None):
-                if len(self.spins) > 1:
+                if len(spins_to_plot) > 1:
                     raise ValueError(
                         "DMFit plots can only handle one spectrum at a time."
                     )
