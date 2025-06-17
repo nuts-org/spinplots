@@ -230,7 +230,7 @@ class SpinCollection:
                     f"Grid format should be 'rows x cols' (e.g., '2x2', '1x3'), got {grid}"
                 ) from e
             subplot_dims = (rows, cols)
-            
+
         spins_to_plot = self.spins
         if filter:
             if isinstance(filter, str):
@@ -239,8 +239,10 @@ class SpinCollection:
                 raise KeyError(
                     f"One or more tags in {filter} not found in the collection."
                 )
-            spins_to_plot = {tag: self.spins[tag] for tag in filter if tag in self.spins}
-    
+            spins_to_plot = {
+                tag: self.spins[tag] for tag in filter if tag in self.spins
+            }
+
         spectra = [spin.spectrum for spin in spins_to_plot.values()]
 
         if "labels" not in kwargs:
