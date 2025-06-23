@@ -105,8 +105,8 @@ def calculate_projections(data, export=False, filename=None):
         raise ValueError("Data must be a DataFrame or a path to a CSV file.")
 
     cols = df_nmr.columns
-    f1_nuclei, f1_units = cols[0].split()
-    f2_nuclei, f2_units = cols[1].split()
+    f1_nuclei, f1_units = cols[0].split()[0], cols[0].split()[-1] 
+    f2_nuclei, f2_units = cols[1].split()[0], cols[1].split()[-1] 
     data = (
         df_nmr["intensity"]
         .to_numpy()
