@@ -30,7 +30,7 @@ DEFAULTS = {
 
 def bruker2d(
     spectra: dict | list[dict],
-    contour_start: float = 1e5,
+    contour_start: float | None = None,
     contour_num: int = 10,
     contour_factor: float = 1.2,
     cmap: str | list[str] | None = None,
@@ -152,6 +152,9 @@ def bruker2d(
             zoomed_data = data[y_indices, x_indices]
             proj_x = np.amax(zoomed_data, axis=0)
             proj_y = np.amax(zoomed_data, axis=1)
+
+        if contour_start is None:
+            contour_start = 0.05 * np.max(data)
 
         contour_levels = contour_start * contour_factor ** np.arange(contour_num)
 
