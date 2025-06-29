@@ -1,6 +1,7 @@
 # filepath: src/spinplots/io.py
 from __future__ import annotations
 
+import re
 import warnings
 from pathlib import Path
 
@@ -168,7 +169,6 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
 
 def _read_dmfit_data(path: str, **kwargs) -> dict:
     """Helper function to read data of DMFit data."""
-    import re
 
     with Path(path).open() as file:
         first_lines = "".join([file.readline() for _ in range(10)])

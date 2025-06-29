@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+import os
 
 from spinplots.utils import calculate_projections, nmr_df
 
@@ -47,6 +48,22 @@ def test_calculate_projections_csv(tmp_path):
     f1, f2 = calculate_projections(str(f))
     assert f1 is not None
     assert f2 is not None
+
+def test_calculate_projections_without_filename(tmp_path):
+    """Test calculate_projections with export=True and no filename."""
+    df_2d = nmr_df(DATA_DIR_2D)
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path)
+
+    try:
+        f1, f2 = calculate_projections(df_2d, export=True)
+        assert f1 is None
+        assert f2 is None
+        assert (tmp_path / "projections_f1.csv").exists()
+        assert (tmp_path / "projections_f2.csv").exists()
+    finally:
+        os.chdir(original_cwd)
 
 
 def test_calculate_projections_invalid():

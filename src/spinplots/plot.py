@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LogNorm
+from matplotlib.lines import Line2D
+from matplotlib.ticker import MultipleLocator
 
 from spinplots.utils import calculate_projections
 
@@ -162,8 +164,6 @@ def bruker2d(
         y_proj_ppm = ppm_y[y_indices]
 
         if cmap is not None:
-            from matplotlib.colors import LogNorm
-
             if isinstance(cmap, str):
                 cmap = [cmap]
 
@@ -644,8 +644,6 @@ def bruker1d_grid(
         )
 
         if defaults["tickspacing"]:
-            from matplotlib.ticker import MultipleLocator
-
             ax.xaxis.set_major_locator(MultipleLocator(defaults["tickspacing"]))
 
         if not frame:
@@ -1152,7 +1150,6 @@ def dmfit2d(
     ax_dict : dict of matplotlib.axes.Axes, optional
         Dictionary of axes objects (e.g., 'A', 'a', 'b'), if return_fig is True.
     """
-    from matplotlib.lines import Line2D
 
     defaults = DEFAULTS.copy()
     defaults.update(
