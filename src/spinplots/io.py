@@ -1,6 +1,7 @@
 # filepath: src/spinplots/io.py
 from __future__ import annotations
 
+import re
 import warnings
 from pathlib import Path
 
@@ -139,8 +140,8 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
         ppm_f1, ppm_f2 = np.meshgrid(ppm_scale[0], ppm_scale[1], indexing="ij")
         df_nmr_temp = pd.DataFrame(
             {
-                f"{nuclei_y} ppm": ppm_f1.flatten(),
-                f"{nuclei_x} ppm": ppm_f2.flatten(),
+                f"{nuclei_y} F1 ppm": ppm_f1.flatten(),
+                f"{nuclei_x} F2 ppm": ppm_f2.flatten(),
                 "intensity": data.flatten(),
             }
         )
@@ -168,7 +169,6 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
 
 def _read_dmfit_data(path: str, **kwargs) -> dict:
     """Helper function to read data of DMFit data."""
-    import re
 
     with Path(path).open() as file:
         first_lines = "".join([file.readline() for _ in range(10)])

@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LogNorm
+from matplotlib.lines import Line2D
+from matplotlib.ticker import MultipleLocator
 
 from spinplots.utils import calculate_projections
 
@@ -30,7 +32,7 @@ DEFAULTS = {
 
 def bruker2d(
     spectra: dict | list[dict],
-    contour_start: float = 1e5,
+    contour_start: float | None = None,
     contour_num: int = 10,
     contour_factor: float = 1.2,
     cmap: str | list[str] | None = None,
@@ -153,14 +155,15 @@ def bruker2d(
             proj_x = np.amax(zoomed_data, axis=0)
             proj_y = np.amax(zoomed_data, axis=1)
 
+        if contour_start is None:
+            contour_start = 0.05 * np.max(data)
+
         contour_levels = contour_start * contour_factor ** np.arange(contour_num)
 
         x_proj_ppm = ppm_x[x_indices]
         y_proj_ppm = ppm_y[y_indices]
 
         if cmap is not None:
-            from matplotlib.colors import LogNorm
-
             if isinstance(cmap, str):
                 cmap = [cmap]
 
@@ -641,8 +644,6 @@ def bruker1d_grid(
         )
 
         if defaults["tickspacing"]:
-            from matplotlib.ticker import MultipleLocator
-
             ax.xaxis.set_major_locator(MultipleLocator(defaults["tickspacing"]))
 
         if not frame:
@@ -1149,7 +1150,6 @@ def dmfit2d(
     ax_dict : dict of matplotlib.axes.Axes, optional
         Dictionary of axes objects (e.g., 'A', 'a', 'b'), if return_fig is True.
     """
-    from matplotlib.lines import Line2D
 
     defaults = DEFAULTS.copy()
     defaults.update(

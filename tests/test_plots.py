@@ -50,6 +50,17 @@ def test_bruker2d():
     assert out is not None
 
 
+def test_bruker2d_no_contour_start():
+    """Test bruker2d with contour_start=None to cover default calculation."""
+    spin = read_nmr(DATA_DIR_2D, "bruker")
+    out = bruker2d(
+        [spin.spectrum],
+        contour_start=None,
+        return_fig=True,
+    )
+    assert out is not None
+
+
 def test_df2d():
     df_2d = nmr_df(DATA_DIR_2D)
     out = df2d(
