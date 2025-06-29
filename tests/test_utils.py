@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-import pytest
 import os
+from pathlib import Path
+
+import pytest
 
 from spinplots.utils import calculate_projections, nmr_df
 
@@ -49,11 +51,12 @@ def test_calculate_projections_csv(tmp_path):
     assert f1 is not None
     assert f2 is not None
 
+
 def test_calculate_projections_without_filename(tmp_path):
     """Test calculate_projections with export=True and no filename."""
     df_2d = nmr_df(DATA_DIR_2D)
 
-    original_cwd = os.getcwd()
+    original_cwd = Path.cwd()
     os.chdir(tmp_path)
 
     try:
