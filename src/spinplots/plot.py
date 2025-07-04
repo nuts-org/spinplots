@@ -277,6 +277,10 @@ def bruker2d(
         else:
             defaults["yaxislabel"] = f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)"
 
+        if defaults["tickspacing"]:
+            ax["A"].xaxis.set_major_locator(plt.MultipleLocator(defaults["tickspacing"]))
+            ax["A"].yaxis.set_major_locator(plt.MultipleLocator(defaults["tickspacing"]))
+
         if (
             homo
             and "yaxislabel" not in kwargs
