@@ -11,7 +11,7 @@ from spinplots.plot import bruker1d, bruker1d_grid, bruker2d, df2d, dmfit1d
 from spinplots.spin import Spin, SpinCollection
 from spinplots.utils import calculate_projections
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 __all__ = [
     "Spin",
