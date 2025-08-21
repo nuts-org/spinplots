@@ -19,6 +19,7 @@ nav:
 
 repo_url: https://github.com/nuts-org/spinplots
 edit_uri: blob/main/docs/
+site_url: https://nuts-org.github.io/spinplots/
 
 theme:
   features:
