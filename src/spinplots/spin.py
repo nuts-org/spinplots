@@ -95,7 +95,9 @@ class Spin:
             case ("dmfit", 2, None):
                 return spinplot.dmfit2d(self, **kwargs)
             case ("dmfit", 2, tuple()):
-                raise ValueError("Grid layout is not supported for 2D spectra.")
+                return spinplot.dmfit2d_grid(
+                    self, subplot_dims=subplot_dims, **kwargs
+                )
             case _:
                 raise ValueError(
                     f"Plotting not supported for provider: {self.provider} with ndim={self.ndim}"
@@ -268,7 +270,11 @@ class SpinCollection:
             case ("dmfit", 1, tuple()):
                 raise ValueError("Grid layout is not supported for DMFit spectra.")
             case ("dmfit", 2, None):
-                return spinplot.dmfit2d(self, **kwargs)
+                return spinplot.dmfit2d(spectra, **kwargs)
+            case ("dmfit", 2, tuple()):
+                return spinplot.dmfit2d_grid(
+                    spectra, subplot_dims=subplot_dims, **kwargs
+                )
             case _:
                 raise ValueError(
                     f"Plotting not supported for provider: {self.provider} with ndim={self.ndim}"
