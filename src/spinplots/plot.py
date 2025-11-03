@@ -705,416 +705,6 @@ def bruker1d_grid(
     plt.show()
     return None
 
-def dmfit1d_grid(
-    spins: list,
-    subplot_dims=(1, 1),
-    labels=None,
-    xlim=None,
-    ylim=None,
-    color=None,
-    model_color=None,
-    deconv_color=None,
-    save=False,
-    filename=None,
-    format="png",
-    return_fig=False,
-    **kwargs,
-):
-    """
-    Plot multiple 1D DMFit spectra in a grid layout.
-    
-    Each subplot shows an experimental spectrum overlaid with its fit/model
-    and optionally its deconvoluted components.
-
-    Parameters
-    ----------
-    spins : list of Spin objects
-        List of Spin objects containing DMFit 1D data.
-    subplot_dims : tuple, optional
-        Grid dimensions as (rows, cols). Default is (1, 1).
-    labels : list of str, optional
-        Labels for each subplot. If None, no labels are shown.
-    xlim : tuple, optional
-        X-axis limits for all subplots.
-    ylim : tuple, optional
-        Y-axis limits for all subplots.
-    color : list of str, optional
-        Colors for experimental spectra.
-    model_color : str, optional
-        Color for model spectra.
-    deconv_color : str, optional
-        Color for deconvoluted components.
-    save : bool, optional
-        Whether to save the figure. Default is False.
-    filename : str, optional
-        Filename for saving (without extension).
-    format : str, optional
-        File format for saving. Default is 'png'.
-    return_fig : bool, optional
-        Whether to return figure and axes. Default is False.
-    **kwargs : dict
-        Additional customization options (axisfontsize, tickfontsize, etc.)
-    Returns
-    -------
-    fig, axes : tuple
-        Figure and axes array if return_fig=True.
-    """
-
-    defaults = DEFAULTS.copy()
-    defaults.update(
-        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
-    )
-
-    rows, cols = subplot_dims
-    fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
-    axes = axes.flatten() if rows * cols > 1 else [axes]
-
-    for i, spin in enumerate(spins):
-        if i >= len(axes):
-            break
-
-        ax = axes[i]
-
-        if spin.spectrum["ndim"] != 1:
-            raise ValueError("All spectra must be 1D for grid plotting")
-        if spin.spectrum["metadata"]["provider_type"] != "dmfit":
-            raise ValueError("All spectra must be from DMFit provider")
-
-        ppm = spin.spectrum["ppm_scale"]
-        data_exp = spin.spectrum["data"]
-        data_model = spin.spectrum["model_data"]
-        data_deconv = spin.spectrum.get("deconvoluted_data", None)
-
-        exp_color = color[i] if color and i < len(color) else "black"
-        model_color = model_color if model_color else "red"
-        deconv_color = deconv_color if deconv_color else "blue"
-
-        ax.plot(ppm, data_exp, color=exp_color, label="Experimental", linewidth=defaults["linewidth"])
-        ax.plot(ppm, data_model, color=model_color, label="Model", linewidth=defaults["linewidth"])
-
-        if data_deconv is not None:
-            for j, component in enumerate(data_deconv):
-                ax.plot(ppm, component, color=deconv_color, linestyle='--', label=f"Component {j+1}", linewidth=defaults["linewidth"])
-
-        if labels and i < len(labels):
-            ax.set_title(labels[i], fontsize=defaults["axisfontsize"])
-
-        if xlim:
-            ax.set_xlim(xlim)
-        if ylim:
-            ax.set_ylim(ylim)
-
-        ax.set_xlabel(
-            defaults["xaxislabel"] if defaults["xaxislabel"] else "Chemical Shift (ppm)",
-            fontsize=defaults["axisfontsize"],
-        )
-        ax.set_ylabel(
-            defaults["yaxislabel"],
-            fontsize=defaults["axisfontsize"],
-        )
-        ax.tick_params(
-            axis="x",
-            labelsize=defaults["tickfontsize"],
-        )
-        ax.tick_params(
-            axis="y",
-            labelsize=defaults["tickfontsize"],
-        )
-        ax.legend(fontsize=defaults["labelsize"])
-    plt.tight_layout()
-
-    if save:
-        if filename:
-            full_filename = f"{filename}.{format}"
-        else:
-            full_filename = f"1d_dmfit_spectra.{format}"
-        fig.savefig(
-            full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
-        )
-        return None
-
-    if return_fig:
-        return fig, axes
-    plt.show()
-    return None
-
-def dmfit2d_grid(
-    spin_objects,
-    subplot_dims=(1, 3),
-    contour_start=1e5,
-    contour_num=10,
-    contour_factor=1.2,
-    colors=None,
-    proj_colors=None,
-    xlim=None,
-    ylim=None,
-    titles=None,
-    linestyles=None,
-    save=False,
-    filename=None,
-    format="png",
-    diag=None,
-    return_fig=False,
-    **kwargs,
-):
-    """
-    Plot multiple 2D DMFit spectra in a grid layout with projections.
-    
-    Each subplot shows an experimental spectrum overlaid with its fit/model.
-    This function expects pairs of spectra (experimental + model) in the SpinCollection.
-
-    Parameters
-    ----------
-    spin_objects : SpinCollection
-        Collection of Spin objects containing DMFit 2D data.
-        Should contain pairs: [exp1, model1, exp2, model2, ...].
-    subplot_dims : tuple, optional
-        Grid dimensions as (rows, cols). Default is (1, 3).
-    contour_start : float, optional
-        Starting contour level. Default is 1e5.
-    contour_num : int, optional
-        Number of contour levels. Default is 10.
-    contour_factor : float, optional
-        Factor by which contour levels increase. Default is 1.2.
-    colors : list of lists, optional
-        Colors for each subplot's [experimental, model] spectra.
-        E.g., [['black', 'red'], ['black', 'red'], ...].
-        If None, uses default ['black', 'red'] for all subplots.
-    proj_colors : list of lists, optional
-        Colors for projections. Same structure as colors.
-    xlim : tuple, optional
-        X-axis limits for all subplots.
-    ylim : tuple, optional
-        Y-axis limits for all subplots.
-    titles : list of str, optional
-        Titles for each subplot (one per pair). If None, no titles are shown.
-    linestyles : list of lists, optional
-        Line styles for each subplot's [experimental, model] spectra.
-        E.g., [['-', '-'], ['-', '--'], ...].
-        If None, uses default ['-', '-'] for all subplots (solid lines for both).
-    xaxislabel : str, optional
-        Label for x-axis. Default is None (auto-generated from nucleus).
-    yaxislabel : str, optional
-        Label for y-axis. Default is None (auto-generated from nucleus).
-    save : bool, optional
-        Whether to save the figure. Default is False.
-    filename : str, optional
-        Filename for saving (without extension).
-    format : str, optional
-        File format for saving. Default is 'png'.
-    diag : float, optional
-        Slope for diagonal reference line. Default is None.
-    return_fig : bool, optional
-        Whether to return figure and axes. Default is False.
-    **kwargs : dict
-        Additional customization options (axisfontsize, tickfontsize, etc.)
-
-    Returns
-    -------
-    fig, axes : tuple, optional
-        Figure and axes array if return_fig=True.
-
-    Example
-    -------
-    >>> data = read_nmr(['exp1.ppm', 'model1.ppm', 'exp2.ppm', 'model2.ppm'], 
-    ...                 provider='dmfit', tags=['1:1 exp', '1:1 model', '2:1 exp', '2:1 model'])
-    >>> data.plot(grid='1x2', contour_start=1.5e5, xlim=(65, 52), ylim=(65, 52))
-    """
-    defaults = DEFAULTS.copy()
-    defaults.update(
-        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
-    )
-
-    if hasattr(spin_objects, "spins"):
-        spectra_list = list(spin_objects.spins.values())
-    else:
-        raise ValueError("dmfit2d_grid requires a SpinCollection object")
-
-    # Check all are 2D DMFit
-    for spin in spectra_list:
-        if spin.spectrum["ndim"] != 2:
-            raise ValueError("All spectra must be 2D for grid plotting")
-        if spin.spectrum["metadata"]["provider_type"] != "dmfit":
-            raise ValueError("All spectra must be from DMFit provider")
-
-    if len(spectra_list) % 2 != 0:
-        raise ValueError(
-            "dmfit2d_grid expects pairs of spectra (experimental + model). "
-            f"Got {len(spectra_list)} spectra, which is not divisible by 2."
-        )
-    
-    num_pairs = len(spectra_list) // 2
-    spectrum_pairs = [
-        (spectra_list[i * 2], spectra_list[i * 2 + 1]) 
-        for i in range(num_pairs)
-    ]
-
-    rows, cols = subplot_dims
-    
-    # Exp and model colors
-    if colors is None:
-        colors = [['black', 'red'] for _ in range(num_pairs)]
-    elif isinstance(colors, list):
-        if len(colors) > 0 and not isinstance(colors[0], list):
-            colors = [colors for _ in range(num_pairs)]
-    
-    # Project colors
-    if proj_colors is None:
-        proj_colors = colors 
-    elif isinstance(proj_colors, list):
-        if len(proj_colors) > 0 and not isinstance(proj_colors[0], list):
-            proj_colors = [proj_colors for _ in range(num_pairs)]
-
-    if linestyles is None:
-        linestyles = [['-', '-'] for _ in range(num_pairs)]
-    elif isinstance(linestyles, list):
-        if len(linestyles) > 0 and not isinstance(linestyles[0], list):
-            linestyles = [linestyles for _ in range(num_pairs)]
-
-    fig = plt.figure(figsize=(6 * cols, 6 * rows))
-    
-    gs = fig.add_gridspec(
-        rows, cols,
-        wspace=0.15,
-        hspace=0.15
-    )
-    
-    axes = []
-
-    for idx, (spin_exp, spin_model) in enumerate(spectrum_pairs):
-        if idx >= rows * cols:
-            break
-
-        row = idx // cols
-        col = idx % cols
-        
-        gs_sub = gs[row, col].subgridspec(
-            10, 10,
-            wspace=0.01,
-            hspace=0.01
-        )
-        
-        ax_top = fig.add_subplot(gs_sub[0, 1:])
-        ax_left = fig.add_subplot(gs_sub[1:, 0])
-        ax_main = fig.add_subplot(gs_sub[1:, 1:], sharex=ax_top, sharey=ax_left)
-
-        exp_color = colors[idx][0] if idx < len(colors) else 'black'
-        model_color = colors[idx][1] if idx < len(colors) and len(colors[idx]) > 1 else 'red'
-        proj_exp_color = proj_colors[idx][0] if idx < len(proj_colors) else exp_color
-        proj_model_color = proj_colors[idx][1] if idx < len(proj_colors) and len(proj_colors[idx]) > 1 else model_color
-
-        exp_linestyle = linestyles[idx][0] if idx < len(linestyles) else '-'
-        model_linestyle = linestyles[idx][1] if idx < len(linestyles) and len(linestyles[idx]) > 1 else '-'
-
-        contour_levels = contour_start * contour_factor ** np.arange(contour_num)
-
-        # Experimental
-        exp_data = spin_exp.spectrum["data"]
-        y_axis = spin_exp.spectrum["ppm_scale"][0]
-        x_axis = spin_exp.spectrum["ppm_scale"][1]
-        proj_f1_exp = spin_exp.spectrum["projections"]["f1"]
-        proj_f2_exp = spin_exp.spectrum["projections"]["f2"]
-
-        ax_main.contour(
-            x_axis, y_axis, exp_data,
-            levels=contour_levels,
-            colors=exp_color,
-            linewidths=defaults["linewidth_contour"],
-            alpha=defaults["alpha"],
-            linestyles=exp_linestyle
-        )
-
-        # Model
-        model_data = spin_model.spectrum["data"]
-        proj_f1_model = spin_model.spectrum["projections"]["f1"]
-        proj_f2_model = spin_model.spectrum["projections"]["f2"]
-
-        ax_main.contour(
-            x_axis, y_axis, model_data,
-            levels=contour_levels,
-            colors=model_color,
-            linewidths=defaults["linewidth_contour"],
-            alpha=defaults["alpha"],
-            linestyles=model_linestyle
-        )
-
-        ax_top.plot(x_axis, proj_f2_exp, color=proj_exp_color, linewidth=defaults["linewidth_proj"], linestyle=exp_linestyle)
-        ax_top.plot(x_axis, proj_f2_model, color=proj_model_color, linewidth=defaults["linewidth_proj"], linestyle=model_linestyle)
-        
-        ax_left.plot(-proj_f1_exp, y_axis, color=proj_exp_color, linewidth=defaults["linewidth_proj"], linestyle=exp_linestyle)
-        ax_left.plot(-proj_f1_model, y_axis, color=proj_model_color, linewidth=defaults["linewidth_proj"], linestyle=model_linestyle)
-
-        ax_top.axis("off")
-        ax_left.axis("off")
-
-        if xlim:
-            ax_main.set_xlim(xlim)
-        if ylim:
-            ax_main.set_ylim(ylim)
-
-        if diag is not None:
-            xlim_eff = xlim if xlim else (x_axis.max(), x_axis.min())
-            x_diag = np.linspace(xlim_eff[0], xlim_eff[1], 100)
-            ax_main.plot(x_diag, diag * x_diag, "k--", lw=1)
-
-        nuclei = spin_exp.spectrum.get("nuclei", ["Unknown", "Unknown"])
-        
-        f2_str = str(nuclei[1])
-        num_f2, nuc_f2 = (
-            "".join(filter(str.isdigit, f2_str)),
-            "".join(filter(str.isalpha, f2_str))
-        )
-        
-        ax_main.set_xlabel(
-            defaults["xaxislabel"] if defaults["xaxislabel"] else f"$^{{{num_f2}}}${nuc_f2} (ppm)",
-            fontsize=defaults["axisfontsize"],
-            fontname=defaults["axisfont"]
-        )
-        
-        f1_str = str(nuclei[0])
-        num_f1, nuc_f1 = (
-            "".join(filter(str.isdigit, f1_str)),
-            "".join(filter(str.isalpha, f1_str))
-        )
-        
-        ax_main.set_ylabel(
-            defaults["yaxislabel"] if defaults["yaxislabel"] else f"$^{{{num_f1}}}${nuc_f1} (ppm)",
-            fontsize=defaults["axisfontsize"],
-            fontname=defaults["axisfont"]
-        )
-        ax_main.yaxis.set_label_position("right")
-        ax_main.yaxis.tick_right()
-
-        if titles is not None and idx < len(titles):
-            ax_top.set_title(
-                titles[idx], 
-                fontsize=defaults["axisfontsize"], 
-                fontweight="bold",
-                pad=5
-            )
-
-        # Tick params
-        ax_main.tick_params(
-            axis="both",
-            labelsize=defaults["tickfontsize"],
-            labelfontfamily=defaults["tickfont"]
-        )
-
-        axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
-
-    # Save or show
-    if save:
-        full_filename = f"{filename if filename else 'dmfit_2d_grid'}.{format}"
-        fig.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
-
-    if return_fig:
-        return fig, axes
-
-    if not save:
-        plt.show()
-
-    return None
-
 # Plot 2D NMR data from CSV or DataFrame
 def df2d(
     path,
@@ -1791,6 +1381,416 @@ def dmfit2d(
 
     if return_fig:
         return ax_dict
+
+    if not save:
+        plt.show()
+
+    return None
+
+def dmfit1d_grid(
+    spins: list,
+    subplot_dims=(1, 1),
+    labels=None,
+    xlim=None,
+    ylim=None,
+    color=None,
+    model_color=None,
+    deconv_color=None,
+    save=False,
+    filename=None,
+    format="png",
+    return_fig=False,
+    **kwargs,
+):
+    """
+    Plot multiple 1D DMFit spectra in a grid layout.
+    
+    Each subplot shows an experimental spectrum overlaid with its fit/model
+    and optionally its deconvoluted components.
+
+    Parameters
+    ----------
+    spins : list of Spin objects
+        List of Spin objects containing DMFit 1D data.
+    subplot_dims : tuple, optional
+        Grid dimensions as (rows, cols). Default is (1, 1).
+    labels : list of str, optional
+        Labels for each subplot. If None, no labels are shown.
+    xlim : tuple, optional
+        X-axis limits for all subplots.
+    ylim : tuple, optional
+        Y-axis limits for all subplots.
+    color : list of str, optional
+        Colors for experimental spectra.
+    model_color : str, optional
+        Color for model spectra.
+    deconv_color : str, optional
+        Color for deconvoluted components.
+    save : bool, optional
+        Whether to save the figure. Default is False.
+    filename : str, optional
+        Filename for saving (without extension).
+    format : str, optional
+        File format for saving. Default is 'png'.
+    return_fig : bool, optional
+        Whether to return figure and axes. Default is False.
+    **kwargs : dict
+        Additional customization options (axisfontsize, tickfontsize, etc.)
+    Returns
+    -------
+    fig, axes : tuple
+        Figure and axes array if return_fig=True.
+    """
+
+    defaults = DEFAULTS.copy()
+    defaults.update(
+        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
+    )
+
+    rows, cols = subplot_dims
+    fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
+    axes = axes.flatten() if rows * cols > 1 else [axes]
+
+    for i, spin in enumerate(spins):
+        if i >= len(axes):
+            break
+
+        ax = axes[i]
+
+        if spin.spectrum["ndim"] != 1:
+            raise ValueError("All spectra must be 1D for grid plotting")
+        if spin.spectrum["metadata"]["provider_type"] != "dmfit":
+            raise ValueError("All spectra must be from DMFit provider")
+
+        ppm = spin.spectrum["ppm_scale"]
+        data_exp = spin.spectrum["data"]
+        data_model = spin.spectrum["model_data"]
+        data_deconv = spin.spectrum.get("deconvoluted_data", None)
+
+        exp_color = color[i] if color and i < len(color) else "black"
+        model_color = model_color if model_color else "red"
+        deconv_color = deconv_color if deconv_color else "blue"
+
+        ax.plot(ppm, data_exp, color=exp_color, label="Experimental", linewidth=defaults["linewidth"])
+        ax.plot(ppm, data_model, color=model_color, label="Model", linewidth=defaults["linewidth"])
+
+        if data_deconv is not None:
+            for j, component in enumerate(data_deconv):
+                ax.plot(ppm, component, color=deconv_color, linestyle='--', label=f"Component {j+1}", linewidth=defaults["linewidth"])
+
+        if labels and i < len(labels):
+            ax.set_title(labels[i], fontsize=defaults["axisfontsize"])
+
+        if xlim:
+            ax.set_xlim(xlim)
+        if ylim:
+            ax.set_ylim(ylim)
+
+        ax.set_xlabel(
+            defaults["xaxislabel"] if defaults["xaxislabel"] else "Chemical Shift (ppm)",
+            fontsize=defaults["axisfontsize"],
+        )
+        ax.set_ylabel(
+            defaults["yaxislabel"],
+            fontsize=defaults["axisfontsize"],
+        )
+        ax.tick_params(
+            axis="x",
+            labelsize=defaults["tickfontsize"],
+        )
+        ax.tick_params(
+            axis="y",
+            labelsize=defaults["tickfontsize"],
+        )
+        ax.legend(fontsize=defaults["labelsize"])
+    plt.tight_layout()
+
+    if save:
+        if filename:
+            full_filename = f"{filename}.{format}"
+        else:
+            full_filename = f"1d_dmfit_spectra.{format}"
+        fig.savefig(
+            full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
+        )
+        return None
+
+    if return_fig:
+        return fig, axes
+    plt.show()
+    return None
+
+def dmfit2d_grid(
+    spin_objects,
+    subplot_dims=(1, 3),
+    contour_start=1e5,
+    contour_num=10,
+    contour_factor=1.2,
+    colors=None,
+    proj_colors=None,
+    xlim=None,
+    ylim=None,
+    titles=None,
+    linestyles=None,
+    save=False,
+    filename=None,
+    format="png",
+    diag=None,
+    return_fig=False,
+    **kwargs,
+):
+    """
+    Plot multiple 2D DMFit spectra in a grid layout with projections.
+    
+    Each subplot shows an experimental spectrum overlaid with its fit/model.
+    This function expects pairs of spectra (experimental + model) in the SpinCollection.
+
+    Parameters
+    ----------
+    spin_objects : SpinCollection
+        Collection of Spin objects containing DMFit 2D data.
+        Should contain pairs: [exp1, model1, exp2, model2, ...].
+    subplot_dims : tuple, optional
+        Grid dimensions as (rows, cols). Default is (1, 3).
+    contour_start : float, optional
+        Starting contour level. Default is 1e5.
+    contour_num : int, optional
+        Number of contour levels. Default is 10.
+    contour_factor : float, optional
+        Factor by which contour levels increase. Default is 1.2.
+    colors : list of lists, optional
+        Colors for each subplot's [experimental, model] spectra.
+        E.g., [['black', 'red'], ['black', 'red'], ...].
+        If None, uses default ['black', 'red'] for all subplots.
+    proj_colors : list of lists, optional
+        Colors for projections. Same structure as colors.
+    xlim : tuple, optional
+        X-axis limits for all subplots.
+    ylim : tuple, optional
+        Y-axis limits for all subplots.
+    titles : list of str, optional
+        Titles for each subplot (one per pair). If None, no titles are shown.
+    linestyles : list of lists, optional
+        Line styles for each subplot's [experimental, model] spectra.
+        E.g., [['-', '-'], ['-', '--'], ...].
+        If None, uses default ['-', '-'] for all subplots (solid lines for both).
+    xaxislabel : str, optional
+        Label for x-axis. Default is None (auto-generated from nucleus).
+    yaxislabel : str, optional
+        Label for y-axis. Default is None (auto-generated from nucleus).
+    save : bool, optional
+        Whether to save the figure. Default is False.
+    filename : str, optional
+        Filename for saving (without extension).
+    format : str, optional
+        File format for saving. Default is 'png'.
+    diag : float, optional
+        Slope for diagonal reference line. Default is None.
+    return_fig : bool, optional
+        Whether to return figure and axes. Default is False.
+    **kwargs : dict
+        Additional customization options (axisfontsize, tickfontsize, etc.)
+
+    Returns
+    -------
+    fig, axes : tuple, optional
+        Figure and axes array if return_fig=True.
+
+    Example
+    -------
+    >>> data = read_nmr(['exp1.ppm', 'model1.ppm', 'exp2.ppm', 'model2.ppm'], 
+    ...                 provider='dmfit', tags=['1:1 exp', '1:1 model', '2:1 exp', '2:1 model'])
+    >>> data.plot(grid='1x2', contour_start=1.5e5, xlim=(65, 52), ylim=(65, 52))
+    """
+    defaults = DEFAULTS.copy()
+    defaults.update(
+        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
+    )
+
+    if hasattr(spin_objects, "spins"):
+        spectra_list = list(spin_objects.spins.values())
+    else:
+        raise ValueError("dmfit2d_grid requires a SpinCollection object")
+
+    # Check all are 2D DMFit
+    for spin in spectra_list:
+        if spin.spectrum["ndim"] != 2:
+            raise ValueError("All spectra must be 2D for grid plotting")
+        if spin.spectrum["metadata"]["provider_type"] != "dmfit":
+            raise ValueError("All spectra must be from DMFit provider")
+
+    if len(spectra_list) % 2 != 0:
+        raise ValueError(
+            "dmfit2d_grid expects pairs of spectra (experimental + model). "
+            f"Got {len(spectra_list)} spectra, which is not divisible by 2."
+        )
+    
+    num_pairs = len(spectra_list) // 2
+    spectrum_pairs = [
+        (spectra_list[i * 2], spectra_list[i * 2 + 1]) 
+        for i in range(num_pairs)
+    ]
+
+    rows, cols = subplot_dims
+    
+    # Exp and model colors
+    if colors is None:
+        colors = [['black', 'red'] for _ in range(num_pairs)]
+    elif isinstance(colors, list):
+        if len(colors) > 0 and not isinstance(colors[0], list):
+            colors = [colors for _ in range(num_pairs)]
+    
+    # Project colors
+    if proj_colors is None:
+        proj_colors = colors 
+    elif isinstance(proj_colors, list):
+        if len(proj_colors) > 0 and not isinstance(proj_colors[0], list):
+            proj_colors = [proj_colors for _ in range(num_pairs)]
+
+    if linestyles is None:
+        linestyles = [['-', '-'] for _ in range(num_pairs)]
+    elif isinstance(linestyles, list):
+        if len(linestyles) > 0 and not isinstance(linestyles[0], list):
+            linestyles = [linestyles for _ in range(num_pairs)]
+
+    fig = plt.figure(figsize=(6 * cols, 6 * rows))
+    
+    gs = fig.add_gridspec(
+        rows, cols,
+        wspace=0.15,
+        hspace=0.15
+    )
+    
+    axes = []
+
+    for idx, (spin_exp, spin_model) in enumerate(spectrum_pairs):
+        if idx >= rows * cols:
+            break
+
+        row = idx // cols
+        col = idx % cols
+        
+        gs_sub = gs[row, col].subgridspec(
+            10, 10,
+            wspace=0.01,
+            hspace=0.01
+        )
+        
+        ax_top = fig.add_subplot(gs_sub[0, 1:])
+        ax_left = fig.add_subplot(gs_sub[1:, 0])
+        ax_main = fig.add_subplot(gs_sub[1:, 1:], sharex=ax_top, sharey=ax_left)
+
+        exp_color = colors[idx][0] if idx < len(colors) else 'black'
+        model_color = colors[idx][1] if idx < len(colors) and len(colors[idx]) > 1 else 'red'
+        proj_exp_color = proj_colors[idx][0] if idx < len(proj_colors) else exp_color
+        proj_model_color = proj_colors[idx][1] if idx < len(proj_colors) and len(proj_colors[idx]) > 1 else model_color
+
+        exp_linestyle = linestyles[idx][0] if idx < len(linestyles) else '-'
+        model_linestyle = linestyles[idx][1] if idx < len(linestyles) and len(linestyles[idx]) > 1 else '-'
+
+        contour_levels = contour_start * contour_factor ** np.arange(contour_num)
+
+        # Experimental
+        exp_data = spin_exp.spectrum["data"]
+        y_axis = spin_exp.spectrum["ppm_scale"][0]
+        x_axis = spin_exp.spectrum["ppm_scale"][1]
+        proj_f1_exp = spin_exp.spectrum["projections"]["f1"]
+        proj_f2_exp = spin_exp.spectrum["projections"]["f2"]
+
+        ax_main.contour(
+            x_axis, y_axis, exp_data,
+            levels=contour_levels,
+            colors=exp_color,
+            linewidths=defaults["linewidth_contour"],
+            alpha=defaults["alpha"],
+            linestyles=exp_linestyle
+        )
+
+        # Model
+        model_data = spin_model.spectrum["data"]
+        proj_f1_model = spin_model.spectrum["projections"]["f1"]
+        proj_f2_model = spin_model.spectrum["projections"]["f2"]
+
+        ax_main.contour(
+            x_axis, y_axis, model_data,
+            levels=contour_levels,
+            colors=model_color,
+            linewidths=defaults["linewidth_contour"],
+            alpha=defaults["alpha"],
+            linestyles=model_linestyle
+        )
+
+        ax_top.plot(x_axis, proj_f2_exp, color=proj_exp_color, linewidth=defaults["linewidth_proj"], linestyle=exp_linestyle)
+        ax_top.plot(x_axis, proj_f2_model, color=proj_model_color, linewidth=defaults["linewidth_proj"], linestyle=model_linestyle)
+        
+        ax_left.plot(-proj_f1_exp, y_axis, color=proj_exp_color, linewidth=defaults["linewidth_proj"], linestyle=exp_linestyle)
+        ax_left.plot(-proj_f1_model, y_axis, color=proj_model_color, linewidth=defaults["linewidth_proj"], linestyle=model_linestyle)
+
+        ax_top.axis("off")
+        ax_left.axis("off")
+
+        if xlim:
+            ax_main.set_xlim(xlim)
+        if ylim:
+            ax_main.set_ylim(ylim)
+
+        if diag is not None:
+            xlim_eff = xlim if xlim else (x_axis.max(), x_axis.min())
+            x_diag = np.linspace(xlim_eff[0], xlim_eff[1], 100)
+            ax_main.plot(x_diag, diag * x_diag, "k--", lw=1)
+
+        nuclei = spin_exp.spectrum.get("nuclei", ["Unknown", "Unknown"])
+        
+        f2_str = str(nuclei[1])
+        num_f2, nuc_f2 = (
+            "".join(filter(str.isdigit, f2_str)),
+            "".join(filter(str.isalpha, f2_str))
+        )
+        
+        ax_main.set_xlabel(
+            defaults["xaxislabel"] if defaults["xaxislabel"] else f"$^{{{num_f2}}}${nuc_f2} (ppm)",
+            fontsize=defaults["axisfontsize"],
+            fontname=defaults["axisfont"]
+        )
+        
+        f1_str = str(nuclei[0])
+        num_f1, nuc_f1 = (
+            "".join(filter(str.isdigit, f1_str)),
+            "".join(filter(str.isalpha, f1_str))
+        )
+        
+        ax_main.set_ylabel(
+            defaults["yaxislabel"] if defaults["yaxislabel"] else f"$^{{{num_f1}}}${nuc_f1} (ppm)",
+            fontsize=defaults["axisfontsize"],
+            fontname=defaults["axisfont"]
+        )
+        ax_main.yaxis.set_label_position("right")
+        ax_main.yaxis.tick_right()
+
+        if titles is not None and idx < len(titles):
+            ax_top.set_title(
+                titles[idx], 
+                fontsize=defaults["axisfontsize"], 
+                fontweight="bold",
+                pad=5
+            )
+
+        # Tick params
+        ax_main.tick_params(
+            axis="both",
+            labelsize=defaults["tickfontsize"],
+            labelfontfamily=defaults["tickfont"]
+        )
+
+        axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
+
+    # Save or show
+    if save:
+        full_filename = f"{filename if filename else 'dmfit_2d_grid'}.{format}"
+        fig.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
+
+    if return_fig:
+        return fig, axes
 
     if not save:
         plt.show()
