@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "spinplots"
 description="NMR spectra in python made easy"
-version = "0.2.1"
+version = "0.2.2"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [
