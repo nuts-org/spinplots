@@ -1388,7 +1388,7 @@ def dmfit2d(
     return None
 
 def dmfit1d_grid(
-    spins: list,
+    spectra: dict | list[dict],
     subplot_dims=(1, 1),
     labels=None,
     xlim=None,
@@ -1404,14 +1404,14 @@ def dmfit1d_grid(
 ):
     """
     Plot multiple 1D DMFit spectra in a grid layout.
-    
+
     Each subplot shows an experimental spectrum overlaid with its fit/model
     and optionally its deconvoluted components.
 
     Parameters
     ----------
-    spins : list of Spin objects
-        List of Spin objects containing DMFit 1D data.
+    spectra : dict or list of dict
+        Dictionary or list of dictionaries containing DMFit 1D spectrum data.
     subplot_dims : tuple, optional
         Grid dimensions as (rows, cols). Default is (1, 1).
     labels : list of str, optional
@@ -1420,12 +1420,13 @@ def dmfit1d_grid(
         X-axis limits for all subplots.
     ylim : tuple, optional
         Y-axis limits for all subplots.
-    color : list of str, optional
-        Colors for experimental spectra.
+    color : str or list of str, optional
+        Color(s) for experimental spectra. If a single string, the same color
+        is used for all spectra. If a list, each spectrum gets its own color.
     model_color : str, optional
-        Color for model spectra.
+        Color for model/fit spectra. Default is 'red'.
     deconv_color : str, optional
-        Color for deconvoluted components.
+        Color for deconvoluted components. If None, uses default matplotlib colors.
     save : bool, optional
         Whether to save the figure. Default is False.
     filename : str, optional
@@ -1442,6 +1443,15 @@ def dmfit1d_grid(
         Figure and axes array if return_fig=True.
     """
 
+    spectra = spectra if isinstance(spectra, list) else [spectra]
+
+    if not all(s["ndim"] == 1 for s in spectra):
+        raise ValueError("All spectra must be 1-dimensional for dmfit1d_grid.")
+
+    # Convert single color string to list
+    if isinstance(color, str):
+        color = [color] * len(spectra)
+
     defaults = DEFAULTS.copy()
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
@@ -1451,58 +1461,112 @@ def dmfit1d_grid(
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
     axes = axes.flatten() if rows * cols > 1 else [axes]
 
-    for i, spin in enumerate(spins):
+    for i, spectrum in enumerate(spectra):
         if i >= len(axes):
             break
 
         ax = axes[i]
 
-        if spin.spectrum["ndim"] != 1:
-            raise ValueError("All spectra must be 1D for grid plotting")
-        if spin.spectrum["metadata"]["provider_type"] != "dmfit":
+        if spectrum["metadata"]["provider_type"] != "dmfit":
             raise ValueError("All spectra must be from DMFit provider")
 
-        ppm = spin.spectrum["ppm_scale"]
-        data_exp = spin.spectrum["data"]
-        data_model = spin.spectrum["model_data"]
-        data_deconv = spin.spectrum.get("deconvoluted_data", None)
+        dmfit_df = spectrum.get("dmfit_dataframe")
+        if dmfit_df is None:
+            raise ValueError(
+                "DMfit DataFrame not found in spectrum. Read data with provider='dmfit'"
+            )
+
+        ppm = dmfit_df["ppm"].to_numpy()
+        data_exp = dmfit_df["Spectrum"].to_numpy()
+        data_model = dmfit_df["Model"].to_numpy()
+
+        n_lines = sum(col.startswith("Line#") for col in dmfit_df.columns)
 
         exp_color = color[i] if color and i < len(color) else "black"
-        model_color = model_color if model_color else "red"
-        deconv_color = deconv_color if deconv_color else "blue"
+        fit_color = model_color if model_color else "red"
 
-        ax.plot(ppm, data_exp, color=exp_color, label="Experimental", linewidth=defaults["linewidth"])
-        ax.plot(ppm, data_model, color=model_color, label="Model", linewidth=defaults["linewidth"])
+        # Plot experimental spectrum
+        ax.plot(
+            ppm,
+            data_exp,
+            color=exp_color,
+            linewidth=defaults["linewidth"],
+            linestyle=defaults["linestyle"],
+            alpha=defaults["alpha"],
+        )
 
-        if data_deconv is not None:
-            for j, component in enumerate(data_deconv):
-                ax.plot(ppm, component, color=deconv_color, linestyle='--', label=f"Component {j+1}", linewidth=defaults["linewidth"])
+        # Plot model/fit spectrum
+        ax.plot(
+            ppm,
+            data_model,
+            color=fit_color,
+            linewidth=defaults["linewidth"],
+            linestyle="--",
+            alpha=defaults["alpha"],
+        )
+
+        # Plot deconvoluted components if they exist
+        if n_lines > 0:
+            for j in range(1, n_lines + 1):
+                if deconv_color is not None:
+                    ax.fill_between(
+                        ppm,
+                        dmfit_df[f"Line#{j}"],
+                        alpha=0.3,
+                        color=deconv_color,
+                    )
+                else:
+                    ax.fill_between(ppm, dmfit_df[f"Line#{j}"], alpha=0.3)
 
         if labels and i < len(labels):
             ax.set_title(labels[i], fontsize=defaults["axisfontsize"])
+
+        # X-axis label
+        if xaxislabel := defaults.get("xaxislabel"):
+            ax.set_xlabel(
+                xaxislabel,
+                fontsize=defaults["axisfontsize"],
+                fontname=defaults["axisfont"],
+            )
+        else:
+            nuclei = spectrum.get("nuclei", "Unknown")
+            if nuclei and nuclei != "Unknown":
+                number, nucleus = (
+                    "".join(filter(str.isdigit, nuclei)),
+                    "".join(filter(str.isalpha, nuclei)),
+                )
+                ax.set_xlabel(
+                    f"$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)",
+                    fontsize=defaults["axisfontsize"],
+                    fontname=defaults["axisfont"],
+                )
+            else:
+                ax.set_xlabel(
+                    "Chemical Shift (ppm)",
+                    fontsize=defaults["axisfontsize"],
+                    fontname=defaults["axisfont"],
+                )
+
+        ax.tick_params(
+            axis="x",
+            labelsize=defaults["tickfontsize"],
+            labelfontfamily=defaults["tickfont"],
+        )
+
+        if defaults["tickspacing"]:
+            ax.xaxis.set_major_locator(MultipleLocator(defaults["tickspacing"]))
+
+        # Y-axis (no frame by default)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.spines["left"].set_visible(False)
+        ax.set_yticklabels([])
+        ax.set_yticks([])
 
         if xlim:
             ax.set_xlim(xlim)
         if ylim:
             ax.set_ylim(ylim)
-
-        ax.set_xlabel(
-            defaults["xaxislabel"] if defaults["xaxislabel"] else "Chemical Shift (ppm)",
-            fontsize=defaults["axisfontsize"],
-        )
-        ax.set_ylabel(
-            defaults["yaxislabel"],
-            fontsize=defaults["axisfontsize"],
-        )
-        ax.tick_params(
-            axis="x",
-            labelsize=defaults["tickfontsize"],
-        )
-        ax.tick_params(
-            axis="y",
-            labelsize=defaults["tickfontsize"],
-        )
-        ax.legend(fontsize=defaults["labelsize"])
     plt.tight_layout()
 
     if save:
@@ -1514,9 +1578,9 @@ def dmfit1d_grid(
             full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
         )
         return None
-
-    if return_fig:
+    elif return_fig:
         return fig, axes
+
     plt.show()
     return None
 

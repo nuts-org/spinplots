@@ -268,7 +268,9 @@ class SpinCollection:
                     )
                 return spinplot.dmfit1d(list(self.spins.values())[0], **kwargs)
             case ("dmfit", 1, tuple()):
-                raise ValueError("Grid layout is not supported for DMFit spectra.")
+                return spinplot.dmfit1d_grid(
+                        spectra, subplot_dims=subplot_dims, **kwargs
+                )
             case ("dmfit", 2, None):
                 return spinplot.dmfit2d(spectra, **kwargs)
             case ("dmfit", 2, tuple()):
