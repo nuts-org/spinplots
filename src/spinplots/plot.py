@@ -419,11 +419,7 @@ def bruker2d_grid(
     rows, cols = subplot_dims
     fig = plt.figure(figsize=(6 * cols, 6 * rows))
 
-    gs = fig.add_gridspec(
-        rows, cols,
-        wspace=0.15,
-        hspace=0.15
-    )
+    gs = fig.add_gridspec(rows, cols, wspace=0.15, hspace=0.15)
 
     axes = []
 
@@ -435,11 +431,7 @@ def bruker2d_grid(
         col = idx % cols
 
         # Create subgrid for each 2D plot with projections
-        gs_sub = gs[row, col].subgridspec(
-            10, 10,
-            wspace=0.01,
-            hspace=0.01
-        )
+        gs_sub = gs[row, col].subgridspec(10, 10, wspace=0.01, hspace=0.01)
 
         ax_top = fig.add_subplot(gs_sub[0, 1:])
         ax_left = fig.add_subplot(gs_sub[1:, 0])
@@ -541,7 +533,11 @@ def bruker2d_grid(
                 colors=contour_color,
                 linewidths=defaults["linewidth_contour"],
             )
-            proj_color = proj_colors[idx] if proj_colors and idx < len(proj_colors) else contour_color
+            proj_color = (
+                proj_colors[idx]
+                if proj_colors and idx < len(proj_colors)
+                else contour_color
+            )
         else:
             proj_color = "black"
             ax_main.contour(
@@ -627,10 +623,7 @@ def bruker2d_grid(
         # Add title if provided
         if titles is not None and idx < len(titles):
             ax_top.set_title(
-                titles[idx],
-                fontsize=defaults["axisfontsize"],
-                fontweight="bold",
-                pad=5
+                titles[idx], fontsize=defaults["axisfontsize"], fontweight="bold", pad=5
             )
 
         axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
@@ -1021,6 +1014,7 @@ def bruker1d_grid(
     plt.show()
     return None
 
+
 # Plot 2D NMR data from CSV or DataFrame
 def df2d(
     path,
@@ -1143,7 +1137,11 @@ def df2d(
         else:
             full_filename = "2d_nmr_spectrum." + (format if format else "png")
         plt.savefig(
-            full_filename, format=format if format else "png", dpi=300, bbox_inches="tight", pad_inches=0.1
+            full_filename,
+            format=format if format else "png",
+            dpi=300,
+            bbox_inches="tight",
+            pad_inches=0.1,
         )
         return None
     elif return_fig:
@@ -1494,11 +1492,15 @@ def dmfit2d(
         if spin_objects and isinstance(spin_objects[0], dict):
             spectra_dicts = spin_objects
             if labels is None:
-                plot_labels = [f"Spectrum {idx + 1}" for idx in range(len(spin_objects))]
+                plot_labels = [
+                    f"Spectrum {idx + 1}" for idx in range(len(spin_objects))
+                ]
             else:
                 plot_labels = labels
         else:
-            raise ValueError("Unexpected list of Spin objects. Use SpinCollection instead.")
+            raise ValueError(
+                "Unexpected list of Spin objects. Use SpinCollection instead."
+            )
     elif hasattr(spin_objects, "spins"):
         spectra_dicts = [spin_obj.spectrum for spin_obj in spin_objects.spins.values()]
         if labels is None:
@@ -1723,6 +1725,7 @@ def dmfit2d(
 
     return None
 
+
 def dmfit1d_grid(
     spectra: dict | list[dict],
     subplot_dims=(1, 1),
@@ -1922,6 +1925,7 @@ def dmfit1d_grid(
     plt.show()
     return None
 
+
 def dmfit2d_grid(
     spin_objects,
     subplot_dims=(1, 3),
@@ -2028,36 +2032,41 @@ def dmfit2d_grid(
 
     num_pairs = len(spectra_list) // 2
     spectrum_pairs = [
-        (spectra_list[i * 2], spectra_list[i * 2 + 1])
-        for i in range(num_pairs)
+        (spectra_list[i * 2], spectra_list[i * 2 + 1]) for i in range(num_pairs)
     ]
 
     rows, cols = subplot_dims
 
     # Exp and model colors
     if colors is None:
-        colors = [['black', 'red'] for _ in range(num_pairs)]
-    elif isinstance(colors, list) and len(colors) > 0 and not isinstance(colors[0], list):
+        colors = [["black", "red"] for _ in range(num_pairs)]
+    elif (
+        isinstance(colors, list) and len(colors) > 0 and not isinstance(colors[0], list)
+    ):
         colors = [colors for _ in range(num_pairs)]
 
     # Project colors
     if proj_colors is None:
         proj_colors = colors
-    elif isinstance(proj_colors, list) and len(proj_colors) > 0 and not isinstance(proj_colors[0], list):
+    elif (
+        isinstance(proj_colors, list)
+        and len(proj_colors) > 0
+        and not isinstance(proj_colors[0], list)
+    ):
         proj_colors = [proj_colors for _ in range(num_pairs)]
 
     if linestyles is None:
-        linestyles = [['-', '-'] for _ in range(num_pairs)]
-    elif isinstance(linestyles, list) and len(linestyles) > 0 and not isinstance(linestyles[0], list):
+        linestyles = [["-", "-"] for _ in range(num_pairs)]
+    elif (
+        isinstance(linestyles, list)
+        and len(linestyles) > 0
+        and not isinstance(linestyles[0], list)
+    ):
         linestyles = [linestyles for _ in range(num_pairs)]
 
     fig = plt.figure(figsize=(6 * cols, 6 * rows))
 
-    gs = fig.add_gridspec(
-        rows, cols,
-        wspace=0.15,
-        hspace=0.15
-    )
+    gs = fig.add_gridspec(rows, cols, wspace=0.15, hspace=0.15)
 
     axes = []
 
@@ -2068,23 +2077,29 @@ def dmfit2d_grid(
         row = idx // cols
         col = idx % cols
 
-        gs_sub = gs[row, col].subgridspec(
-            10, 10,
-            wspace=0.01,
-            hspace=0.01
-        )
+        gs_sub = gs[row, col].subgridspec(10, 10, wspace=0.01, hspace=0.01)
 
         ax_top = fig.add_subplot(gs_sub[0, 1:])
         ax_left = fig.add_subplot(gs_sub[1:, 0])
         ax_main = fig.add_subplot(gs_sub[1:, 1:], sharex=ax_top, sharey=ax_left)
 
-        exp_color = colors[idx][0] if idx < len(colors) else 'black'
-        model_color = colors[idx][1] if idx < len(colors) and len(colors[idx]) > 1 else 'red'
+        exp_color = colors[idx][0] if idx < len(colors) else "black"
+        model_color = (
+            colors[idx][1] if idx < len(colors) and len(colors[idx]) > 1 else "red"
+        )
         proj_exp_color = proj_colors[idx][0] if idx < len(proj_colors) else exp_color
-        proj_model_color = proj_colors[idx][1] if idx < len(proj_colors) and len(proj_colors[idx]) > 1 else model_color
+        proj_model_color = (
+            proj_colors[idx][1]
+            if idx < len(proj_colors) and len(proj_colors[idx]) > 1
+            else model_color
+        )
 
-        exp_linestyle = linestyles[idx][0] if idx < len(linestyles) else '-'
-        model_linestyle = linestyles[idx][1] if idx < len(linestyles) and len(linestyles[idx]) > 1 else '-'
+        exp_linestyle = linestyles[idx][0] if idx < len(linestyles) else "-"
+        model_linestyle = (
+            linestyles[idx][1]
+            if idx < len(linestyles) and len(linestyles[idx]) > 1
+            else "-"
+        )
 
         contour_levels = contour_start * contour_factor ** np.arange(contour_num)
 
@@ -2096,12 +2111,14 @@ def dmfit2d_grid(
         proj_f2_exp = spin_exp.spectrum["projections"]["f2"]
 
         ax_main.contour(
-            x_axis, y_axis, exp_data,
+            x_axis,
+            y_axis,
+            exp_data,
             levels=contour_levels,
             colors=exp_color,
             linewidths=defaults["linewidth_contour"],
             alpha=defaults["alpha"],
-            linestyles=exp_linestyle
+            linestyles=exp_linestyle,
         )
 
         # Model
@@ -2110,19 +2127,45 @@ def dmfit2d_grid(
         proj_f2_model = spin_model.spectrum["projections"]["f2"]
 
         ax_main.contour(
-            x_axis, y_axis, model_data,
+            x_axis,
+            y_axis,
+            model_data,
             levels=contour_levels,
             colors=model_color,
             linewidths=defaults["linewidth_contour"],
             alpha=defaults["alpha"],
-            linestyles=model_linestyle
+            linestyles=model_linestyle,
         )
 
-        ax_top.plot(x_axis, proj_f2_exp, color=proj_exp_color, linewidth=defaults["linewidth_proj"], linestyle=exp_linestyle)
-        ax_top.plot(x_axis, proj_f2_model, color=proj_model_color, linewidth=defaults["linewidth_proj"], linestyle=model_linestyle)
+        ax_top.plot(
+            x_axis,
+            proj_f2_exp,
+            color=proj_exp_color,
+            linewidth=defaults["linewidth_proj"],
+            linestyle=exp_linestyle,
+        )
+        ax_top.plot(
+            x_axis,
+            proj_f2_model,
+            color=proj_model_color,
+            linewidth=defaults["linewidth_proj"],
+            linestyle=model_linestyle,
+        )
 
-        ax_left.plot(-proj_f1_exp, y_axis, color=proj_exp_color, linewidth=defaults["linewidth_proj"], linestyle=exp_linestyle)
-        ax_left.plot(-proj_f1_model, y_axis, color=proj_model_color, linewidth=defaults["linewidth_proj"], linestyle=model_linestyle)
+        ax_left.plot(
+            -proj_f1_exp,
+            y_axis,
+            color=proj_exp_color,
+            linewidth=defaults["linewidth_proj"],
+            linestyle=exp_linestyle,
+        )
+        ax_left.plot(
+            -proj_f1_model,
+            y_axis,
+            color=proj_model_color,
+            linewidth=defaults["linewidth_proj"],
+            linestyle=model_linestyle,
+        )
 
         ax_top.axis("off")
         ax_left.axis("off")
@@ -2142,42 +2185,43 @@ def dmfit2d_grid(
         f2_str = str(nuclei[1])
         num_f2, nuc_f2 = (
             "".join(filter(str.isdigit, f2_str)),
-            "".join(filter(str.isalpha, f2_str))
+            "".join(filter(str.isalpha, f2_str)),
         )
 
         ax_main.set_xlabel(
-            defaults["xaxislabel"] if defaults["xaxislabel"] else f"$^{{{num_f2}}}${nuc_f2} (ppm)",
+            defaults["xaxislabel"]
+            if defaults["xaxislabel"]
+            else f"$^{{{num_f2}}}${nuc_f2} (ppm)",
             fontsize=defaults["axisfontsize"],
-            fontname=defaults["axisfont"]
+            fontname=defaults["axisfont"],
         )
 
         f1_str = str(nuclei[0])
         num_f1, nuc_f1 = (
             "".join(filter(str.isdigit, f1_str)),
-            "".join(filter(str.isalpha, f1_str))
+            "".join(filter(str.isalpha, f1_str)),
         )
 
         ax_main.set_ylabel(
-            defaults["yaxislabel"] if defaults["yaxislabel"] else f"$^{{{num_f1}}}${nuc_f1} (ppm)",
+            defaults["yaxislabel"]
+            if defaults["yaxislabel"]
+            else f"$^{{{num_f1}}}${nuc_f1} (ppm)",
             fontsize=defaults["axisfontsize"],
-            fontname=defaults["axisfont"]
+            fontname=defaults["axisfont"],
         )
         ax_main.yaxis.set_label_position("right")
         ax_main.yaxis.tick_right()
 
         if titles is not None and idx < len(titles):
             ax_top.set_title(
-                titles[idx],
-                fontsize=defaults["axisfontsize"],
-                fontweight="bold",
-                pad=5
+                titles[idx], fontsize=defaults["axisfontsize"], fontweight="bold", pad=5
             )
 
         # Tick params
         ax_main.tick_params(
             axis="both",
             labelsize=defaults["tickfontsize"],
-            labelfontfamily=defaults["tickfont"]
+            labelfontfamily=defaults["tickfont"],
         )
 
         axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
