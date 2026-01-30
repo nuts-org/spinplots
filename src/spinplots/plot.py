@@ -27,6 +27,8 @@ DEFAULTS = {
     "yaxislabel": "Intensity (a.u.)",
     "xaxislabel": None,
     "tickspacing": None,
+    "xtickspacing": None,
+    "ytickspacing": None,
 }
 
 
@@ -157,7 +159,8 @@ def bruker2d(
 
         if contour_start is None:
             contour_start = 0.05 * np.max(data)
-
+        
+        assert contour_start is not None
         contour_levels = contour_start * contour_factor ** np.arange(contour_num)
 
         x_proj_ppm = ppm_x[x_indices]
@@ -277,13 +280,13 @@ def bruker2d(
         else:
             defaults["yaxislabel"] = f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)"
 
-        if defaults["tickspacing"]:
-            ax["A"].xaxis.set_major_locator(
-                plt.MultipleLocator(defaults["tickspacing"])
-            )
-            ax["A"].yaxis.set_major_locator(
-                plt.MultipleLocator(defaults["tickspacing"])
-            )
+        xtick = defaults["xtickspacing"] or defaults["tickspacing"]
+        if xtick:
+            ax["A"].xaxis.set_major_locator(MultipleLocator(xtick))
+        
+        ytick = defaults["ytickspacing"] or defaults["tickspacing"]
+        if ytick:
+            ax["A"].yaxis.set_major_locator(MultipleLocator(ytick))
 
         if (
             homo
@@ -348,10 +351,309 @@ def bruker2d(
     return None
 
 
+def bruker2d_grid(
+    spectra: dict | list[dict],
+    subplot_dims=(1, 1),
+    contour_start: float | None = None,
+    contour_num: int = 10,
+    contour_factor: float = 1.2,
+    cmap: str | list[str] | None = None,
+    colors: list[str] | None = None,
+    proj_colors=None,
+    xlim=None,
+    ylim=None,
+    titles=None,
+    save=False,
+    filename=None,
+    format=None,
+    diag=None,
+    homo=False,
+    return_fig=False,
+    **kwargs,
+):
+    """
+    Plots multiple 2D Bruker NMR spectra in a grid layout with projections.
+
+    Parameters:
+        spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
+        subplot_dims (tuple): Grid dimensions as (rows, cols). Default is (1, 1).
+        contour_start (float, optional): Start value for the contour levels.
+        contour_num (int, optional): Number of contour levels. Default is 10.
+        contour_factor (float, optional): Factor by which the contour levels increase. Default is 1.2.
+
+    Keyword arguments:
+        cmap (str or list): Colormap(s) to use for the contour lines.
+        colors (list): Colors to use when overlaying spectra.
+        proj_colors (list): Colors to use for the projections.
+        xlim (tuple): The limits for the x-axis.
+        ylim (tuple): The limits for the y-axis.
+        titles (list): Titles for each subplot.
+        save (bool): Whether to save the plot.
+        filename (str): The name of the file to save the plot.
+        format (str): The format to save the file in.
+        diag (float or None): Slope of the diagonal line/None.
+        homo (bool): True if doing homonuclear experiment.
+        return_fig (bool): Whether to return the figure and axes.
+        **kwargs: Additional keyword arguments for customizing the plot.
+
+    Returns:
+        None or tuple: If return_fig is True, returns the figure and axes array.
+
+    Example:
+        bruker2d_grid([spectrum1, spectrum2], subplot_dims=(1, 2), contour_start=0.1, 
+                      contour_num=10, contour_factor=1.2, cmap='viridis', 
+                      xlim=(0, 100), ylim=(0, 100), save=True, 
+                      filename='2d_spectra_grid', format='png')
+    """
+    spectra = spectra if isinstance(spectra, list) else [spectra]
+
+    if not all(s["ndim"] == 2 for s in spectra):
+        raise ValueError("All spectra must be 2-dimensional for bruker2d_grid.")
+
+    defaults = DEFAULTS.copy()
+    defaults["yaxislabel"] = None
+    defaults.update(
+        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
+    )
+
+    rows, cols = subplot_dims
+    fig = plt.figure(figsize=(6 * cols, 6 * rows))
+    
+    gs = fig.add_gridspec(
+        rows, cols,
+        wspace=0.15,
+        hspace=0.15
+    )
+    
+    axes = []
+
+    for idx, spectrum in enumerate(spectra):
+        if idx >= rows * cols:
+            break
+
+        row = idx // cols
+        col = idx % cols
+        
+        # Create subgrid for each 2D plot with projections
+        gs_sub = gs[row, col].subgridspec(
+            10, 10,
+            wspace=0.01,
+            hspace=0.01
+        )
+        
+        ax_top = fig.add_subplot(gs_sub[0, 1:])
+        ax_left = fig.add_subplot(gs_sub[1:, 0])
+        ax_main = fig.add_subplot(gs_sub[1:, 1:], sharex=ax_top, sharey=ax_left)
+
+        data = spectrum["data"]
+        nuclei_list = spectrum["nuclei"]
+
+        if homo:
+            nuclei_x = nuclei_list[1]
+            nuclei_y = nuclei_list[1]
+        else:
+            nuclei_x = nuclei_list[1]
+            nuclei_y = nuclei_list[0]
+
+        number_x, nucleus_x = (
+            "".join(filter(str.isdigit, nuclei_x)),
+            "".join(filter(str.isalpha, nuclei_x)),
+        )
+        number_y, nucleus_y = (
+            "".join(filter(str.isdigit, nuclei_y)),
+            "".join(filter(str.isalpha, nuclei_y)),
+        )
+        
+        ppm_x = spectrum["ppm_scale"][1]
+        ppm_y = spectrum["ppm_scale"][0]
+
+        # Handle xlim and ylim for data slicing
+        if xlim:
+            x_min_idx = np.abs(ppm_x - max(xlim)).argmin()
+            x_max_idx = np.abs(ppm_x - min(xlim)).argmin()
+            x_indices = slice(min(x_min_idx, x_max_idx), max(x_min_idx, x_max_idx))
+        else:
+            x_indices = slice(None)
+
+        if ylim:
+            y_min_idx = np.abs(ppm_y - max(ylim)).argmin()
+            y_max_idx = np.abs(ppm_y - min(ylim)).argmin()
+            y_indices = slice(min(y_min_idx, y_max_idx), max(y_min_idx, y_max_idx))
+        else:
+            y_indices = slice(None)
+
+        # Calculate or retrieve projections
+        if (
+            isinstance(spectrum["projections"], dict)
+            and "x" in spectrum["projections"]
+            and "y" in spectrum["projections"]
+        ):
+            if xlim is None and ylim is None:
+                proj_x = spectrum["projections"]["x"]
+                proj_y = spectrum["projections"]["y"]
+            else:
+                zoomed_data = data[y_indices, x_indices]
+                proj_x = np.amax(zoomed_data, axis=0)
+                proj_y = np.amax(zoomed_data, axis=1)
+        else:
+            zoomed_data = data[y_indices, x_indices]
+            proj_x = np.amax(zoomed_data, axis=0)
+            proj_y = np.amax(zoomed_data, axis=1)
+
+        if contour_start is None:
+            contour_start = 0.05 * np.max(data)
+        
+        assert contour_start is not None
+        contour_levels = contour_start * contour_factor ** np.arange(contour_num)
+
+        x_proj_ppm = ppm_x[x_indices]
+        y_proj_ppm = ppm_y[y_indices]
+
+        # Determine colors
+        if cmap is not None:
+            if isinstance(cmap, str):
+                cmap = [cmap]
+            cmap_i = plt.get_cmap(cmap[idx % len(cmap)])
+            ax_main.contour(
+                x_proj_ppm,
+                y_proj_ppm,
+                data[y_indices, x_indices],
+                contour_levels,
+                cmap=cmap_i,
+                linewidths=defaults["linewidth_contour"],
+                norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]),
+            )
+            if proj_colors and idx < len(proj_colors):
+                proj_color = proj_colors[idx]
+            else:
+                proj_color = cmap_i(
+                    mcolors.Normalize(
+                        vmin=contour_levels.min(), vmax=contour_levels.max()
+                    )(contour_levels[0])
+                )
+        elif colors is not None:
+            contour_color = colors[idx % len(colors)]
+            ax_main.contour(
+                x_proj_ppm,
+                y_proj_ppm,
+                data[y_indices, x_indices],
+                contour_levels,
+                colors=contour_color,
+                linewidths=defaults["linewidth_contour"],
+            )
+            proj_color = proj_colors[idx] if proj_colors and idx < len(proj_colors) else contour_color
+        else:
+            proj_color = "black"
+            ax_main.contour(
+                x_proj_ppm,
+                y_proj_ppm,
+                data[y_indices, x_indices],
+                contour_levels,
+                colors="black",
+                linewidths=defaults["linewidth_contour"],
+            )
+
+        # Plot projections
+        ax_top.plot(
+            x_proj_ppm,
+            proj_x,
+            linewidth=defaults["linewidth_proj"],
+            color=proj_color,
+        )
+        ax_top.axis(False)
+        
+        ax_left.plot(
+            -proj_y,
+            y_proj_ppm,
+            linewidth=defaults["linewidth_proj"],
+            color=proj_color,
+        )
+        ax_left.axis(False)
+
+        # Set labels
+        if xaxislabel := defaults.get("xaxislabel"):
+            x_label = xaxislabel
+        else:
+            x_label = f"$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)"
+
+        if yaxislabel := defaults.get("yaxislabel"):
+            y_label = yaxislabel
+        elif homo and number_y == number_x and nucleus_y == nucleus_x:
+            y_label = x_label
+        else:
+            y_label = f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)"
+
+        ax_main.set_xlabel(
+            x_label,
+            fontsize=defaults["axisfontsize"],
+            fontname=defaults["axisfont"],
+        )
+        ax_main.set_ylabel(
+            y_label,
+            fontsize=defaults["axisfontsize"],
+            fontname=defaults["axisfont"],
+        )
+        ax_main.yaxis.set_label_position("right")
+        ax_main.yaxis.tick_right()
+
+        # Tick params
+        ax_main.tick_params(
+            axis="both",
+            labelsize=defaults["tickfontsize"],
+            labelfontfamily=defaults["tickfont"],
+        )
+
+        # Apply tick spacing
+        xtick = defaults["xtickspacing"] or defaults["tickspacing"]
+        if xtick:
+            ax_main.xaxis.set_major_locator(MultipleLocator(xtick))
+        
+        ytick = defaults["ytickspacing"] or defaults["tickspacing"]
+        if ytick:
+            ax_main.yaxis.set_major_locator(MultipleLocator(ytick))
+
+        # Diagonal line
+        if diag is not None:
+            xlim_eff = xlim if xlim else (ppm_x[0], ppm_x[-1])
+            x_diag = np.linspace(xlim_eff[0], xlim_eff[1], 100)
+            ax_main.plot(x_diag, diag * x_diag, "k--", lw=1)
+
+        # Set axis limits
+        if xlim:
+            ax_main.set_xlim(xlim)
+        if ylim:
+            ax_main.set_ylim(ylim)
+
+        # Add title if provided
+        if titles is not None and idx < len(titles):
+            ax_top.set_title(
+                titles[idx], 
+                fontsize=defaults["axisfontsize"], 
+                fontweight="bold",
+                pad=5
+            )
+
+        axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
+
+    # Save or show
+    if save:
+        full_filename = f"{filename if filename else 'bruker_2d_grid'}.{format if format else 'png'}"
+        fig.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
+
+    if return_fig:
+        return fig, axes
+
+    if not save:
+        plt.show()
+
+    return None
+
+
 def bruker1d(
     spectra: dict | list[dict],
     labels: list[str] | None = None,
     xlim: tuple[float, float] | None = None,
+    ylim: tuple[float, float] | None = None,
     save: bool = False,
     filename: str | None = None,
     format: str | None = None,
@@ -369,6 +671,7 @@ def bruker1d(
         spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
         labels (list, optional): List of labels for the spectra.
         xlim (tuple, optional): The limits for the x-axis.
+        ylim (tuple, optional): The limits for the y-axis.
         save (bool, optional): Whether to save the plot.
         filename (str, optional): The name of the file to save the plot.
         format (str, optional): The format to save the file in.
@@ -478,8 +781,10 @@ def bruker1d(
         labelfontfamily=defaults["tickfont"],
     )
 
-    if defaults["tickspacing"]:
-        ax.xaxis.set_major_locator(plt.MultipleLocator(defaults["tickspacing"]))
+    # Apply x-axis tick spacing
+    xtick = defaults["xtickspacing"] or defaults["tickspacing"]
+    if xtick:
+        ax.xaxis.set_major_locator(MultipleLocator(xtick))
 
     if not frame:
         ax.spines["top"].set_visible(False)
@@ -488,11 +793,12 @@ def bruker1d(
         ax.set_yticklabels([])
         ax.set_yticks([])
     else:
-        ax.set_ylabel(
-            defaults["yaxislabel"],
-            fontsize=defaults["axisfontsize"],
-            fontname=defaults["axisfont"],
-        )
+        if defaults["yaxislabel"]:
+            ax.set_ylabel(
+                defaults["yaxislabel"],
+                fontsize=defaults["axisfontsize"],
+                fontname=defaults["axisfont"],
+            )
         ax.tick_params(
             axis="y",
             labelsize=defaults["tickfontsize"],
@@ -504,10 +810,10 @@ def bruker1d(
     else:
         current_xlim = ax.get_xlim()
         if current_xlim[0] < current_xlim[1]:
-            ax.set_xlim(current_xlim[::-1])
+            ax.set_xlim((current_xlim[1], current_xlim[0]))
 
-    if "ylim" in kwargs and kwargs["ylim"] is not None:
-        ax.set_ylim(kwargs["ylim"])
+    if ylim is not None:
+        ax.set_ylim(ylim)
 
     if save:
         if not filename or not format:
@@ -531,6 +837,7 @@ def bruker1d_grid(
     labels=None,
     subplot_dims=(1, 1),
     xlim=None,
+    ylim=None,
     save=False,
     filename=None,
     format="png",
@@ -548,6 +855,7 @@ def bruker1d_grid(
         labels (list): List of labels for the spectra.
         subplot_dims (tuple): Dimensions of the subplot grid (rows, cols).
         xlim (list of tuples or tuple): The limits for the x-axis.
+        ylim (list of tuples or tuple): The limits for the y-axis.
         save (bool): Whether to save the plot.
         filename (str): The name of the file to save the plot.
         format (str): The format to save the file in.
@@ -576,7 +884,11 @@ def bruker1d_grid(
 
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
-    axes = axes.flatten() if rows * cols > 1 else [axes]
+    # Ensure axes is flat list
+    if rows * cols > 1:
+        axes = axes.flatten() 
+    else:
+        axes = [axes]
 
     for i, spectrum in enumerate(spectra):
         if i >= len(axes):
@@ -654,8 +966,10 @@ def bruker1d_grid(
             labelfontfamily=defaults["tickfont"],
         )
 
-        if defaults["tickspacing"]:
-            ax.xaxis.set_major_locator(MultipleLocator(defaults["tickspacing"]))
+        # Apply x-axis tick spacing
+        xtick = defaults["xtickspacing"] or defaults["tickspacing"]
+        if xtick:
+            ax.xaxis.set_major_locator(MultipleLocator(xtick))
 
         if not frame:
             ax.spines["top"].set_visible(False)
@@ -687,6 +1001,11 @@ def bruker1d_grid(
             ax.set_xlim(xlim)
         elif xlim and isinstance(xlim, list) and i < len(xlim):
             ax.set_xlim(xlim[i])
+
+        if ylim and isinstance(ylim, tuple):
+            ax.set_ylim(ylim)
+        elif ylim and isinstance(ylim, list) and i < len(ylim):
+            ax.set_ylim(ylim[i])
 
     plt.tight_layout()
 
@@ -797,14 +1116,15 @@ def df2d(
             norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]),
         )
 
-    ax["a"].plot(
-        proj_f2[f"{f2_nuclei} {f2_units}"], proj_f2["F2 projection"], color="black"
-    )
-    ax["a"].axis(False)
-    ax["b"].plot(
-        -proj_f1["F1 projection"], proj_f1[f"{f1_nuclei} {f1_units}"], color="black"
-    )
-    ax["b"].axis(False)
+    if proj_f2 is not None and proj_f1 is not None:
+        ax["a"].plot(
+            proj_f2[f"{f2_nuclei} {f2_units}"], proj_f2["F2 projection"], color="black"
+        )
+        ax["a"].axis(False)
+        ax["b"].plot(
+            -proj_f1["F1 projection"], proj_f1[f"{f1_nuclei} {f1_units}"], color="black"
+        )
+        ax["b"].axis(False)
 
     ax["A"].set_xlabel(f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)", fontsize=13)
     ax["A"].set_ylabel(f"$^{{{number_x}}}\\mathrm{{{nucleus_x}}}$ (ppm)", fontsize=13)
@@ -822,11 +1142,11 @@ def df2d(
 
     if save:
         if filename:
-            full_filename = filename + "." + format
+            full_filename = filename + "." + (format if format else "png")
         else:
-            full_filename = "2d_nmr_spectrum." + format
+            full_filename = "2d_nmr_spectrum." + (format if format else "png")
         plt.savefig(
-            full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
+            full_filename, format=format if format else "png", dpi=300, bbox_inches="tight", pad_inches=0.1
         )
         return None
     elif return_fig:
@@ -1037,8 +1357,8 @@ def dmfit1d(
     if params["xaxislabel"]:
         ax.set_xlabel(params["xaxislabel"], fontsize=params["labelsize"])
     if params["axisfontsize"]:
-        ax.xaxis.label.set_size(params["axisfontsize"])
-        ax.yaxis.label.set_size(params["axisfontsize"])
+        ax.xaxis.label.set_fontsize(params["axisfontsize"])
+        ax.yaxis.label.set_fontsize(params["axisfontsize"])
     if params["axisfont"]:
         ax.xaxis.label.set_fontname(params["axisfont"])
         ax.yaxis.label.set_fontname(params["axisfont"])
@@ -1048,9 +1368,16 @@ def dmfit1d(
     if params["tickfont"]:
         ax.tick_params(axis="both", which="major", labelfont=params["tickfont"])
         ax.tick_params(axis="both", which="minor", labelfont=params["tickfont"])
-    if params["tickspacing"]:
-        ax.xaxis.set_major_locator(plt.MultipleLocator(params["tickspacing"]))
-        ax.yaxis.set_major_locator(plt.MultipleLocator(params["tickspacing"]))
+    
+    # Apply x-axis tick spacing
+    xtick = params.get("xtickspacing") or params.get("tickspacing")
+    if xtick:
+        ax.xaxis.set_major_locator(MultipleLocator(xtick))
+    
+    # Apply y-axis tick spacing
+    ytick = params.get("ytickspacing") or params.get("tickspacing")
+    if ytick:
+        ax.yaxis.set_major_locator(MultipleLocator(ytick))
     if params["frame"]:
         ax.spines["top"].set_visible(True)
         ax.spines["right"].set_visible(True)
@@ -1166,7 +1493,16 @@ def dmfit2d(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
     )
 
-    if hasattr(spin_objects, "spins"):
+    if isinstance(spin_objects, list):
+        if spin_objects and isinstance(spin_objects[0], dict):
+            spectra_dicts = spin_objects
+            if labels is None:
+                plot_labels = [f"Spectrum {idx + 1}" for idx in range(len(spin_objects))]
+            else:
+                plot_labels = labels
+        else:
+            raise ValueError("Unexpected list of Spin objects. Use SpinCollection instead.")
+    elif hasattr(spin_objects, "spins"):
         spectra_dicts = [spin_obj.spectrum for spin_obj in spin_objects.spins.values()]
         if labels is None:
             plot_labels = [
@@ -1309,6 +1645,9 @@ def dmfit2d(
         if defaults.get("yaxislabel")
         else f"$^{{{num_f1}}}${nuc_f1} (ppm)"
     )
+    
+    assert final_xaxislabel is not None
+    assert final_yaxislabel is not None
 
     main_ax.set_xlabel(
         final_xaxislabel,
@@ -1344,7 +1683,7 @@ def dmfit2d(
     else:
         current_xlim_main = main_ax.get_xlim()
         if current_xlim_main[0] < current_xlim_main[1]:
-            main_ax.set_xlim(current_xlim_main[::-1])
+            main_ax.set_xlim((current_xlim_main[1], current_xlim_main[0]))
     proj_ax_f2.set_xlim(main_ax.get_xlim())
 
     if ylim:
@@ -1352,7 +1691,7 @@ def dmfit2d(
     else:
         current_ylim_main = main_ax.get_ylim()
         if current_ylim_main[0] < current_ylim_main[1]:
-            main_ax.set_ylim(current_ylim_main[::-1])
+            main_ax.set_ylim((current_ylim_main[1], current_ylim_main[0]))
     proj_ax_f1.set_ylim(main_ax.get_ylim())
 
     if diag is not None:
@@ -1459,7 +1798,10 @@ def dmfit1d_grid(
 
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
-    axes = axes.flatten() if rows * cols > 1 else [axes]
+    if rows * cols > 1:
+        axes = axes.flatten()
+    else:
+        axes = [axes]
 
     for i, spectrum in enumerate(spectra):
         if i >= len(axes):
@@ -1553,8 +1895,10 @@ def dmfit1d_grid(
             labelfontfamily=defaults["tickfont"],
         )
 
-        if defaults["tickspacing"]:
-            ax.xaxis.set_major_locator(MultipleLocator(defaults["tickspacing"]))
+        # Apply x-axis tick spacing
+        xtick = defaults["xtickspacing"] or defaults["tickspacing"]
+        if xtick:
+            ax.xaxis.set_major_locator(MultipleLocator(xtick))
 
         # Y-axis (no frame by default)
         ax.spines["top"].set_visible(False)

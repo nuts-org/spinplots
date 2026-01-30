@@ -260,7 +260,9 @@ class SpinCollection:
                     spectra, subplot_dims=subplot_dims, **kwargs
                 )
             case ("bruker", 2, tuple()):
-                raise ValueError("Grid layout is not supported for 2D spectra.")
+                return spinplot.bruker2d_grid(
+                    spectra, subplot_dims=subplot_dims, **kwargs
+                )
             case ("dmfit", 1, None):
                 if len(spins_to_plot) > 1:
                     raise ValueError(
