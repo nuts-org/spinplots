@@ -71,6 +71,6 @@ def test_calculate_projections_without_filename(tmp_path):
 
 def test_calculate_projections_invalid():
     with pytest.raises(
-        ValueError, match="Data must be a DataFrame or a path to a CSV file."
+        ValueError, match=r"Data must be a DataFrame or a path to a CSV file."
     ):
         calculate_projections(42)

@@ -100,7 +100,7 @@ def test_spin_plot_bad_grid_str(spin_1d):
 
 def test_spin_plot_bad_grid_dim(spin_2d):
     with pytest.raises(
-        ValueError, match="Grid layout is not supported for 2D spectra."
+        ValueError, match=r"Grid layout is not supported for 2D spectra."
     ):
         spin_2d.plot(grid="1x2", contour_start=1e5, contour_num=5, contour_factor=1.5)
 
@@ -113,7 +113,7 @@ def test_spin_plot_dmfit(spin_dmfit):
 
 def test_spin_plot_dmfit_grid_not_supported(spin_dmfit):
     with pytest.raises(
-        ValueError, match="Grid layout is not supported for 1D DMFit spectra."
+        ValueError, match=r"Grid layout is not supported for 1D DMFit spectra."
     ):
         spin_dmfit.plot(grid="1x1")
 
@@ -128,7 +128,7 @@ def test_spincollection_construction(spin_1d, spin_1d_2):
 def test_spincollection_append_invalid_ndim(spin_1d, spin_2d):
     coll = SpinCollection([spin_1d])
     with pytest.raises(
-        ValueError, match="All Spin objects must have the same dimension."
+        ValueError, match=r"All Spin objects must have the same dimension."
     ):
         coll.append(spin_2d)
 
@@ -136,7 +136,7 @@ def test_spincollection_append_invalid_ndim(spin_1d, spin_2d):
 def test_spincollection_append_invalid_provider(spin_1d, spin_dmfit):
     coll = SpinCollection([spin_1d])
     with pytest.raises(
-        ValueError, match="All Spin objects must have the same provider."
+        ValueError, match=r"All Spin objects must have the same provider."
     ):
         coll.append(spin_dmfit)
 
@@ -192,7 +192,7 @@ def test_spincollection_plot_override_labels(spin_1d, spin_1d_2):
 
     # Plot with custom labels
     custom_labels = ["Custom 1", "Custom 2"]
-    fig, ax = coll.plot(labels=custom_labels, return_fig=True)
+    _fig, ax = coll.plot(labels=custom_labels, return_fig=True)
     legend_texts = [text.get_text() for text in ax.get_legend().get_texts()]
     assert "Custom 1" in legend_texts
     assert "Custom 2" in legend_texts
@@ -258,8 +258,9 @@ def test_spincollection_plot_dmfit_2d(spincollection_dmfit_2d):
     assert "Calculated" in legend_texts
 
 
-def test_spin_plot_dmfit_2d_grid_not_supported(spin_dmfit_2d):
+def test_spin_plot_dmfit_2d_grid_requires_spincollection(spin_dmfit_2d):
+    """Test that passing a single Spin to grid plotting raises a ValueError."""
     with pytest.raises(
-        ValueError, match="Grid layout is not supported for 2D spectra."
+        ValueError, match=r"dmfit2d_grid requires a SpinCollection object"
     ):
         spin_dmfit_2d.plot(grid="1x2")

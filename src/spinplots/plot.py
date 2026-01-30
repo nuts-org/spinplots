@@ -159,7 +159,7 @@ def bruker2d(
 
         if contour_start is None:
             contour_start = 0.05 * np.max(data)
-        
+
         assert contour_start is not None
         contour_levels = contour_start * contour_factor ** np.arange(contour_num)
 
@@ -283,7 +283,7 @@ def bruker2d(
         xtick = defaults["xtickspacing"] or defaults["tickspacing"]
         if xtick:
             ax["A"].xaxis.set_major_locator(MultipleLocator(xtick))
-        
+
         ytick = defaults["ytickspacing"] or defaults["tickspacing"]
         if ytick:
             ax["A"].yaxis.set_major_locator(MultipleLocator(ytick))
@@ -400,10 +400,10 @@ def bruker2d_grid(
         None or tuple: If return_fig is True, returns the figure and axes array.
 
     Example:
-        bruker2d_grid([spectrum1, spectrum2], subplot_dims=(1, 2), contour_start=0.1, 
-                      contour_num=10, contour_factor=1.2, cmap='viridis', 
-                      xlim=(0, 100), ylim=(0, 100), save=True, 
-                      filename='2d_spectra_grid', format='png')
+        bruker2d_grid([spectrum1, spectrum2], subplot_dims=(1, 2), contour_start=0.1,
+                  contour_num=10, contour_factor=1.2, cmap='viridis',
+                  xlim=(0, 100), ylim=(0, 100), save=True,
+                  filename='2d_spectra_grid', format='png')
     """
     spectra = spectra if isinstance(spectra, list) else [spectra]
 
@@ -418,13 +418,13 @@ def bruker2d_grid(
 
     rows, cols = subplot_dims
     fig = plt.figure(figsize=(6 * cols, 6 * rows))
-    
+
     gs = fig.add_gridspec(
         rows, cols,
         wspace=0.15,
         hspace=0.15
     )
-    
+
     axes = []
 
     for idx, spectrum in enumerate(spectra):
@@ -433,14 +433,14 @@ def bruker2d_grid(
 
         row = idx // cols
         col = idx % cols
-        
+
         # Create subgrid for each 2D plot with projections
         gs_sub = gs[row, col].subgridspec(
             10, 10,
             wspace=0.01,
             hspace=0.01
         )
-        
+
         ax_top = fig.add_subplot(gs_sub[0, 1:])
         ax_left = fig.add_subplot(gs_sub[1:, 0])
         ax_main = fig.add_subplot(gs_sub[1:, 1:], sharex=ax_top, sharey=ax_left)
@@ -463,7 +463,7 @@ def bruker2d_grid(
             "".join(filter(str.isdigit, nuclei_y)),
             "".join(filter(str.isalpha, nuclei_y)),
         )
-        
+
         ppm_x = spectrum["ppm_scale"][1]
         ppm_y = spectrum["ppm_scale"][0]
 
@@ -502,7 +502,7 @@ def bruker2d_grid(
 
         if contour_start is None:
             contour_start = 0.05 * np.max(data)
-        
+
         assert contour_start is not None
         contour_levels = contour_start * contour_factor ** np.arange(contour_num)
 
@@ -561,7 +561,7 @@ def bruker2d_grid(
             color=proj_color,
         )
         ax_top.axis(False)
-        
+
         ax_left.plot(
             -proj_y,
             y_proj_ppm,
@@ -607,7 +607,7 @@ def bruker2d_grid(
         xtick = defaults["xtickspacing"] or defaults["tickspacing"]
         if xtick:
             ax_main.xaxis.set_major_locator(MultipleLocator(xtick))
-        
+
         ytick = defaults["ytickspacing"] or defaults["tickspacing"]
         if ytick:
             ax_main.yaxis.set_major_locator(MultipleLocator(ytick))
@@ -627,8 +627,8 @@ def bruker2d_grid(
         # Add title if provided
         if titles is not None and idx < len(titles):
             ax_top.set_title(
-                titles[idx], 
-                fontsize=defaults["axisfontsize"], 
+                titles[idx],
+                fontsize=defaults["axisfontsize"],
                 fontweight="bold",
                 pad=5
             )
@@ -876,7 +876,7 @@ def bruker1d_grid(
 
     if not all(s["ndim"] == 1 for s in spectra):
         raise ValueError("All spectra must be 1-dimensional for bruker1d_grid.")
-    
+
     defaults = DEFAULTS.copy()
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
@@ -885,10 +885,7 @@ def bruker1d_grid(
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
     # Ensure axes is flat list
-    if rows * cols > 1:
-        axes = axes.flatten() 
-    else:
-        axes = [axes]
+    axes = axes.flatten() if rows * cols > 1 else [axes]
 
     for i, spectrum in enumerate(spectra):
         if i >= len(axes):
@@ -1368,12 +1365,12 @@ def dmfit1d(
     if params["tickfont"]:
         ax.tick_params(axis="both", which="major", labelfont=params["tickfont"])
         ax.tick_params(axis="both", which="minor", labelfont=params["tickfont"])
-    
+
     # Apply x-axis tick spacing
     xtick = params.get("xtickspacing") or params.get("tickspacing")
     if xtick:
         ax.xaxis.set_major_locator(MultipleLocator(xtick))
-    
+
     # Apply y-axis tick spacing
     ytick = params.get("ytickspacing") or params.get("tickspacing")
     if ytick:
@@ -1645,7 +1642,7 @@ def dmfit2d(
         if defaults.get("yaxislabel")
         else f"$^{{{num_f1}}}${nuc_f1} (ppm)"
     )
-    
+
     assert final_xaxislabel is not None
     assert final_yaxislabel is not None
 
@@ -1798,10 +1795,7 @@ def dmfit1d_grid(
 
     rows, cols = subplot_dims
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows))
-    if rows * cols > 1:
-        axes = axes.flatten()
-    else:
-        axes = [axes]
+    axes = axes.flatten() if rows * cols > 1 else [axes]
 
     for i, spectrum in enumerate(spectra):
         if i >= len(axes):
@@ -1949,7 +1943,6 @@ def dmfit2d_grid(
 ):
     """
     Plot multiple 2D DMFit spectra in a grid layout with projections.
-    
     Each subplot shows an experimental spectrum overlaid with its fit/model.
     This function expects pairs of spectra (experimental + model) in the SpinCollection.
 
@@ -2006,7 +1999,7 @@ def dmfit2d_grid(
 
     Example
     -------
-    >>> data = read_nmr(['exp1.ppm', 'model1.ppm', 'exp2.ppm', 'model2.ppm'], 
+    >>> data = read_nmr(['exp1.ppm', 'model1.ppm', 'exp2.ppm', 'model2.ppm'],
     ...                 provider='dmfit', tags=['1:1 exp', '1:1 model', '2:1 exp', '2:1 model'])
     >>> data.plot(grid='1x2', contour_start=1.5e5, xlim=(65, 52), ylim=(65, 52))
     """
@@ -2032,43 +2025,40 @@ def dmfit2d_grid(
             "dmfit2d_grid expects pairs of spectra (experimental + model). "
             f"Got {len(spectra_list)} spectra, which is not divisible by 2."
         )
-    
+
     num_pairs = len(spectra_list) // 2
     spectrum_pairs = [
-        (spectra_list[i * 2], spectra_list[i * 2 + 1]) 
+        (spectra_list[i * 2], spectra_list[i * 2 + 1])
         for i in range(num_pairs)
     ]
 
     rows, cols = subplot_dims
-    
+
     # Exp and model colors
     if colors is None:
         colors = [['black', 'red'] for _ in range(num_pairs)]
-    elif isinstance(colors, list):
-        if len(colors) > 0 and not isinstance(colors[0], list):
-            colors = [colors for _ in range(num_pairs)]
-    
+    elif isinstance(colors, list) and len(colors) > 0 and not isinstance(colors[0], list):
+        colors = [colors for _ in range(num_pairs)]
+
     # Project colors
     if proj_colors is None:
-        proj_colors = colors 
-    elif isinstance(proj_colors, list):
-        if len(proj_colors) > 0 and not isinstance(proj_colors[0], list):
-            proj_colors = [proj_colors for _ in range(num_pairs)]
+        proj_colors = colors
+    elif isinstance(proj_colors, list) and len(proj_colors) > 0 and not isinstance(proj_colors[0], list):
+        proj_colors = [proj_colors for _ in range(num_pairs)]
 
     if linestyles is None:
         linestyles = [['-', '-'] for _ in range(num_pairs)]
-    elif isinstance(linestyles, list):
-        if len(linestyles) > 0 and not isinstance(linestyles[0], list):
-            linestyles = [linestyles for _ in range(num_pairs)]
+    elif isinstance(linestyles, list) and len(linestyles) > 0 and not isinstance(linestyles[0], list):
+        linestyles = [linestyles for _ in range(num_pairs)]
 
     fig = plt.figure(figsize=(6 * cols, 6 * rows))
-    
+
     gs = fig.add_gridspec(
         rows, cols,
         wspace=0.15,
         hspace=0.15
     )
-    
+
     axes = []
 
     for idx, (spin_exp, spin_model) in enumerate(spectrum_pairs):
@@ -2077,13 +2067,13 @@ def dmfit2d_grid(
 
         row = idx // cols
         col = idx % cols
-        
+
         gs_sub = gs[row, col].subgridspec(
             10, 10,
             wspace=0.01,
             hspace=0.01
         )
-        
+
         ax_top = fig.add_subplot(gs_sub[0, 1:])
         ax_left = fig.add_subplot(gs_sub[1:, 0])
         ax_main = fig.add_subplot(gs_sub[1:, 1:], sharex=ax_top, sharey=ax_left)
@@ -2130,7 +2120,7 @@ def dmfit2d_grid(
 
         ax_top.plot(x_axis, proj_f2_exp, color=proj_exp_color, linewidth=defaults["linewidth_proj"], linestyle=exp_linestyle)
         ax_top.plot(x_axis, proj_f2_model, color=proj_model_color, linewidth=defaults["linewidth_proj"], linestyle=model_linestyle)
-        
+
         ax_left.plot(-proj_f1_exp, y_axis, color=proj_exp_color, linewidth=defaults["linewidth_proj"], linestyle=exp_linestyle)
         ax_left.plot(-proj_f1_model, y_axis, color=proj_model_color, linewidth=defaults["linewidth_proj"], linestyle=model_linestyle)
 
@@ -2148,25 +2138,25 @@ def dmfit2d_grid(
             ax_main.plot(x_diag, diag * x_diag, "k--", lw=1)
 
         nuclei = spin_exp.spectrum.get("nuclei", ["Unknown", "Unknown"])
-        
+
         f2_str = str(nuclei[1])
         num_f2, nuc_f2 = (
             "".join(filter(str.isdigit, f2_str)),
             "".join(filter(str.isalpha, f2_str))
         )
-        
+
         ax_main.set_xlabel(
             defaults["xaxislabel"] if defaults["xaxislabel"] else f"$^{{{num_f2}}}${nuc_f2} (ppm)",
             fontsize=defaults["axisfontsize"],
             fontname=defaults["axisfont"]
         )
-        
+
         f1_str = str(nuclei[0])
         num_f1, nuc_f1 = (
             "".join(filter(str.isdigit, f1_str)),
             "".join(filter(str.isalpha, f1_str))
         )
-        
+
         ax_main.set_ylabel(
             defaults["yaxislabel"] if defaults["yaxislabel"] else f"$^{{{num_f1}}}${nuc_f1} (ppm)",
             fontsize=defaults["axisfontsize"],
@@ -2177,8 +2167,8 @@ def dmfit2d_grid(
 
         if titles is not None and idx < len(titles):
             ax_top.set_title(
-                titles[idx], 
-                fontsize=defaults["axisfontsize"], 
+                titles[idx],
+                fontsize=defaults["axisfontsize"],
                 fontweight="bold",
                 pad=5
             )
