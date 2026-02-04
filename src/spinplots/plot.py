@@ -1331,7 +1331,7 @@ def dmfit1d(
                     dmfit_df["ppm"],
                     dmfit_df[f"Line#{i}"],
                     alpha=params["deconv_alpha"],
-                    color=params["deconv_color"],
+                    color=params["deconv_color"][i-1],
                 )
             else:
                 ax.fill_between(
@@ -1852,7 +1852,7 @@ def dmfit1d_grid(
                         ppm,
                         dmfit_df[f"Line#{j}"],
                         alpha=0.3,
-                        color=deconv_color,
+                        color=deconv_color[j-1],
                     )
                 else:
                     ax.fill_between(ppm, dmfit_df[f"Line#{j}"], alpha=0.3)
