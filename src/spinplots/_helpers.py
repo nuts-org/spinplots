@@ -107,7 +107,7 @@ def _resolve_per_subplot(value, idx):
     return None
 
 
-def _handle_show_return(fig, return_value, return_fig, save):
+def _handle_show_return(_fig, return_value, return_fig, save):
     """Handle the common show/return/save logic at end of plot functions.
 
     Parameters

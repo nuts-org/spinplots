@@ -20,6 +20,7 @@ from spinplots._helpers import (
 )
 from spinplots.utils import calculate_projections
 
+
 def _validate_kwargs(kwargs, defaults, func_name):
     """Warn about unrecognized keyword arguments that will be silently ignored."""
     unknown = set(kwargs) - set(defaults)
@@ -1308,8 +1309,8 @@ def dmfit1d(
         c = color[i] if isinstance(color, list) and i < len(color) else color
 
         # Compute stack offset
-        spectrum_data = dmfit_df["Spectrum"].values.copy()
-        model_data = dmfit_df["Model"].values.copy()
+        spectrum_data = dmfit_df["Spectrum"].to_numpy().copy()
+        model_data = dmfit_df["Model"].to_numpy().copy()
         if stacked:
             spectrum_data = spectrum_data + current_stack_offset
             model_data = model_data + current_stack_offset
@@ -1347,7 +1348,7 @@ def dmfit1d(
             )
         if deconv_show:
             for j in range(1, n_lines + 1):
-                line_data = dmfit_df[f"Line#{j}"].values.copy()
+                line_data = dmfit_df[f"Line#{j}"].to_numpy().copy()
                 if stacked:
                     line_data = line_data + current_stack_offset
                 if deconv_color is not None:

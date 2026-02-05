@@ -1,11 +1,21 @@
 from __future__ import annotations
 
+import warnings
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pytest
 
 from spinplots.io import read_nmr
-from spinplots.plot import bruker1d, bruker1d_grid, bruker2d, df2d, dmfit1d, dmfit1d_grid, dmfit2d
+from spinplots.plot import (
+    bruker1d,
+    bruker1d_grid,
+    bruker2d,
+    df2d,
+    dmfit1d,
+    dmfit1d_grid,
+    dmfit2d,
+)
 from spinplots.utils import nmr_df
 
 DATA_DIR_1D_1 = "data/1D/glycine/pdata/1"
@@ -115,12 +125,10 @@ def test_unknown_kwarg_warns():
 
 def test_valid_kwargs_no_warning():
     """Valid kwargs should not produce a warning."""
-    import warnings
-
     spin = read_nmr(DATA_DIR_1D_1, "bruker")
     with warnings.catch_warnings():
         warnings.simplefilter("error")
-        fig, ax = bruker1d([spin.spectrum], return_fig=True, linewidth=2)
+        _fig, _ax = bruker1d([spin.spectrum], return_fig=True, linewidth=2)
 
 
 def test_dmfit1d_stacked():
