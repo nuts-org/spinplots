@@ -1351,12 +1351,14 @@ def dmfit1d(
                 if stacked:
                     line_data = line_data + current_stack_offset
                 if deconv_color is not None:
+                    # Support per-line colors (list) or single color (str)
+                    dc = deconv_color[j - 1] if isinstance(deconv_color, list) else deconv_color
                     ax.fill_between(
                         dmfit_df["ppm"],
                         line_data,
                         current_stack_offset if stacked else 0,
                         alpha=deconv_alpha,
-                        color=deconv_color,
+                        color=dc,
                     )
                 else:
                     ax.fill_between(
@@ -1814,7 +1816,7 @@ def dmfit1d_grid(
                         ppm,
                         dmfit_df[f"Line#{j}"],
                         alpha=0.3,
-                        color=deconv_color,
+                        color=deconv_color[j-1],
                     )
                 else:
                     ax.fill_between(ppm, dmfit_df[f"Line#{j}"], alpha=0.3)
