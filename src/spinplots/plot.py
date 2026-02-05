@@ -10,7 +10,28 @@ from matplotlib.colors import LogNorm
 from matplotlib.lines import Line2D
 from matplotlib.ticker import MultipleLocator
 
+from spinplots._helpers import (
+    _apply_tick_spacing,
+    _handle_show_return,
+    _nucleus_label,
+    _parse_nucleus,
+    _resolve_per_subplot,
+    _save_figure,
+)
 from spinplots.utils import calculate_projections
+
+def _validate_kwargs(kwargs, defaults, func_name):
+    """Warn about unrecognized keyword arguments that will be silently ignored."""
+    unknown = set(kwargs) - set(defaults)
+    if unknown:
+        warnings.warn(
+            f"{func_name}() got unexpected keyword argument(s): "
+            f"{', '.join(sorted(unknown))}. "
+            f"Valid options are: {', '.join(sorted(defaults))}.",
+            UserWarning,
+            stacklevel=3,
+        )
+
 
 # Default values
 DEFAULTS = {
@@ -38,43 +59,62 @@ def bruker2d(
     contour_num: int = 10,
     contour_factor: float = 1.2,
     cmap: str | list[str] | None = None,
-    colors: list[str] | None = None,
-    proj_colors=None,
-    xlim=None,
-    ylim=None,
-    save=False,
-    filename=None,
-    format=None,
-    diag=None,
-    homo=False,
-    return_fig=False,
+    color: list[str] | None = None,
+    proj_color: list[str] | None = None,
+    xlim: tuple[float, float] | None = None,
+    ylim: tuple[float, float] | None = None,
+    save: bool = False,
+    filename: str | None = None,
+    format: str | None = None,
+    diagonal: float | None = None,
+    homonuclear: bool = False,
+    return_fig: bool = False,
     **kwargs,
-):
+) -> tuple | dict | None:
     """
-    Plots a 2D NMR spectrum from spectrum dictionaries.
+    Plot one or more 2D Bruker NMR spectra with contour lines and projections.
 
-    Parameters:
-        spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
-        contour_start (float, optional): Start value for the contour levels. Default is 1e5.
-        contour_num (int, optional): Number of contour levels. Default is 10.
-        contour_factor (float, optional): Factor by which the contour levels increase. Default is 1.2.
+    Parameters
+    ----------
+    spectra : dict or list of dict
+        Dictionary or list of dictionaries containing spectrum data.
+    contour_start : float, optional
+        Starting contour level. If None, defaults to 5 % of the data maximum.
+    contour_num : int, optional
+        Number of contour levels. Default is 10.
+    contour_factor : float, optional
+        Multiplicative factor between successive contour levels. Default is 1.2.
+    cmap : str or list of str, optional
+        Colormap(s) for the contour lines. Mutually exclusive with *color*.
+    color : list of str, optional
+        Solid color(s) for contour lines when overlaying spectra.
+    proj_color : list of str, optional
+        Color(s) for the projection traces.
+    xlim : tuple of float, optional
+        Limits for the x-axis (F2 / direct dimension).
+    ylim : tuple of float, optional
+        Limits for the y-axis (F1 / indirect dimension).
+    save : bool, optional
+        Whether to save the plot. Default is False.
+    filename : str, optional
+        Filename for saving (without extension).
+    format : str, optional
+        File format for saving (e.g. ``'png'``, ``'pdf'``).
+    diagonal : float, optional
+        Slope of a diagonal reference line (e.g. 2 for DQ-SQ).
+    homonuclear : bool, optional
+        Set to True when both axes correspond to the same nucleus.
+    return_fig : bool, optional
+        Whether to return the figure and axes dict. Default is False.
+    **kwargs : dict
+        Additional customization (``axisfontsize``, ``tickfontsize``,
+        ``linewidth_contour``, ``linewidth_proj``, ``alpha``,
+        ``xaxislabel``, ``yaxislabel``, ``tickspacing``, etc.).
 
-    Keyword arguments:
-        cmap (str or list): Colormap(s) to use for the contour lines.
-        colors (list): Colors to use when overlaying spectra.
-        proj_colors (list): Colors to use for the projections.
-        xlim (tuple): The limits for the x-axis.
-        ylim (tuple): The limits for the y-axis.
-        save (bool): Whether to save the plot.
-        filename (str): The name of the file to save the plot.
-        format (str): The format to save the file in.
-        diag (float or None): Slope of the diagonal line/None.
-        homo (bool): True if doing homonuclear experiment. When True, both axes will show the same nucleus.
-        return_fig (bool): Whether to return the figure and axes.
-        **kwargs: Additional keyword arguments for customizing the plot.
-
-    Example:
-        bruker2d(spectrum, 0.1, 10, 1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png', diag=True)
+    Returns
+    -------
+    dict or None
+        Axes dictionary if *return_fig* is True, else None.
     """
 
     spectra = spectra if isinstance(spectra, list) else [spectra]
@@ -84,6 +124,7 @@ def bruker2d(
 
     defaults = DEFAULTS.copy()
     defaults["yaxislabel"] = None
+    _validate_kwargs(kwargs, defaults, "bruker2d")
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
     )
@@ -107,21 +148,15 @@ def bruker2d(
 
         nuclei_list = spectrum["nuclei"]
 
-        if homo:
+        if homonuclear:
             nuclei_x = nuclei_list[1]
             nuclei_y = nuclei_list[1]
         else:
             nuclei_x = nuclei_list[1]
             nuclei_y = nuclei_list[0]
 
-        number_x, nucleus_x = (
-            "".join(filter(str.isdigit, nuclei_x)),
-            "".join(filter(str.isalpha, nuclei_x)),
-        )
-        number_y, nucleus_y = (
-            "".join(filter(str.isdigit, nuclei_y)),
-            "".join(filter(str.isalpha, nuclei_y)),
-        )
+        number_x, nucleus_x = _parse_nucleus(nuclei_x)
+        number_y, nucleus_y = _parse_nucleus(nuclei_y)
         ppm_x = spectrum["ppm_scale"][1]
         ppm_x_limits = (ppm_x[0], ppm_x[-1])
         ppm_y = spectrum["ppm_scale"][0]
@@ -142,12 +177,12 @@ def bruker2d(
 
         if (
             isinstance(spectrum["projections"], dict)
-            and "x" in spectrum["projections"]
-            and "y" in spectrum["projections"]
+            and "f2" in spectrum["projections"]
+            and "f1" in spectrum["projections"]
         ):
             if xlim is None and ylim is None:
-                proj_x = spectrum["projections"]["x"]
-                proj_y = spectrum["projections"]["y"]
+                proj_x = spectrum["projections"]["f2"]
+                proj_y = spectrum["projections"]["f1"]
             else:
                 zoomed_data = data[y_indices, x_indices]
                 proj_x = np.amax(zoomed_data, axis=0)
@@ -187,10 +222,10 @@ def bruker2d(
                 norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]),
             )
 
-            if proj_colors and i < len(proj_colors):
-                proj_color = proj_colors[i]
+            if proj_color and i < len(proj_color):
+                _pcolor = proj_color[i]
             else:
-                proj_color = cmap_i(
+                _pcolor = cmap_i(
                     mcolors.Normalize(
                         vmin=contour_levels.min(), vmax=contour_levels.max()
                     )(contour_levels[0])
@@ -200,20 +235,20 @@ def bruker2d(
                 x_proj_ppm,
                 proj_x,
                 linewidth=defaults["linewidth_proj"],
-                color=proj_color,
+                color=_pcolor,
             )
             ax["a"].axis(False)
             ax["b"].plot(
                 -proj_y,
                 y_proj_ppm,
                 linewidth=defaults["linewidth_proj"],
-                color=proj_color,
+                color=_pcolor,
             )
             ax["b"].axis(False)
-        elif cmap is not None and colors is not None:
-            raise ValueError("Only one of cmap or colors can be provided.")
-        elif colors is not None and cmap is None:
-            contour_color = colors[i % len(colors)]
+        elif cmap is not None and color is not None:
+            raise ValueError("Only one of cmap or color can be provided.")
+        elif color is not None and cmap is None:
+            contour_color = color[i % len(color)]
             ax["A"].contour(
                 x_proj_ppm,
                 y_proj_ppm,
@@ -223,28 +258,28 @@ def bruker2d(
                 linewidths=defaults["linewidth_contour"],
             )
 
-            if proj_colors and i < len(proj_colors):
-                proj_color = proj_colors[i]
+            if proj_color and i < len(proj_color):
+                _pcolor = proj_color[i]
             else:
-                proj_color = contour_color
+                _pcolor = contour_color
 
             ax["a"].plot(
                 x_proj_ppm,
                 proj_x,
                 linewidth=defaults["linewidth_proj"],
-                color=proj_color,
+                color=_pcolor,
             )
             ax["a"].axis(False)
             ax["b"].plot(
                 -proj_y,
                 y_proj_ppm,
                 linewidth=defaults["linewidth_proj"],
-                color=proj_color,
+                color=_pcolor,
             )
             ax["b"].axis(False)
 
         else:
-            proj_color = "black"
+            _pcolor = "black"
             # Create contour plot with basic black color
             ax["A"].contour(
                 x_proj_ppm,
@@ -258,14 +293,14 @@ def bruker2d(
                 x_proj_ppm,
                 proj_x,
                 linewidth=defaults["linewidth_proj"],
-                color=proj_color,
+                color=_pcolor,
             )
             ax["a"].axis(False)
             ax["b"].plot(
                 -proj_y,
                 y_proj_ppm,
                 linewidth=defaults["linewidth_proj"],
-                color=proj_color,
+                color=_pcolor,
             )
             ax["b"].axis(False)
         if xaxislabel := defaults.get("xaxislabel"):
@@ -280,16 +315,10 @@ def bruker2d(
         else:
             defaults["yaxislabel"] = f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)"
 
-        xtick = defaults["xtickspacing"] or defaults["tickspacing"]
-        if xtick:
-            ax["A"].xaxis.set_major_locator(MultipleLocator(xtick))
-
-        ytick = defaults["ytickspacing"] or defaults["tickspacing"]
-        if ytick:
-            ax["A"].yaxis.set_major_locator(MultipleLocator(ytick))
+        _apply_tick_spacing(ax["A"], defaults)
 
         if (
-            homo
+            homonuclear
             and "yaxislabel" not in kwargs
             and "xaxislabel" not in kwargs
             and defaults["yaxislabel"] != defaults["xaxislabel"]
@@ -321,13 +350,13 @@ def bruker2d(
             labelfontfamily=defaults["tickfont"] if defaults["tickfont"] else None,
         )
 
-        if diag is not None:
+        if diagonal is not None:
             x_diag = np.linspace(
                 xlim[0] if xlim else ppm_x_limits[0],
                 xlim[1] if xlim else ppm_x_limits[1],
                 100,
             )
-            y_diag = diag * x_diag
+            y_diag = diagonal * x_diag
             ax["A"].plot(x_diag, y_diag, linestyle="--", color="gray")
 
         if xlim:
@@ -337,67 +366,78 @@ def bruker2d(
             ax["A"].set_ylim(ylim)
             ax["b"].set_ylim(ylim)
 
-    if save:
-        if filename and format:
-            full_filename = f"{filename}.{format}"
-        else:
-            full_filename = f"2d_nmr_spectrum.{format if format else 'png'}"
-        plt.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
-
-    if return_fig:
-        return ax
-
-    plt.show()
-    return None
+    _save_figure(fig, save, filename, format, "2d_nmr_spectrum")
+    return _handle_show_return(fig, ax, return_fig, save)
 
 
 def bruker2d_grid(
     spectra: dict | list[dict],
-    subplot_dims=(1, 1),
+    subplot_dims: tuple[int, int] = (1, 1),
     contour_start: float | None = None,
     contour_num: int = 10,
     contour_factor: float = 1.2,
     cmap: str | list[str] | None = None,
-    colors: list[str] | None = None,
-    proj_colors=None,
-    xlim=None,
-    ylim=None,
-    titles=None,
-    save=False,
-    filename=None,
-    format=None,
-    diag=None,
-    homo=False,
-    return_fig=False,
+    color: list[str] | None = None,
+    proj_color: list[str] | None = None,
+    xlim: tuple[float, float] | list[tuple[float, float]] | None = None,
+    ylim: tuple[float, float] | list[tuple[float, float]] | None = None,
+    titles: list[str] | None = None,
+    save: bool = False,
+    filename: str | None = None,
+    format: str | None = None,
+    diagonal: float | None = None,
+    homonuclear: bool = False,
+    return_fig: bool = False,
     **kwargs,
-):
+) -> tuple | None:
     """
     Plots multiple 2D Bruker NMR spectra in a grid layout with projections.
 
-    Parameters:
-        spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
-        subplot_dims (tuple): Grid dimensions as (rows, cols). Default is (1, 1).
-        contour_start (float, optional): Start value for the contour levels.
-        contour_num (int, optional): Number of contour levels. Default is 10.
-        contour_factor (float, optional): Factor by which the contour levels increase. Default is 1.2.
+    Parameters
+    ----------
+    spectra : dict or list of dict
+        Dictionary or list of dictionaries containing spectrum data.
+    subplot_dims : tuple, optional
+        Grid dimensions as (rows, cols). Default is (1, 1).
+    contour_start : float, optional
+        Start value for the contour levels.
+    contour_num : int, optional
+        Number of contour levels. Default is 10.
+    contour_factor : float, optional
+        Factor by which the contour levels increase. Default is 1.2.
+    cmap : str or list of str, optional
+        Colormap(s) for contour fill.
+    color : list of str, optional
+        Colors for contour lines when overlaying spectra.
+    proj_color : list of str, optional
+        Colors for the projections.
+    xlim : tuple or list of tuples, optional
+        X-axis limits. A single tuple applies to all subplots.
+        A list of tuples sets per-subplot limits.
+    ylim : tuple or list of tuples, optional
+        Y-axis limits. Same format as xlim.
+    titles : list of str, optional
+        Titles for each subplot.
+    save : bool, optional
+        Whether to save the plot.
+    filename : str, optional
+        Filename for saving (without extension).
+    format : str, optional
+        File format for saving.
+    diagonal : float or None, optional
+        Slope of the diagonal reference line.
+    homonuclear : bool, optional
+        True if this is a homonuclear experiment.
+    return_fig : bool, optional
+        Whether to return (fig, axes).
+    **kwargs : dict
+        Additional customization (axisfontsize, tickfontsize, linewidth_contour,
+        linewidth_proj, alpha, xaxislabel, yaxislabel, tickspacing, etc.).
 
-    Keyword arguments:
-        cmap (str or list): Colormap(s) to use for the contour lines.
-        colors (list): Colors to use when overlaying spectra.
-        proj_colors (list): Colors to use for the projections.
-        xlim (tuple): The limits for the x-axis.
-        ylim (tuple): The limits for the y-axis.
-        titles (list): Titles for each subplot.
-        save (bool): Whether to save the plot.
-        filename (str): The name of the file to save the plot.
-        format (str): The format to save the file in.
-        diag (float or None): Slope of the diagonal line/None.
-        homo (bool): True if doing homonuclear experiment.
-        return_fig (bool): Whether to return the figure and axes.
-        **kwargs: Additional keyword arguments for customizing the plot.
-
-    Returns:
-        None or tuple: If return_fig is True, returns the figure and axes array.
+    Returns
+    -------
+    tuple of (Figure, list of dict) or None
+        (fig, axes) if return_fig is True, else None.
 
     Example:
         bruker2d_grid([spectrum1, spectrum2], subplot_dims=(1, 2), contour_start=0.1,
@@ -412,6 +452,7 @@ def bruker2d_grid(
 
     defaults = DEFAULTS.copy()
     defaults["yaxislabel"] = None
+    _validate_kwargs(kwargs, defaults, "bruker2d_grid")
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
     )
@@ -440,36 +481,34 @@ def bruker2d_grid(
         data = spectrum["data"]
         nuclei_list = spectrum["nuclei"]
 
-        if homo:
+        if homonuclear:
             nuclei_x = nuclei_list[1]
             nuclei_y = nuclei_list[1]
         else:
             nuclei_x = nuclei_list[1]
             nuclei_y = nuclei_list[0]
 
-        number_x, nucleus_x = (
-            "".join(filter(str.isdigit, nuclei_x)),
-            "".join(filter(str.isalpha, nuclei_x)),
-        )
-        number_y, nucleus_y = (
-            "".join(filter(str.isdigit, nuclei_y)),
-            "".join(filter(str.isalpha, nuclei_y)),
-        )
+        number_x, nucleus_x = _parse_nucleus(nuclei_x)
+        number_y, nucleus_y = _parse_nucleus(nuclei_y)
 
         ppm_x = spectrum["ppm_scale"][1]
         ppm_y = spectrum["ppm_scale"][0]
 
+        # Resolve per-subplot xlim/ylim
+        effective_xlim = _resolve_per_subplot(xlim, idx)
+        effective_ylim = _resolve_per_subplot(ylim, idx)
+
         # Handle xlim and ylim for data slicing
-        if xlim:
-            x_min_idx = np.abs(ppm_x - max(xlim)).argmin()
-            x_max_idx = np.abs(ppm_x - min(xlim)).argmin()
+        if effective_xlim:
+            x_min_idx = np.abs(ppm_x - max(effective_xlim)).argmin()
+            x_max_idx = np.abs(ppm_x - min(effective_xlim)).argmin()
             x_indices = slice(min(x_min_idx, x_max_idx), max(x_min_idx, x_max_idx))
         else:
             x_indices = slice(None)
 
-        if ylim:
-            y_min_idx = np.abs(ppm_y - max(ylim)).argmin()
-            y_max_idx = np.abs(ppm_y - min(ylim)).argmin()
+        if effective_ylim:
+            y_min_idx = np.abs(ppm_y - max(effective_ylim)).argmin()
+            y_max_idx = np.abs(ppm_y - min(effective_ylim)).argmin()
             y_indices = slice(min(y_min_idx, y_max_idx), max(y_min_idx, y_max_idx))
         else:
             y_indices = slice(None)
@@ -477,12 +516,12 @@ def bruker2d_grid(
         # Calculate or retrieve projections
         if (
             isinstance(spectrum["projections"], dict)
-            and "x" in spectrum["projections"]
-            and "y" in spectrum["projections"]
+            and "f2" in spectrum["projections"]
+            and "f1" in spectrum["projections"]
         ):
             if xlim is None and ylim is None:
-                proj_x = spectrum["projections"]["x"]
-                proj_y = spectrum["projections"]["y"]
+                proj_x = spectrum["projections"]["f2"]
+                proj_y = spectrum["projections"]["f1"]
             else:
                 zoomed_data = data[y_indices, x_indices]
                 proj_x = np.amax(zoomed_data, axis=0)
@@ -515,16 +554,16 @@ def bruker2d_grid(
                 linewidths=defaults["linewidth_contour"],
                 norm=LogNorm(vmin=contour_levels[0], vmax=contour_levels[-1]),
             )
-            if proj_colors and idx < len(proj_colors):
-                proj_color = proj_colors[idx]
+            if proj_color and idx < len(proj_color):
+                _pcolor = proj_color[idx]
             else:
-                proj_color = cmap_i(
+                _pcolor = cmap_i(
                     mcolors.Normalize(
                         vmin=contour_levels.min(), vmax=contour_levels.max()
                     )(contour_levels[0])
                 )
-        elif colors is not None:
-            contour_color = colors[idx % len(colors)]
+        elif color is not None:
+            contour_color = color[idx % len(color)]
             ax_main.contour(
                 x_proj_ppm,
                 y_proj_ppm,
@@ -533,13 +572,13 @@ def bruker2d_grid(
                 colors=contour_color,
                 linewidths=defaults["linewidth_contour"],
             )
-            proj_color = (
-                proj_colors[idx]
-                if proj_colors and idx < len(proj_colors)
+            _pcolor = (
+                proj_color[idx]
+                if proj_color and idx < len(proj_color)
                 else contour_color
             )
         else:
-            proj_color = "black"
+            _pcolor = "black"
             ax_main.contour(
                 x_proj_ppm,
                 y_proj_ppm,
@@ -554,7 +593,7 @@ def bruker2d_grid(
             x_proj_ppm,
             proj_x,
             linewidth=defaults["linewidth_proj"],
-            color=proj_color,
+            color=_pcolor,
         )
         ax_top.axis(False)
 
@@ -562,7 +601,7 @@ def bruker2d_grid(
             -proj_y,
             y_proj_ppm,
             linewidth=defaults["linewidth_proj"],
-            color=proj_color,
+            color=_pcolor,
         )
         ax_left.axis(False)
 
@@ -574,7 +613,7 @@ def bruker2d_grid(
 
         if yaxislabel := defaults.get("yaxislabel"):
             y_label = yaxislabel
-        elif homo and number_y == number_x and nucleus_y == nucleus_x:
+        elif homonuclear and number_y == number_x and nucleus_y == nucleus_x:
             y_label = x_label
         else:
             y_label = f"$^{{{number_y}}}\\mathrm{{{nucleus_y}}}$ (ppm)"
@@ -599,26 +638,19 @@ def bruker2d_grid(
             labelfontfamily=defaults["tickfont"],
         )
 
-        # Apply tick spacing
-        xtick = defaults["xtickspacing"] or defaults["tickspacing"]
-        if xtick:
-            ax_main.xaxis.set_major_locator(MultipleLocator(xtick))
-
-        ytick = defaults["ytickspacing"] or defaults["tickspacing"]
-        if ytick:
-            ax_main.yaxis.set_major_locator(MultipleLocator(ytick))
+        _apply_tick_spacing(ax_main, defaults)
 
         # Diagonal line
-        if diag is not None:
-            xlim_eff = xlim if xlim else (ppm_x[0], ppm_x[-1])
-            x_diag = np.linspace(xlim_eff[0], xlim_eff[1], 100)
-            ax_main.plot(x_diag, diag * x_diag, "k--", lw=1)
+        if diagonal is not None:
+            diag_xlim = effective_xlim if effective_xlim else (ppm_x[0], ppm_x[-1])
+            x_diag = np.linspace(diag_xlim[0], diag_xlim[1], 100)
+            ax_main.plot(x_diag, diagonal * x_diag, "k--", lw=1)
 
         # Set axis limits
-        if xlim:
-            ax_main.set_xlim(xlim)
-        if ylim:
-            ax_main.set_ylim(ylim)
+        if effective_xlim:
+            ax_main.set_xlim(effective_xlim)
+        if effective_ylim:
+            ax_main.set_ylim(effective_ylim)
 
         # Add title if provided
         if titles is not None and idx < len(titles):
@@ -628,18 +660,8 @@ def bruker2d_grid(
 
         axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
 
-    # Save or show
-    if save:
-        full_filename = f"{filename if filename else 'bruker_2d_grid'}.{format if format else 'png'}"
-        fig.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
-
-    if return_fig:
-        return fig, axes
-
-    if not save:
-        plt.show()
-
-    return None
+    _save_figure(fig, save, filename, format, "bruker_2d_grid")
+    return _handle_show_return(fig, (fig, axes), return_fig, save)
 
 
 def bruker1d(
@@ -660,23 +682,44 @@ def bruker1d(
     """
     Plots one or more 1D NMR spectra from spectrum dictionaries.
 
-    Parameters:
-        spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
-        labels (list, optional): List of labels for the spectra.
-        xlim (tuple, optional): The limits for the x-axis.
-        ylim (tuple, optional): The limits for the y-axis.
-        save (bool, optional): Whether to save the plot.
-        filename (str, optional): The name of the file to save the plot.
-        format (str, optional): The format to save the file in.
-        frame (bool, optional): Whether to show the frame.
-        normalize (str, optional): Normalization method ('max', 'scans', or None).
-        stacked (bool, optional): Whether to stack the spectra.
-        color (list, optional): List of colors for the spectra.
-        return_fig (bool, optional): Whether to return the figure and axes.
-        **kwargs: Additional keyword arguments for customizing the plot.
+    Parameters
+    ----------
+    spectra : dict or list of dict
+        Dictionary or list of dictionaries containing spectrum data.
+    labels : list of str, optional
+        Legend labels for each spectrum.
+    xlim : tuple, optional
+        The limits for the x-axis as (left, right).
+    ylim : tuple, optional
+        The limits for the y-axis as (bottom, top).
+    save : bool, optional
+        Whether to save the plot.
+    filename : str, optional
+        Filename for saving (without extension).
+    format : str, optional
+        File format for saving (e.g., 'png', 'pdf').
+    frame : bool, optional
+        Whether to show the axis frame (spines, y-axis ticks).
+    normalize : str, bool, or None, optional
+        Normalization method:
 
-    Returns:
-        None or tuple: If return_fig is True, returns the figure and axes.
+        - ``None`` or ``False``: Plot raw data (default).
+        - ``'max'`` or ``True``: Normalize by maximum intensity.
+        - ``'scans'``: Normalize by number of scans (NS).
+    stacked : bool, optional
+        Whether to stack spectra vertically with offsets.
+    color : list of str, optional
+        Colors for each spectrum.
+    return_fig : bool, optional
+        Whether to return (fig, ax).
+    **kwargs : dict
+        Additional customization (axisfontsize, tickfontsize, linewidth,
+        linestyle, alpha, xaxislabel, yaxislabel, tickspacing, etc.).
+
+    Returns
+    -------
+    tuple of (Figure, Axes) or None
+        (fig, ax) if return_fig is True, else None.
     """
 
     spectra = spectra if isinstance(spectra, list) else [spectra]
@@ -686,6 +729,7 @@ def bruker1d(
 
     defaults = DEFAULTS.copy()
     defaults["yaxislabel"] = None
+    _validate_kwargs(kwargs, defaults, "bruker1d")
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
     )
@@ -695,10 +739,7 @@ def bruker1d(
     current_stack_offset = 0.0
 
     first_nuclei = spectra[0]["nuclei"]
-    number, nucleus = (
-        "".join(filter(str.isdigit, first_nuclei)),
-        "".join(filter(str.isalpha, first_nuclei)),
-    )
+    number, nucleus = _parse_nucleus(first_nuclei)
 
     for i, spectrum in enumerate(spectra):
         data_to_plot = None
@@ -774,8 +815,8 @@ def bruker1d(
         labelfontfamily=defaults["tickfont"],
     )
 
-    # Apply x-axis tick spacing
-    xtick = defaults["xtickspacing"] or defaults["tickspacing"]
+    # Apply x-axis tick spacing (y-axis only when frame is shown)
+    xtick = defaults.get("xtickspacing") or defaults.get("tickspacing")
     if xtick:
         ax.xaxis.set_major_locator(MultipleLocator(xtick))
 
@@ -808,58 +849,69 @@ def bruker1d(
     if ylim is not None:
         ax.set_ylim(ylim)
 
-    if save:
-        if not filename or not format:
-            raise ValueError("Both filename and format must be provided if save=True.")
-        full_filename = f"{filename}.{format}"
-        fig.savefig(
-            full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
-        )
-        plt.show()
-        return None
-
-    if return_fig:
-        return fig, ax
-
-    plt.show()
-    return None
+    _save_figure(fig, save, filename, format, "1d_nmr_spectrum")
+    return _handle_show_return(fig, (fig, ax), return_fig, save)
 
 
 def bruker1d_grid(
     spectra: dict | list[dict],
-    labels=None,
-    subplot_dims=(1, 1),
-    xlim=None,
-    ylim=None,
-    save=False,
-    filename=None,
-    format="png",
-    frame=False,
-    normalize=False,
-    color=None,
-    return_fig=False,
+    labels: list[str] | None = None,
+    subplot_dims: tuple[int, int] = (1, 1),
+    xlim: tuple[float, float] | list[tuple[float, float]] | None = None,
+    ylim: tuple[float, float] | list[tuple[float, float]] | None = None,
+    save: bool = False,
+    filename: str | None = None,
+    format: str | None = "png",
+    frame: bool = False,
+    normalize: str | bool | list | None = False,
+    color: list[str] | None = None,
+    return_fig: bool = False,
     **kwargs,
-):
+) -> tuple | None:
     """
-    Plots 1D NMR spectra from Bruker data in subplots.
+    Plots 1D NMR spectra from Bruker data in a grid of subplots.
 
-    Parameters:
-        spectra (dict or list): Dictionary or list of dictionaries containing spectrum data.
-        labels (list): List of labels for the spectra.
-        subplot_dims (tuple): Dimensions of the subplot grid (rows, cols).
-        xlim (list of tuples or tuple): The limits for the x-axis.
-        ylim (list of tuples or tuple): The limits for the y-axis.
-        save (bool): Whether to save the plot.
-        filename (str): The name of the file to save the plot.
-        format (str): The format to save the file in.
-        frame (bool): Whether to show the frame.
-        normalize (str): Normalization method 'max', 'scans', or None.
-        color (str): List of colors for the spectra.
-        return_fig (bool): Whether to return the figure and axis.
-        **kwargs: Additional keyword arguments for customizing the plot.
+    Parameters
+    ----------
+    spectra : dict or list of dict
+        Dictionary or list of dictionaries containing spectrum data.
+    labels : list of str, optional
+        Legend labels for each subplot's spectrum.
+    subplot_dims : tuple, optional
+        Grid dimensions as (rows, cols). Default is (1, 1).
+    xlim : tuple or list of tuples, optional
+        X-axis limits. A single tuple applies to all subplots.
+        A list of tuples sets per-subplot limits
+        (e.g., ``[(200, 0), (100, 0)]``).
+    ylim : tuple or list of tuples, optional
+        Y-axis limits. Same format as xlim.
+    save : bool, optional
+        Whether to save the plot.
+    filename : str, optional
+        Filename for saving (without extension).
+    format : str, optional
+        File format for saving (e.g., 'png', 'pdf'). Default is 'png'.
+    frame : bool, optional
+        Whether to show the axis frame (spines, y-axis ticks).
+    normalize : str, bool, list, or None, optional
+        Normalization method:
 
-    Returns:
-        None or tuple: If return_fig is True, returns the figure and axis.
+        - ``None`` or ``False``: Plot raw data (default).
+        - ``'max'`` or ``True``: Normalize by maximum intensity.
+        - ``'scans'``: Normalize by number of scans (NS).
+        - ``list``: Per-spectrum normalization, e.g. ``['max', None, 'scans']``.
+    color : list of str, optional
+        Colors for each subplot's spectrum.
+    return_fig : bool, optional
+        Whether to return (fig, axes).
+    **kwargs : dict
+        Additional customization (axisfontsize, tickfontsize, linewidth,
+        linestyle, alpha, xaxislabel, yaxislabel, tickspacing, etc.).
+
+    Returns
+    -------
+    tuple of (Figure, ndarray of Axes) or None
+        (fig, axes) if return_fig is True, else None.
 
     Example:
         bruker1d_grid([spectrum1, spectrum2], labels=['Spectrum 1', 'Spectrum 2'], subplot_dims=(1, 2), xlim=[(0, 100), (0, 100)], save=True, filename='1d_spectra', format='png', frame=False, normalize='max', color=['red', 'blue'])
@@ -871,6 +923,7 @@ def bruker1d_grid(
         raise ValueError("All spectra must be 1-dimensional for bruker1d_grid.")
 
     defaults = DEFAULTS.copy()
+    _validate_kwargs(kwargs, defaults, "bruker1d_grid")
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
     )
@@ -887,10 +940,7 @@ def bruker1d_grid(
         ax = axes[i]
 
         nuclei = spectrum["nuclei"]
-        number, nucleus = (
-            "".join(filter(str.isdigit, nuclei)),
-            "".join(filter(str.isalpha, nuclei)),
-        )
+        number, nucleus = _parse_nucleus(nuclei)
 
         ppm = spectrum["ppm_scale"]
         if isinstance(normalize, list):
@@ -987,68 +1037,68 @@ def bruker1d_grid(
                     labelfontfamily=defaults["tickfont"],
                 )
 
-        if xlim and isinstance(xlim, tuple):
-            ax.set_xlim(xlim)
-        elif xlim and isinstance(xlim, list) and i < len(xlim):
-            ax.set_xlim(xlim[i])
+        effective_xlim = _resolve_per_subplot(xlim, i)
+        if effective_xlim:
+            ax.set_xlim(effective_xlim)
 
-        if ylim and isinstance(ylim, tuple):
-            ax.set_ylim(ylim)
-        elif ylim and isinstance(ylim, list) and i < len(ylim):
-            ax.set_ylim(ylim[i])
+        effective_ylim = _resolve_per_subplot(ylim, i)
+        if effective_ylim:
+            ax.set_ylim(effective_ylim)
 
     plt.tight_layout()
 
-    if save:
-        if filename:
-            full_filename = f"{filename}.{format}"
-        else:
-            full_filename = f"1d_nmr_spectra.{format}"
-        fig.savefig(
-            full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
-        )
-        return None
-    elif return_fig:
-        return fig, axes
-
-    plt.show()
-    return None
+    _save_figure(fig, save, filename, format, "1d_nmr_spectra")
+    return _handle_show_return(fig, (fig, axes), return_fig, save)
 
 
 # Plot 2D NMR data from CSV or DataFrame
 def df2d(
-    path,
-    contour_start,
-    contour_num,
-    contour_factor,
-    cmap=None,
-    xlim=None,
-    ylim=None,
-    save=False,
-    filename=None,
-    format=None,
-    return_fig=False,
-):
+    path: str | pd.DataFrame,
+    contour_start: float = 1e5,
+    contour_num: int = 10,
+    contour_factor: float = 1.2,
+    cmap: str | None = None,
+    xlim: tuple[float, float] | None = None,
+    ylim: tuple[float, float] | None = None,
+    save: bool = False,
+    filename: str | None = None,
+    format: str | None = None,
+    return_fig: bool = False,
+) -> tuple | dict | None:
     """
-    Plot 2D NMR data from a CSV file or a DataFrame.
+    Plot 2D NMR data from a CSV file or a Pandas DataFrame.
 
-    Parameters:
-    path (str): Path to the CSV file.
-    contour_start (float): Contour start value.
-    contour_num (int): Number of contour levels.
-    contour_factor (float): Contour factor.
+    Parameters
+    ----------
+    path : str or DataFrame
+        Path to a CSV file, or an existing ``pandas.DataFrame`` with
+        columns for F1 ppm, F2 ppm, and intensity.
+    contour_start : float, optional
+        Starting contour level. Default is 1e5.
+    contour_num : int, optional
+        Number of contour levels. Default is 10.
+    contour_factor : float, optional
+        Multiplicative factor between successive contour levels.
+        Default is 1.2.
+    cmap : str, optional
+        Matplotlib colormap name. Default is ``'Greys'``.
+    xlim : tuple of float, optional
+        Limits for the x-axis.
+    ylim : tuple of float, optional
+        Limits for the y-axis.
+    save : bool, optional
+        Whether to save the plot. Default is False.
+    filename : str, optional
+        Filename for saving (without extension).
+    format : str, optional
+        File format for saving (e.g. ``'png'``, ``'pdf'``).
+    return_fig : bool, optional
+        Whether to return the figure and axes dict. Default is False.
 
-    Keyword arguments:
-        cmap (str): The colormap to use for the contour lines.
-        xlim (tuple): The limits for the x-axis.
-        ylim (tuple): The limits for the y-axis.
-        save (bool): Whether to save the plot.
-        filename (str): The name of the file to save the plot.
-        format (str): The format to save the file in.
-        return_fig (bool): Whether to return the figure and axis.
-
-    Example:
-    df2d('nmr_data.csv', contour_start=4e3, contour_num=10, contour_factor=1.2, cmap='viridis', xlim=(0, 100), ylim=(0, 100), save=True, filename='2d_spectrum', format='png')
+    Returns
+    -------
+    dict or None
+        Axes dictionary if *return_fig* is True, else None.
     """
 
     # Check if path to CSV or DataFrame
@@ -1056,15 +1106,9 @@ def df2d(
 
     cols = df_nmr.columns
     f1_nuclei, f1_units = cols[0].split()
-    number_x, nucleus_x = (
-        "".join(filter(str.isdigit, f1_nuclei)),
-        "".join(filter(str.isalpha, f1_nuclei)),
-    )
+    number_x, nucleus_x = _parse_nucleus(f1_nuclei)
     f2_nuclei, f2_units = cols[1].split()
-    number_y, nucleus_y = (
-        "".join(filter(str.isdigit, f2_nuclei)),
-        "".join(filter(str.isalpha, f2_nuclei)),
-    )
+    number_y, nucleus_y = _parse_nucleus(f2_nuclei)
     data_grid = df_nmr.pivot_table(index=cols[0], columns=cols[1], values="intensity")
     proj_f1, proj_f2 = calculate_projections(df_nmr, export=False)
 
@@ -1131,72 +1175,44 @@ def df2d(
         ax["A"].set_ylim(ylim)
         ax["b"].set_ylim(ylim)
 
-    if save:
-        if filename:
-            full_filename = filename + "." + (format if format else "png")
-        else:
-            full_filename = "2d_nmr_spectrum." + (format if format else "png")
-        plt.savefig(
-            full_filename,
-            format=format if format else "png",
-            dpi=300,
-            bbox_inches="tight",
-            pad_inches=0.1,
-        )
-        return None
-    elif return_fig:
-        return ax
-    else:
-        plt.show()
-        return None
+    _save_figure(ax["A"].figure, save, filename, format, "2d_nmr_spectrum")
+    return _handle_show_return(ax["A"].figure, ax, return_fig, save)
 
 
 # Functions for DMFit
 def dmfit1d(
-    spin_objects,
-    color="b",
-    linewidth=1,
-    linestyle="-",
-    alpha=1,
-    model_show=True,
-    model_color="red",
-    model_linewidth=1,
-    model_linestyle="--",
-    model_alpha=1,
-    deconv_show=True,
-    deconv_color=None,
-    deconv_alpha=0.3,
-    frame=False,
-    labels=None,
-    labelsize=12,
-    xlim=None,
-    save=False,
-    format=None,
-    filename=None,
-    yaxislabel=None,
-    xaxislabel=None,
-    axisfontsize=None,
-    axisfont=None,
-    tickfontsize=None,
-    tickfont=None,
-    tickspacing=None,
-    return_fig=False,
-):
+    spectra: dict | list[dict],
+    color: str | list[str] = "b",
+    stacked: bool = False,
+    model_show: bool = True,
+    model_color: str = "red",
+    model_linewidth: float = 1,
+    model_linestyle: str = "--",
+    model_alpha: float = 1,
+    deconv_show: bool = True,
+    deconv_color: str | None = None,
+    deconv_alpha: float = 0.3,
+    frame: bool = False,
+    labels: list[str] | None = None,
+    xlim: tuple[float, float] | None = None,
+    save: bool = False,
+    format: str | None = None,
+    filename: str | None = None,
+    return_fig: bool = False,
+    **kwargs,
+) -> tuple | None:
     """
-    Read a dmfit1d file and return a DataFrame with the data.
+    Plot one or more 1D DMFit spectra with optional model and deconvolution lines.
 
     Parameters
     ----------
-    spin_objects : Spin
-        The Spin object containing the dmfit1d file.
-    color : str, optional
-        The color of the spectrum line. The default is 'b'.
-    linewidth : int, optional
-        The width of the spectrum line. The default is 1.
-    linestyle : str, optional
-        The style of the spectrum line. The default is '-'.
-    alpha : float, optional
-        The transparency of the spectrum line. The default is 1.
+    spectra : dict or list of dict
+        Dictionary (or list of dictionaries) containing DMFit 1D spectrum data,
+        each including a 'dmfit_dataframe' key with the parsed data.
+    color : str or list of str, optional
+        The color(s) of the spectrum line(s). The default is 'b'.
+    stacked : bool, optional
+        Whether to stack multiple spectra vertically. The default is False.
     model_show : bool, optional
         Whether to show the model line. The default is True.
     model_color : str, optional
@@ -1213,13 +1229,10 @@ def dmfit1d(
         The color of the deconvoluted lines. The default is None.
     deconv_alpha : float, optional
         The transparency of the deconvoluted lines. The default is 0.3.
-
     frame : bool, optional
         Whether to show the frame. The default is False.
     labels : list, optional
-        The labels for the x and y axes. The default is name of columns.
-    labelsize : int, optional
-        The size of the labels. The default is 12.
+        Legend labels. The default is None.
     xlim : tuple, optional
         The limits for the x axis. The default is None.
     save : bool, optional
@@ -1228,152 +1241,165 @@ def dmfit1d(
         The format to save the figure. The default is None.
     filename : str, optional
         The name of the file to save the figure. The default is None.
-    yaxislabel : str, optional
-        The label for the y axis. The default is None.
-    xaxislabel : str, optional
-        The label for the x axis. The default is None.
-    axisfontsize : int, optional
-        The size of the axis labels. The default is None.
-    axisfont : str, optional
-        The font of the axis labels. The default is None.
-    tickfontsize : int, optional
-        The size of the tick labels. The default is None.
-    tickfont : str, optional
-        The font of the tick labels. The default is None.
-    tickspacing : int, optional
-        The spacing of the ticks. The default is None.
     return_fig : bool, optional
         Whether to return the figure. The default is False.
+    **kwargs : dict, optional
+        Additional keyword arguments:
+
+        - linewidth : float
+            Width of the spectrum line (default 1.0).
+        - linestyle : str
+            Style of the spectrum line (default '-').
+        - alpha : float
+            Transparency of the spectrum line (default 1.0).
+        - labelsize : int
+            Size of labels in the legend (default 12).
+        - xaxislabel : str
+            Custom label for x-axis.
+        - yaxislabel : str
+            Custom label for y-axis.
+        - axisfontsize : int
+            Font size for axis labels.
+        - axisfont : str
+            Font family for axis labels.
+        - tickfontsize : int
+            Font size for tick labels.
+        - tickfont : str
+            Font family for tick labels.
+        - tickspacing : float
+            Tick spacing for both axes.
+        - xtickspacing : float
+            Tick spacing for x-axis only.
+        - ytickspacing : float
+            Tick spacing for y-axis only.
 
     Returns
     -------
-    fig : matplotlib.figure.Figure
-        The figure object.
-    dmfit_df : pandas.DataFrame
-        The DataFrame with the data from the dmfit1d file.
-
+    fig, ax : tuple of (matplotlib.figure.Figure, matplotlib.axes.Axes)
+        The figure and axes objects, if return_fig is True.
     """
 
-    if not spin_objects.spectrum:
-        raise ValueError("Spin object contains no spectra.")
+    spectra = spectra if isinstance(spectra, list) else [spectra]
+    multi = len(spectra) > 1
 
-    spectrum_info = spin_objects.spectrum
-    dmfit_df = spectrum_info.get("dmfit_dataframe")
+    if not spectra or not spectra[0]:
+        raise ValueError("Empty spectrum data provided.")
 
-    if dmfit_df is None:
-        raise ValueError(
-            "DMfit DataFrame not found in Spin object. Read data with provider='dmfit'"
-        )
-
-    n_lines = sum(col.startswith("Line#") for col in dmfit_df.columns)
-
-    defaults = {
-        "color": color,
-        "linewidth": linewidth,
-        "linestyle": linestyle,
-        "alpha": alpha,
-        "model_show": model_show,
-        "model_color": model_color,
-        "model_linewidth": model_linewidth,
-        "model_linestyle": model_linestyle,
-        "model_alpha": model_alpha,
-        "deconv_show": deconv_show,
-        "deconv_color": deconv_color,
-        "deconv_alpha": deconv_alpha,
-        "frame": frame,
-        "labels": labels,
-        "labelsize": labelsize,
-        "xlim": xlim,
-        "save": save,
-        "format": format,
-        "filename": filename,
-        "yaxislabel": yaxislabel,
-        "xaxislabel": xaxislabel,
-        "axisfontsize": axisfontsize,
-        "axisfont": axisfont,
-        "tickfontsize": tickfontsize,
-        "tickfont": tickfont,
-        "tickspacing": tickspacing,
-        "return_fig": return_fig,
-    }
-
-    params = {k: v for k, v in locals().items() if k in defaults and v is not None}
-    params.update(defaults)
+    defaults = DEFAULTS.copy()
+    defaults["yaxislabel"] = None  # dmfit1d doesn't show y-axis label by default
+    _validate_kwargs(kwargs, defaults, "dmfit1d")
+    defaults.update(
+        {k: v for k, v in kwargs.items() if k in defaults and v is not None}
+    )
 
     fig, ax = plt.subplots()
-    ax.plot(
-        dmfit_df["ppm"],
-        dmfit_df["Spectrum"],
-        color=params["color"],
-        linewidth=params["linewidth"],
-        linestyle=params["linestyle"],
-        alpha=params["alpha"],
-        label=params["labels"][0]
-        if params["labels"] and len(params["labels"]) > 0
-        else None,
-    )
-    if params["model_show"]:
+    current_stack_offset = 0.0
+
+    for i, spectrum in enumerate(spectra):
+        dmfit_df = spectrum.get("dmfit_dataframe")
+
+        if dmfit_df is None:
+            raise ValueError(
+                "DMfit DataFrame not found in spectrum data. Read data with provider='dmfit'."
+            )
+
+        n_lines = sum(col.startswith("Line#") for col in dmfit_df.columns)
+
+        c = color[i] if isinstance(color, list) and i < len(color) else color
+
+        # Compute stack offset
+        spectrum_data = dmfit_df["Spectrum"].values.copy()
+        model_data = dmfit_df["Model"].values.copy()
+        if stacked:
+            spectrum_data = spectrum_data + current_stack_offset
+            model_data = model_data + current_stack_offset
+
+        # Spectrum label: per-spectrum label in multi mode, or full labels[0] for single
+        if labels and not multi:
+            spec_label = labels[0] if len(labels) > 0 else None
+        elif labels and multi:
+            spec_label = labels[i] if i < len(labels) else None
+        else:
+            spec_label = None
+
         ax.plot(
             dmfit_df["ppm"],
-            dmfit_df["Model"],
-            color=params["model_color"],
-            linewidth=params["model_linewidth"],
-            linestyle=params["model_linestyle"],
-            alpha=params["model_alpha"],
-            label=params["labels"][1]
-            if params["labels"] and len(params["labels"]) > 1
-            else None,
+            spectrum_data,
+            color=c,
+            linewidth=defaults["linewidth"],
+            linestyle=defaults["linestyle"],
+            alpha=defaults["alpha"],
+            label=spec_label,
         )
-    if params["deconv_show"]:
-        for i in range(1, n_lines + 1):
-            if params["deconv_color"] is not None:
-                ax.fill_between(
-                    dmfit_df["ppm"],
-                    dmfit_df[f"Line#{i}"],
-                    alpha=params["deconv_alpha"],
-                    color=params["deconv_color"],
-                )
-            else:
-                ax.fill_between(
-                    dmfit_df["ppm"], dmfit_df[f"Line#{i}"], alpha=params["deconv_alpha"]
-                )
+        if model_show:
+            # In multi-spectrum mode, don't add legend labels for model/deconv
+            model_label = None
+            if not multi and labels and len(labels) > 1:
+                model_label = labels[1]
+            ax.plot(
+                dmfit_df["ppm"],
+                model_data,
+                color=model_color,
+                linewidth=model_linewidth,
+                linestyle=model_linestyle,
+                alpha=model_alpha,
+                label=model_label,
+            )
+        if deconv_show:
+            for j in range(1, n_lines + 1):
+                line_data = dmfit_df[f"Line#{j}"].values.copy()
+                if stacked:
+                    line_data = line_data + current_stack_offset
+                if deconv_color is not None:
+                    ax.fill_between(
+                        dmfit_df["ppm"],
+                        line_data,
+                        current_stack_offset if stacked else 0,
+                        alpha=deconv_alpha,
+                        color=deconv_color,
+                    )
+                else:
+                    ax.fill_between(
+                        dmfit_df["ppm"],
+                        line_data,
+                        current_stack_offset if stacked else 0,
+                        alpha=deconv_alpha,
+                    )
 
-    if params["labels"]:
+        if stacked:
+            current_stack_offset += np.amax(dmfit_df["Spectrum"].values) * 1.1
+
+    if labels:
         ax.legend(
             bbox_to_anchor=(1.05, 1),
             loc="upper left",
             fontsize=defaults["labelsize"],
             prop={"family": defaults["tickfont"], "size": defaults["labelsize"]},
         )
-    if params["xlim"]:
-        ax.set_xlim(params["xlim"])
-    if params["yaxislabel"]:
-        ax.set_ylabel(params["yaxislabel"], fontsize=params["labelsize"])
-    if params["xaxislabel"]:
-        ax.set_xlabel(params["xaxislabel"], fontsize=params["labelsize"])
-    if params["axisfontsize"]:
-        ax.xaxis.label.set_fontsize(params["axisfontsize"])
-        ax.yaxis.label.set_fontsize(params["axisfontsize"])
-    if params["axisfont"]:
-        ax.xaxis.label.set_fontname(params["axisfont"])
-        ax.yaxis.label.set_fontname(params["axisfont"])
-    if params["tickfontsize"]:
-        ax.tick_params(axis="both", which="major", labelsize=params["tickfontsize"])
-        ax.tick_params(axis="both", which="minor", labelsize=params["tickfontsize"])
-    if params["tickfont"]:
-        ax.tick_params(axis="both", which="major", labelfont=params["tickfont"])
-        ax.tick_params(axis="both", which="minor", labelfont=params["tickfont"])
+    if xlim:
+        ax.set_xlim(xlim)
+    if defaults["yaxislabel"]:
+        ax.set_ylabel(
+            defaults["yaxislabel"],
+            fontsize=defaults["axisfontsize"],
+            fontname=defaults["axisfont"],
+        )
+    if defaults["xaxislabel"]:
+        ax.set_xlabel(
+            defaults["xaxislabel"],
+            fontsize=defaults["axisfontsize"],
+            fontname=defaults["axisfont"],
+        )
 
-    # Apply x-axis tick spacing
-    xtick = params.get("xtickspacing") or params.get("tickspacing")
-    if xtick:
-        ax.xaxis.set_major_locator(MultipleLocator(xtick))
+    ax.tick_params(
+        axis="both",
+        labelsize=defaults["tickfontsize"],
+        labelfontfamily=defaults["tickfont"],
+    )
 
-    # Apply y-axis tick spacing
-    ytick = params.get("ytickspacing") or params.get("tickspacing")
-    if ytick:
-        ax.yaxis.set_major_locator(MultipleLocator(ytick))
-    if params["frame"]:
+    _apply_tick_spacing(ax, defaults)
+
+    if frame:
         ax.spines["top"].set_visible(True)
         ax.spines["right"].set_visible(True)
         ax.spines["left"].set_visible(True)
@@ -1383,55 +1409,45 @@ def dmfit1d(
         ax.spines["left"].set_visible(False)
         ax.yaxis.set_ticks([])
         ax.yaxis.set_ticklabels([])
-    if params["save"]:
-        if params["format"]:
-            plt.savefig(
-                f"{params['filename']}.{params['format']}", format=params["format"]
-            )
-        else:
-            plt.savefig(params["filename"])
 
-    if params["return_fig"]:
-        return fig, ax
-    else:
-        plt.show()
-        return None
+    _save_figure(fig, save, filename, format, "dmfit_1d_spectrum")
+    return _handle_show_return(fig, (fig, ax), return_fig, save)
 
 
 def dmfit2d(
-    spin_objects,
-    contour_start=1e5,
-    contour_num=10,
-    contour_factor=1.2,
-    colors=None,
-    proj_colors=None,
-    xlim=None,
-    ylim=None,
-    labels=None,
-    save=False,
-    filename=None,
-    format=None,
-    axis_right=True,
-    diag=None,
-    return_fig=False,
+    spectra: dict | list[dict],
+    contour_start: float = 1e5,
+    contour_num: int = 10,
+    contour_factor: float = 1.2,
+    color: str | list[str] | None = None,
+    proj_color: str | list[str] | None = None,
+    xlim: tuple[float, float] | None = None,
+    ylim: tuple[float, float] | None = None,
+    labels: list[str] | None = None,
+    save: bool = False,
+    filename: str | None = None,
+    format: str | None = None,
+    axis_right: bool = True,
+    diagonal: float | None = None,
+    return_fig: bool = False,
     **kwargs,
-):
+) -> tuple | dict | None:
     """
     Plot 2D DMFit data with 1D projections.
 
     Parameters
     ----------
-    spin_objects : Spin or SpinCollection
-        The Spin object or SpinCollection containing DMFit 2D data.
+    spectra : dict or list of dict
+        Dictionary or list of dictionaries containing DMFit 2D spectrum data.
     contour_start : float, optional
         The starting contour level. Default is 1e5.
     contour_num : int, optional
         The number of contour levels. Default is 10.
     contour_factor : float, optional
         The factor by which the contour levels increase. Default is 1.2.
-    colors : str or list, optional
+    color : str or list, optional
         Color(s) for each spectrum's contours.
-    proj_colors : str or list, optional
+    proj_color : str or list, optional
         Color(s) for each spectrum's projections.
     xlim : tuple, optional
         The limits for the x-axis (F2).
@@ -1447,7 +1463,7 @@ def dmfit2d(
         Format for the saved file.
     axis_right : bool, optional
         Whether to put the y-axis on the right.
-    diag : float or None, optional
+    diagonal : float or None, optional
         Slope of the diagonal line.
     return_fig : bool, optional
         Whether to return the figure and axes dictionary.
@@ -1484,38 +1500,17 @@ def dmfit2d(
     """
 
     defaults = DEFAULTS.copy()
+    _validate_kwargs(kwargs, defaults, "dmfit2d")
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
     )
 
-    if isinstance(spin_objects, list):
-        if spin_objects and isinstance(spin_objects[0], dict):
-            spectra_dicts = spin_objects
-            if labels is None:
-                plot_labels = [
-                    f"Spectrum {idx + 1}" for idx in range(len(spin_objects))
-                ]
-            else:
-                plot_labels = labels
-        else:
-            raise ValueError(
-                "Unexpected list of Spin objects. Use SpinCollection instead."
-            )
-    elif hasattr(spin_objects, "spins"):
-        spectra_dicts = [spin_obj.spectrum for spin_obj in spin_objects.spins.values()]
-        if labels is None:
-            plot_labels = [
-                spin_obj.tag if spin_obj.tag else f"Spectrum {idx + 1}"
-                for idx, spin_obj in enumerate(spin_objects.spins.values())
-            ]
-        else:
-            plot_labels = labels
+    spectra_dicts = spectra if isinstance(spectra, list) else [spectra]
+
+    if labels is None:
+        plot_labels = [f"Spectrum {idx + 1}" for idx in range(len(spectra_dicts))]
     else:
-        spectra_dicts = [spin_objects.spectrum]
-        if labels is None:
-            plot_labels = [spin_objects.tag if spin_objects.tag else "Spectrum"]
-        else:
-            plot_labels = labels
+        plot_labels = labels
 
     if not all(s["ndim"] == 2 for s in spectra_dicts):
         raise ValueError("All spectra must be 2D.")
@@ -1537,21 +1532,21 @@ def dmfit2d(
     ]
 
     contour_colors_list = []
-    if isinstance(colors, str):
-        contour_colors_list = [colors] * num_spectra
-    elif isinstance(colors, list):
-        contour_colors_list = [colors[i % len(colors)] for i in range(num_spectra)]
+    if isinstance(color, str):
+        contour_colors_list = [color] * num_spectra
+    elif isinstance(color, list):
+        contour_colors_list = [color[i % len(color)] for i in range(num_spectra)]
     else:
         contour_colors_list = [
             default_colors[i % len(default_colors)] for i in range(num_spectra)
         ]
 
     projection_colors_list = []
-    if isinstance(proj_colors, str):
-        projection_colors_list = [proj_colors] * num_spectra
-    elif isinstance(proj_colors, list):
+    if isinstance(proj_color, str):
+        projection_colors_list = [proj_color] * num_spectra
+    elif isinstance(proj_color, list):
         projection_colors_list = [
-            proj_colors[i % len(proj_colors)] for i in range(num_spectra)
+            proj_color[i % len(proj_color)] for i in range(num_spectra)
         ]
     else:
         projection_colors_list = contour_colors_list
@@ -1625,28 +1620,8 @@ def dmfit2d(
     f2_nuc_str = str(first_spectrum_nuclei[1])
     f1_nuc_str = str(first_spectrum_nuclei[0])
 
-    num_f2, nuc_f2 = (
-        "".join(filter(str.isdigit, f2_nuc_str)),
-        "".join(filter(str.isalpha, f2_nuc_str)),
-    )
-    num_f1, nuc_f1 = (
-        "".join(filter(str.isdigit, f1_nuc_str)),
-        "".join(filter(str.isalpha, f1_nuc_str)),
-    )
-
-    final_xaxislabel = (
-        defaults.get("xaxislabel")
-        if defaults.get("xaxislabel")
-        else f"$^{{{num_f2}}}${nuc_f2} (ppm)"
-    )
-    final_yaxislabel = (
-        defaults.get("yaxislabel")
-        if defaults.get("yaxislabel")
-        else f"$^{{{num_f1}}}${nuc_f1} (ppm)"
-    )
-
-    assert final_xaxislabel is not None
-    assert final_yaxislabel is not None
+    final_xaxislabel = defaults.get("xaxislabel") or _nucleus_label(f2_nuc_str)
+    final_yaxislabel = defaults.get("yaxislabel") or _nucleus_label(f1_nuc_str)
 
     main_ax.set_xlabel(
         final_xaxislabel,
@@ -1693,10 +1668,10 @@ def dmfit2d(
             main_ax.set_ylim((current_ylim_main[1], current_ylim_main[0]))
     proj_ax_f1.set_ylim(main_ax.get_ylim())
 
-    if diag is not None:
+    if diagonal is not None:
         diag_xlim_eff = main_ax.get_xlim()
         x_diag_vals = np.linspace(diag_xlim_eff[0], diag_xlim_eff[1], 100)
-        main_ax.plot(x_diag_vals, diag * x_diag_vals, "k--", lw=1)
+        main_ax.plot(x_diag_vals, diagonal * x_diag_vals, "k--", lw=1)
 
     if legend_elements:
         main_ax.legend(
@@ -1707,40 +1682,25 @@ def dmfit2d(
 
     plt.tight_layout(pad=0.5)
 
-    # --- Save/Show ---
-    if save:
-        if filename and format:
-            full_filename = f"{filename}.{format}"
-        elif filename:
-            full_filename = f"{filename}.png"
-        else:
-            full_filename = f"dmfit_2d_projections.{format if format else 'png'}"
-        fig.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
-
-    if return_fig:
-        return ax_dict
-
-    if not save:
-        plt.show()
-
-    return None
+    _save_figure(fig, save, filename, format, "dmfit_2d_projections")
+    return _handle_show_return(fig, ax_dict, return_fig, save)
 
 
 def dmfit1d_grid(
     spectra: dict | list[dict],
-    subplot_dims=(1, 1),
-    labels=None,
-    xlim=None,
-    ylim=None,
-    color=None,
-    model_color=None,
-    deconv_color=None,
-    save=False,
-    filename=None,
-    format="png",
-    return_fig=False,
+    subplot_dims: tuple[int, int] = (1, 1),
+    titles: list[str] | None = None,
+    xlim: tuple[float, float] | list[tuple[float, float]] | None = None,
+    ylim: tuple[float, float] | list[tuple[float, float]] | None = None,
+    color: str | list[str] | None = None,
+    model_color: str | None = None,
+    deconv_color: str | None = None,
+    save: bool = False,
+    filename: str | None = None,
+    format: str | None = "png",
+    return_fig: bool = False,
     **kwargs,
-):
+) -> tuple | None:
     """
     Plot multiple 1D DMFit spectra in a grid layout.
 
@@ -1753,12 +1713,13 @@ def dmfit1d_grid(
         Dictionary or list of dictionaries containing DMFit 1D spectrum data.
     subplot_dims : tuple, optional
         Grid dimensions as (rows, cols). Default is (1, 1).
-    labels : list of str, optional
-        Labels for each subplot. If None, no labels are shown.
-    xlim : tuple, optional
-        X-axis limits for all subplots.
-    ylim : tuple, optional
-        Y-axis limits for all subplots.
+    titles : list of str, optional
+        Titles for each subplot. If None, no titles are shown.
+    xlim : tuple or list of tuples, optional
+        X-axis limits. A single tuple applies to all subplots.
+        A list of tuples sets per-subplot limits.
+    ylim : tuple or list of tuples, optional
+        Y-axis limits. Same format as xlim.
     color : str or list of str, optional
         Color(s) for experimental spectra. If a single string, the same color
         is used for all spectra. If a list, each spectrum gets its own color.
@@ -1792,6 +1753,7 @@ def dmfit1d_grid(
         color = [color] * len(spectra)
 
     defaults = DEFAULTS.copy()
+    _validate_kwargs(kwargs, defaults, "dmfit1d_grid")
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
     )
@@ -1857,8 +1819,8 @@ def dmfit1d_grid(
                 else:
                     ax.fill_between(ppm, dmfit_df[f"Line#{j}"], alpha=0.3)
 
-        if labels and i < len(labels):
-            ax.set_title(labels[i], fontsize=defaults["axisfontsize"])
+        if titles and i < len(titles):
+            ax.set_title(titles[i], fontsize=defaults["axisfontsize"])
 
         # X-axis label
         if xaxislabel := defaults.get("xaxislabel"):
@@ -1870,12 +1832,8 @@ def dmfit1d_grid(
         else:
             nuclei = spectrum.get("nuclei", "Unknown")
             if nuclei and nuclei != "Unknown":
-                number, nucleus = (
-                    "".join(filter(str.isdigit, nuclei)),
-                    "".join(filter(str.isalpha, nuclei)),
-                )
                 ax.set_xlabel(
-                    f"$^{{{number}}}\\mathrm{{{nucleus}}}$ (ppm)",
+                    _nucleus_label(nuclei),
                     fontsize=defaults["axisfontsize"],
                     fontname=defaults["axisfont"],
                 )
@@ -1892,8 +1850,8 @@ def dmfit1d_grid(
             labelfontfamily=defaults["tickfont"],
         )
 
-        # Apply x-axis tick spacing
-        xtick = defaults["xtickspacing"] or defaults["tickspacing"]
+        # Apply x-axis tick spacing only (y-axis hidden)
+        xtick = defaults.get("xtickspacing") or defaults.get("tickspacing")
         if xtick:
             ax.xaxis.set_major_locator(MultipleLocator(xtick))
 
@@ -1904,56 +1862,48 @@ def dmfit1d_grid(
         ax.set_yticklabels([])
         ax.set_yticks([])
 
-        if xlim:
-            ax.set_xlim(xlim)
-        if ylim:
-            ax.set_ylim(ylim)
+        effective_xlim = _resolve_per_subplot(xlim, i)
+        if effective_xlim:
+            ax.set_xlim(effective_xlim)
+
+        effective_ylim = _resolve_per_subplot(ylim, i)
+        if effective_ylim:
+            ax.set_ylim(effective_ylim)
+
     plt.tight_layout()
 
-    if save:
-        if filename:
-            full_filename = f"{filename}.{format}"
-        else:
-            full_filename = f"1d_dmfit_spectra.{format}"
-        fig.savefig(
-            full_filename, format=format, dpi=300, bbox_inches="tight", pad_inches=0.1
-        )
-        return None
-    elif return_fig:
-        return fig, axes
-
-    plt.show()
-    return None
+    _save_figure(fig, save, filename, format, "1d_dmfit_spectra")
+    return _handle_show_return(fig, (fig, axes), return_fig, save)
 
 
 def dmfit2d_grid(
-    spin_objects,
-    subplot_dims=(1, 3),
-    contour_start=1e5,
-    contour_num=10,
-    contour_factor=1.2,
-    colors=None,
-    proj_colors=None,
-    xlim=None,
-    ylim=None,
-    titles=None,
-    linestyles=None,
-    save=False,
-    filename=None,
-    format="png",
-    diag=None,
-    return_fig=False,
+    spectra: list[dict],
+    subplot_dims: tuple[int, int] = (1, 3),
+    contour_start: float = 1e5,
+    contour_num: int = 10,
+    contour_factor: float = 1.2,
+    color: list[list[str]] | None = None,
+    proj_color: list[list[str]] | None = None,
+    xlim: tuple[float, float] | list[tuple[float, float]] | None = None,
+    ylim: tuple[float, float] | list[tuple[float, float]] | None = None,
+    titles: list[str] | None = None,
+    linestyles: list[list[str]] | None = None,
+    save: bool = False,
+    filename: str | None = None,
+    format: str | None = "png",
+    diagonal: float | None = None,
+    return_fig: bool = False,
     **kwargs,
-):
+) -> tuple | None:
     """
     Plot multiple 2D DMFit spectra in a grid layout with projections.
     Each subplot shows an experimental spectrum overlaid with its fit/model.
-    This function expects pairs of spectra (experimental + model) in the SpinCollection.
+    This function expects pairs of spectra (experimental + model).
 
     Parameters
     ----------
-    spin_objects : SpinCollection
-        Collection of Spin objects containing DMFit 2D data.
+    spectra : list of dict
+        List of spectrum dictionaries containing DMFit 2D data.
         Should contain pairs: [exp1, model1, exp2, model2, ...].
     subplot_dims : tuple, optional
         Grid dimensions as (rows, cols). Default is (1, 3).
@@ -1963,16 +1913,17 @@ def dmfit2d_grid(
         Number of contour levels. Default is 10.
     contour_factor : float, optional
         Factor by which contour levels increase. Default is 1.2.
-    colors : list of lists, optional
+    color : list of lists, optional
         Colors for each subplot's [experimental, model] spectra.
         E.g., [['black', 'red'], ['black', 'red'], ...].
         If None, uses default ['black', 'red'] for all subplots.
-    proj_colors : list of lists, optional
-        Colors for projections. Same structure as colors.
-    xlim : tuple, optional
-        X-axis limits for all subplots.
-    ylim : tuple, optional
-        Y-axis limits for all subplots.
+    proj_color : list of lists, optional
+        Colors for projections. Same structure as color.
+    xlim : tuple or list of tuples, optional
+        X-axis limits. A single tuple applies to all subplots.
+        A list of tuples sets per-subplot limits.
+    ylim : tuple or list of tuples, optional
+        Y-axis limits. Same format as xlim.
     titles : list of str, optional
         Titles for each subplot (one per pair). If None, no titles are shown.
     linestyles : list of lists, optional
@@ -1989,7 +1940,7 @@ def dmfit2d_grid(
         Filename for saving (without extension).
     format : str, optional
         File format for saving. Default is 'png'.
-    diag : float, optional
+    diagonal : float, optional
         Slope for diagonal reference line. Default is None.
     return_fig : bool, optional
         Whether to return figure and axes. Default is False.
@@ -2008,20 +1959,18 @@ def dmfit2d_grid(
     >>> data.plot(grid='1x2', contour_start=1.5e5, xlim=(65, 52), ylim=(65, 52))
     """
     defaults = DEFAULTS.copy()
+    _validate_kwargs(kwargs, defaults, "dmfit2d_grid")
     defaults.update(
         {k: v for k, v in kwargs.items() if k in defaults and v is not None}
     )
 
-    if hasattr(spin_objects, "spins"):
-        spectra_list = list(spin_objects.spins.values())
-    else:
-        raise ValueError("dmfit2d_grid requires a SpinCollection object")
+    spectra_list = spectra if isinstance(spectra, list) else [spectra]
 
     # Check all are 2D DMFit
-    for spin in spectra_list:
-        if spin.spectrum["ndim"] != 2:
+    for s in spectra_list:
+        if s["ndim"] != 2:
             raise ValueError("All spectra must be 2D for grid plotting")
-        if spin.spectrum["metadata"]["provider_type"] != "dmfit":
+        if s["metadata"]["provider_type"] != "dmfit":
             raise ValueError("All spectra must be from DMFit provider")
 
     if len(spectra_list) % 2 != 0:
@@ -2038,22 +1987,22 @@ def dmfit2d_grid(
     rows, cols = subplot_dims
 
     # Exp and model colors
-    if colors is None:
-        colors = [["black", "red"] for _ in range(num_pairs)]
+    if color is None:
+        color = [["black", "red"] for _ in range(num_pairs)]
     elif (
-        isinstance(colors, list) and len(colors) > 0 and not isinstance(colors[0], list)
+        isinstance(color, list) and len(color) > 0 and not isinstance(color[0], list)
     ):
-        colors = [colors for _ in range(num_pairs)]
+        color = [color for _ in range(num_pairs)]
 
     # Project colors
-    if proj_colors is None:
-        proj_colors = colors
+    if proj_color is None:
+        proj_color = color
     elif (
-        isinstance(proj_colors, list)
-        and len(proj_colors) > 0
-        and not isinstance(proj_colors[0], list)
+        isinstance(proj_color, list)
+        and len(proj_color) > 0
+        and not isinstance(proj_color[0], list)
     ):
-        proj_colors = [proj_colors for _ in range(num_pairs)]
+        proj_color = [proj_color for _ in range(num_pairs)]
 
     if linestyles is None:
         linestyles = [["-", "-"] for _ in range(num_pairs)]
@@ -2070,7 +2019,7 @@ def dmfit2d_grid(
 
     axes = []
 
-    for idx, (spin_exp, spin_model) in enumerate(spectrum_pairs):
+    for idx, (exp_dict, model_dict) in enumerate(spectrum_pairs):
         if idx >= rows * cols:
             break
 
@@ -2083,14 +2032,14 @@ def dmfit2d_grid(
         ax_left = fig.add_subplot(gs_sub[1:, 0])
         ax_main = fig.add_subplot(gs_sub[1:, 1:], sharex=ax_top, sharey=ax_left)
 
-        exp_color = colors[idx][0] if idx < len(colors) else "black"
+        exp_color = color[idx][0] if idx < len(color) else "black"
         model_color = (
-            colors[idx][1] if idx < len(colors) and len(colors[idx]) > 1 else "red"
+            color[idx][1] if idx < len(color) and len(color[idx]) > 1 else "red"
         )
-        proj_exp_color = proj_colors[idx][0] if idx < len(proj_colors) else exp_color
+        proj_exp_color = proj_color[idx][0] if idx < len(proj_color) else exp_color
         proj_model_color = (
-            proj_colors[idx][1]
-            if idx < len(proj_colors) and len(proj_colors[idx]) > 1
+            proj_color[idx][1]
+            if idx < len(proj_color) and len(proj_color[idx]) > 1
             else model_color
         )
 
@@ -2104,11 +2053,11 @@ def dmfit2d_grid(
         contour_levels = contour_start * contour_factor ** np.arange(contour_num)
 
         # Experimental
-        exp_data = spin_exp.spectrum["data"]
-        y_axis = spin_exp.spectrum["ppm_scale"][0]
-        x_axis = spin_exp.spectrum["ppm_scale"][1]
-        proj_f1_exp = spin_exp.spectrum["projections"]["f1"]
-        proj_f2_exp = spin_exp.spectrum["projections"]["f2"]
+        exp_data = exp_dict["data"]
+        y_axis = exp_dict["ppm_scale"][0]
+        x_axis = exp_dict["ppm_scale"][1]
+        proj_f1_exp = exp_dict["projections"]["f1"]
+        proj_f2_exp = exp_dict["projections"]["f2"]
 
         ax_main.contour(
             x_axis,
@@ -2122,9 +2071,9 @@ def dmfit2d_grid(
         )
 
         # Model
-        model_data = spin_model.spectrum["data"]
-        proj_f1_model = spin_model.spectrum["projections"]["f1"]
-        proj_f2_model = spin_model.spectrum["projections"]["f2"]
+        model_data = model_dict["data"]
+        proj_f1_model = model_dict["projections"]["f1"]
+        proj_f2_model = model_dict["projections"]["f2"]
 
         ax_main.contour(
             x_axis,
@@ -2170,42 +2119,28 @@ def dmfit2d_grid(
         ax_top.axis("off")
         ax_left.axis("off")
 
-        if xlim:
-            ax_main.set_xlim(xlim)
-        if ylim:
-            ax_main.set_ylim(ylim)
+        effective_xlim = _resolve_per_subplot(xlim, idx)
+        if effective_xlim:
+            ax_main.set_xlim(effective_xlim)
 
-        if diag is not None:
-            xlim_eff = xlim if xlim else (x_axis.max(), x_axis.min())
+        effective_ylim = _resolve_per_subplot(ylim, idx)
+        if effective_ylim:
+            ax_main.set_ylim(effective_ylim)
+
+        if diagonal is not None:
+            xlim_eff = effective_xlim if effective_xlim else (x_axis.max(), x_axis.min())
             x_diag = np.linspace(xlim_eff[0], xlim_eff[1], 100)
-            ax_main.plot(x_diag, diag * x_diag, "k--", lw=1)
+            ax_main.plot(x_diag, diagonal * x_diag, "k--", lw=1)
 
-        nuclei = spin_exp.spectrum.get("nuclei", ["Unknown", "Unknown"])
-
-        f2_str = str(nuclei[1])
-        num_f2, nuc_f2 = (
-            "".join(filter(str.isdigit, f2_str)),
-            "".join(filter(str.isalpha, f2_str)),
-        )
+        nuclei = exp_dict.get("nuclei", ["Unknown", "Unknown"])
 
         ax_main.set_xlabel(
-            defaults["xaxislabel"]
-            if defaults["xaxislabel"]
-            else f"$^{{{num_f2}}}${nuc_f2} (ppm)",
+            defaults["xaxislabel"] or _nucleus_label(nuclei[1]),
             fontsize=defaults["axisfontsize"],
             fontname=defaults["axisfont"],
         )
-
-        f1_str = str(nuclei[0])
-        num_f1, nuc_f1 = (
-            "".join(filter(str.isdigit, f1_str)),
-            "".join(filter(str.isalpha, f1_str)),
-        )
-
         ax_main.set_ylabel(
-            defaults["yaxislabel"]
-            if defaults["yaxislabel"]
-            else f"$^{{{num_f1}}}${nuc_f1} (ppm)",
+            defaults["yaxislabel"] or _nucleus_label(nuclei[0]),
             fontsize=defaults["axisfontsize"],
             fontname=defaults["axisfont"],
         )
@@ -2227,14 +2162,5 @@ def dmfit2d_grid(
         axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
 
     # Save or show
-    if save:
-        full_filename = f"{filename if filename else 'dmfit_2d_grid'}.{format}"
-        fig.savefig(full_filename, dpi=300, bbox_inches="tight", pad_inches=0.1)
-
-    if return_fig:
-        return fig, axes
-
-    if not save:
-        plt.show()
-
-    return None
+    _save_figure(fig, save, filename, format, "dmfit_2d_grid")
+    return _handle_show_return(fig, (fig, axes), return_fig, save)

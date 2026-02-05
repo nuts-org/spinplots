@@ -18,28 +18,35 @@ def read_nmr(
     provider: str = "bruker",
     tags: str | list[str] | None = None,
     **kwargs,
-) -> Spin | SpinCollection:
+) -> SpinCollection:
     """
     Reads NMR data from a specified path or list of paths and provider,
-    returning a single Spin object containing all datasets.
+    returning a Spin or SpinCollection object.
 
     Args:
         path (str | list[str]): Path or list of paths to the NMR data directory(ies).
-        provider (str): The NMR data provider (currently only 'bruker' is supported).
+        provider (str): The NMR data provider ('bruker' or 'dmfit').
+        tags (str | list[str] | None): Tag(s) to identify each spectrum. A single
+            string is accepted for a single path (e.g., ``tags="glycine"``). For
+            multiple paths, pass a list matching the number of paths
+            (e.g., ``tags=["glycine", "alanine"]``).
         **kwargs: Additional provider-specific arguments passed to the reader
-                  (e.g., 'homo' for Bruker 2D).
+                  (e.g., 'homonuclear' for Bruker 2D).
 
     Returns:
-        Spin: A Spin object containing the data for all successfully read spectra.
+        SpinCollection: A SpinCollection containing the loaded spectra.
 
     Raises:
-        ValueError: If the provider is not supported.
+        ValueError: If the provider is not supported or tags length doesn't match paths.
         IOError: If there are problems processing the files.
     """
 
     provider = provider.lower()
 
     paths_to_read = path if isinstance(path, list) else [path]
+
+    if isinstance(tags, str):
+        tags = [tags]
 
     if tags is not None and len(tags) != len(paths_to_read):
         raise ValueError("Length of tags must match the number of paths.")
@@ -60,9 +67,6 @@ def read_nmr(
         tag = tags[i] if tags is not None else None
         spin = Spin(spectrum_data=spectrum_data, provider=provider, tag=tag)
         spins.append(spin)
-
-    if len(spins) == 1:
-        return spins[0]
 
     return SpinCollection(spins)
 
@@ -121,7 +125,7 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
         spectrum_data["nuclei"] = udic[0]["label"]
 
     elif ndim == 2:
-        homo = kwargs.get("homo", False)
+        homo = kwargs.get("homonuclear", kwargs.get("homo", False))
         nuclei_y = udic[0]["label"]
         nuclei_x = udic[1]["label"]
         if homo:
