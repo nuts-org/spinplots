@@ -134,9 +134,7 @@ def test_valid_kwargs_no_warning():
 def test_dmfit1d_stacked():
     spin1 = read_nmr(DATA_DIR_DM, provider="dmfit")
     spin2 = read_nmr(DATA_DIR_DM, provider="dmfit")
-    out = dmfit1d(
-        [spin1.spectrum, spin2.spectrum], stacked=True, return_fig=True
-    )
+    out = dmfit1d([spin1.spectrum, spin2.spectrum], stacked=True, return_fig=True)
     assert out is not None
 
 

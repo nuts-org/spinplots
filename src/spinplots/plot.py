@@ -1353,7 +1353,11 @@ def dmfit1d(
                     line_data = line_data + current_stack_offset
                 if deconv_color is not None:
                     # Support per-line colors (list) or single color (str)
-                    dc = deconv_color[j - 1] if isinstance(deconv_color, list) else deconv_color
+                    dc = (
+                        deconv_color[j - 1]
+                        if isinstance(deconv_color, list)
+                        else deconv_color
+                    )
                     ax.fill_between(
                         dmfit_df["ppm"],
                         line_data,
@@ -1817,7 +1821,7 @@ def dmfit1d_grid(
                         ppm,
                         dmfit_df[f"Line#{j}"],
                         alpha=0.3,
-                        color=deconv_color[j-1],
+                        color=deconv_color[j - 1],
                     )
                 else:
                     ax.fill_between(ppm, dmfit_df[f"Line#{j}"], alpha=0.3)
@@ -1992,9 +1996,7 @@ def dmfit2d_grid(
     # Exp and model colors
     if color is None:
         color = [["black", "red"] for _ in range(num_pairs)]
-    elif (
-        isinstance(color, list) and len(color) > 0 and not isinstance(color[0], list)
-    ):
+    elif isinstance(color, list) and len(color) > 0 and not isinstance(color[0], list):
         color = [color for _ in range(num_pairs)]
 
     # Project colors
@@ -2131,7 +2133,9 @@ def dmfit2d_grid(
             ax_main.set_ylim(effective_ylim)
 
         if diagonal is not None:
-            xlim_eff = effective_xlim if effective_xlim else (x_axis.max(), x_axis.min())
+            xlim_eff = (
+                effective_xlim if effective_xlim else (x_axis.max(), x_axis.min())
+            )
             x_diag = np.linspace(xlim_eff[0], xlim_eff[1], 100)
             ax_main.plot(x_diag, diagonal * x_diag, "k--", lw=1)
 

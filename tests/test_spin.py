@@ -101,7 +101,11 @@ def test_spin_plot_bad_grid_str(spin_1d):
 def test_spin_plot_2d_grid(spin_2d):
     """Single 2D Bruker SpinCollection can use grid layout."""
     fig, axes = spin_2d.plot(
-        grid="1x1", contour_start=1e5, contour_num=5, contour_factor=1.5, return_fig=True
+        grid="1x1",
+        contour_start=1e5,
+        contour_num=5,
+        contour_factor=1.5,
+        return_fig=True,
     )
     assert fig is not None
     assert len(axes) == 1
