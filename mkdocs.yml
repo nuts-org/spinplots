@@ -93,10 +93,10 @@ plugins:
       default_handler: python
       handlers:
         python:
+          inventories:
+            - https://docs.python.org/3/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
           options:
-            inventories:
-              - https://docs.python.org/3/objects.inv
-              - https://numpy.org/doc/stable/objects.inv
             docstring_style: numpy
             docstring_section_style: list
             separate_signature: true
