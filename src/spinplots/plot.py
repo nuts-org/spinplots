@@ -534,10 +534,12 @@ def bruker2d_grid(
             proj_y = np.amax(zoomed_data, axis=1)
 
         if contour_start is None:
-            contour_start = 0.05 * np.max(data)
+            local_contour_start = 0.05 * np.max(data)
+        else:
+            local_contour_start = contour_start
 
-        assert contour_start is not None
-        contour_levels = contour_start * contour_factor ** np.arange(contour_num)
+        assert local_contour_start is not None
+        contour_levels = local_contour_start * contour_factor ** np.arange(contour_num)
 
         x_proj_ppm = ppm_x[x_indices]
         y_proj_ppm = ppm_y[y_indices]
@@ -1192,7 +1194,7 @@ def dmfit1d(
     model_linestyle: str = "--",
     model_alpha: float = 1,
     deconv_show: bool = True,
-    deconv_color: str | None = None,
+    deconv_color: str | list[str] | None = None,
     deconv_alpha: float = 0.3,
     frame: bool = False,
     labels: list[str] | None = None,
@@ -2168,6 +2170,7 @@ def dmfit2d_grid(
             labelsize=defaults["tickfontsize"],
             labelfontfamily=defaults["tickfont"],
         )
+        _apply_tick_spacing(ax_main, defaults)
 
         axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
 
