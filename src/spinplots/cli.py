@@ -1,3 +1,22 @@
+"""Command-line interface for SpinPlots.
+
+Provides the ``bruker2csv`` command, which converts Bruker NMR data
+to CSV files.
+
+Usage
+-----
+.. code-block:: bash
+
+    bruker2csv <path_to_data> <path_to_output>
+
+Parameters
+----------
+path_to_data : str
+    Path to the Bruker experiment directory.
+path_to_output : str
+    Path for the output CSV file.
+"""
+
 from __future__ import annotations
 
 import logging

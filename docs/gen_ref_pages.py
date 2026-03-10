@@ -19,7 +19,7 @@ for path in sorted(Path("src").rglob("*.py")):
 
     parts = tuple(module_path.parts)
 
-    if parts[-1] in ("__init__", "__main__"):
+    if parts[-1] in ("__init__", "__main__", "_helpers"):
         continue
 
     nav[parts] = doc_path.as_posix()
