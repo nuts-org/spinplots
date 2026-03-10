@@ -202,6 +202,9 @@ def bruker2d(
         x_proj_ppm = ppm_x[x_indices]
         y_proj_ppm = ppm_y[y_indices]
 
+        if cmap is not None and color is not None:
+            raise ValueError("Only one of cmap or color can be provided.")
+
         if cmap is not None:
             if isinstance(cmap, str):
                 cmap = [cmap]
@@ -246,9 +249,7 @@ def bruker2d(
                 color=_pcolor,
             )
             ax["b"].axis(False)
-        elif cmap is not None and color is not None:
-            raise ValueError("Only one of cmap or color can be provided.")
-        elif color is not None and cmap is None:
+        elif color is not None:
             contour_color = color[i % len(color)]
             ax["A"].contour(
                 x_proj_ppm,
