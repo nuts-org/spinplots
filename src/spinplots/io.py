@@ -21,7 +21,7 @@ def read_nmr(
 ) -> SpinCollection:
     """
     Reads NMR data from a specified path or list of paths and provider,
-    returning a Spin or SpinCollection object.
+    returning a SpinCollection object.
 
     Args:
         path (str | list[str]): Path or list of paths to the NMR data directory(ies).
