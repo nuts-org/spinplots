@@ -1943,10 +1943,6 @@ def dmfit2d_grid(
         Line styles for each subplot's [experimental, model] spectra.
         E.g., [['-', '-'], ['-', '--'], ...].
         If None, uses default ['-', '-'] for all subplots (solid lines for both).
-    xaxislabel : str, optional
-        Label for x-axis. Default is None (auto-generated from nucleus).
-    yaxislabel : str, optional
-        Label for y-axis. Default is None (auto-generated from nucleus).
     save : bool, optional
         Whether to save the figure. Default is False.
     filename : str, optional
@@ -1958,7 +1954,8 @@ def dmfit2d_grid(
     return_fig : bool, optional
         Whether to return figure and axes. Default is False.
     **kwargs : dict
-        Additional customization options (axisfontsize, tickfontsize, etc.)
+        Additional customization options (axisfontsize, tickfontsize,
+        xaxislabel, yaxislabel, etc.)
 
     Returns
     -------
