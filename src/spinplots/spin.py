@@ -167,8 +167,12 @@ class SpinCollection:
         return next(iter(self.spins.values())).tag
 
     @tag.setter
-    def tag(self, value: str | None):
+    def tag(self, value: str):
         """Set the tag when the collection contains exactly one Spin."""
+        if value is None:
+            raise ValueError(
+                "SpinCollection.tag cannot be set to None. Use a non-empty string tag."
+            )
         if self.size != 1:
             raise ValueError(
                 "SpinCollection contains multiple spins. "
@@ -177,8 +181,7 @@ class SpinCollection:
         old_key = next(iter(self.spins))
         spin = self.spins.pop(old_key)
         spin.tag = value
-        new_key = value if value is not None else old_key
-        self.spins[new_key] = spin
+        self.spins[value] = spin
 
     def append(self, spins: Spin | list[Spin]):
         """
@@ -202,6 +205,7 @@ class SpinCollection:
                 tag = spin.tag
             else:
                 tag = f"Spin{self.size}"
+                spin.tag = tag
                 warnings.warn(f"No tag provided. Using default tag: {tag}", UserWarning)
             if tag in self.spins:
                 raise ValueError(
@@ -304,8 +308,12 @@ class SpinCollection:
 
         spectra = [spin.spectrum for spin in spins_to_plot.values()]
 
-        if "labels" not in kwargs:
-            kwargs["labels"] = list(spins_to_plot.keys())
+        if subplot_dims is not None:
+            if "titles" not in kwargs:
+                kwargs["titles"] = list(spins_to_plot.keys())
+        else:
+            if "labels" not in kwargs:
+                kwargs["labels"] = list(spins_to_plot.keys())
 
         match (self.provider, self.ndim, subplot_dims):
             case ("bruker", 1, None):
