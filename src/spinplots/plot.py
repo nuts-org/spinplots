@@ -1701,7 +1701,7 @@ def dmfit1d_grid(
     ylim: tuple[float, float] | list[tuple[float, float]] | None = None,
     color: str | list[str] | None = None,
     model_color: str | None = None,
-    deconv_color: str | None = None,
+    deconv_color: str | list[str] | None = None,
     save: bool = False,
     filename: str | None = None,
     format: str | None = "png",
@@ -1817,11 +1817,16 @@ def dmfit1d_grid(
         if n_lines > 0:
             for j in range(1, n_lines + 1):
                 if deconv_color is not None:
+                    dc = (
+                        deconv_color[j - 1]
+                        if isinstance(deconv_color, list)
+                        else deconv_color
+                    )
                     ax.fill_between(
                         ppm,
                         dmfit_df[f"Line#{j}"],
                         alpha=0.3,
-                        color=deconv_color[j - 1],
+                        color=dc,
                     )
                 else:
                     ax.fill_between(ppm, dmfit_df[f"Line#{j}"], alpha=0.3)
