@@ -205,7 +205,6 @@ class SpinCollection:
                 tag = spin.tag
             else:
                 tag = f"Spin{self.size}"
-                spin.tag = tag
                 warnings.warn(f"No tag provided. Using default tag: {tag}", UserWarning)
             if tag in self.spins:
                 raise ValueError(
