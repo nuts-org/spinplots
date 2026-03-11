@@ -89,13 +89,16 @@ class Spin:
             case ("bruker", 2, tuple()):
                 raise ValueError("Grid layout is not supported for 2D spectra.")
             case ("dmfit", 1, None):
-                return spinplot.dmfit1d(self, **kwargs)
+                return spinplot.dmfit1d(self.spectrum, **kwargs)
             case ("dmfit", 1, tuple()):
                 raise ValueError("Grid layout is not supported for 1D DMFit spectra.")
             case ("dmfit", 2, None):
-                return spinplot.dmfit2d(self, **kwargs)
+                return spinplot.dmfit2d([self.spectrum], **kwargs)
             case ("dmfit", 2, tuple()):
-                raise ValueError("Grid layout is not supported for 2D spectra.")
+                raise ValueError(
+                    "Grid layout for a single DMFit 2D spectrum is not supported. "
+                    "Use a SpinCollection with multiple spectra."
+                )
             case _:
                 raise ValueError(
                     f"Plotting not supported for provider: {self.provider} with ndim={self.ndim}"
@@ -104,14 +107,30 @@ class Spin:
 
 class SpinCollection:
     """
-    Represents a collection of Spin objects.
+    A dictionary-like container of Spin objects.
 
-    Attributes:
-        spins (dict): A dictionary of Spin objects.
-        provider (str): The source of the NMR data (e.g., 'bruker'). Assumed
-                        to be the same for all loaded spectra.
-        ndim (int): The number of dimensions of the spectra.
-        size (int): The number of Spin objects in the collection.
+    ``read_nmr()`` always returns a ``SpinCollection``, even for a single
+    path.  When the collection contains exactly one spectrum, the
+    convenience properties ``.spectrum`` and ``.tag`` delegate to the
+    inner ``Spin`` so it can be used interchangeably in most contexts.
+
+    Attributes
+    ----------
+    spins : dict
+        Mapping of ``{tag: Spin}`` for every spectrum in the collection.
+    provider : str
+        The data provider shared by all spectra (e.g. ``'bruker'``,
+        ``'dmfit'``).
+    ndim : int
+        Dimensionality shared by all spectra (1 or 2).
+    size : int
+        Number of Spin objects in the collection.
+    spectrum : dict
+        *(property, read-only)* The spectrum dictionary of the single
+        contained Spin.  Raises ``ValueError`` when ``size != 1``.
+    tag : str | None
+        *(property, read-write)* The tag of the single contained Spin.
+        Raises ``ValueError`` when ``size != 1``.
     """
 
     def __init__(self, spins: Spin | list[Spin]):
@@ -126,6 +145,43 @@ class SpinCollection:
         self.ndim = spins[0].ndim
         self.size = 0
         self.append(spins)
+
+    @property
+    def spectrum(self) -> dict:
+        """Return the spectrum dict when the collection contains exactly one Spin."""
+        if self.size != 1:
+            raise ValueError(
+                "SpinCollection contains multiple spins. "
+                "Index into the collection to access individual spectra."
+            )
+        return next(iter(self.spins.values())).spectrum
+
+    @property
+    def tag(self) -> str | None:
+        """Return the tag when the collection contains exactly one Spin."""
+        if self.size != 1:
+            raise ValueError(
+                "SpinCollection contains multiple spins. "
+                "Index into the collection to access individual tags."
+            )
+        return next(iter(self.spins.values())).tag
+
+    @tag.setter
+    def tag(self, value: str):
+        """Set the tag when the collection contains exactly one Spin."""
+        if value is None:
+            raise ValueError(
+                "SpinCollection.tag cannot be set to None. Use a non-empty string tag."
+            )
+        if self.size != 1:
+            raise ValueError(
+                "SpinCollection contains multiple spins. "
+                "Index into the collection to set individual tags."
+            )
+        old_key = next(iter(self.spins))
+        spin = self.spins.pop(old_key)
+        spin.tag = value
+        self.spins[value] = spin
 
     def append(self, spins: Spin | list[Spin]):
         """
@@ -207,19 +263,25 @@ class SpinCollection:
 
     def plot(self, grid=None, filter=None, **kwargs):
         """
-        Generates a plot of the NMR data stored in this collection.
+        Plot the spectra in this collection.
 
-        Args:
-            grid (str, optional): Grid layout in format 'rows x cols' (e.g., '2x2', '1x3').
-                    If provided, spectra will be plotted in a grid layout.
-            filter (str | list[str], optional): A tag or list of tags to filter the spins
-                    to be plotted
-            **kwargs: Plotting keyword arguments specific to the plot type
-                    (e.g., xlim, labels, color, contour_start, etc.).
-                    These are passed to the underlying plotting function.
+        Parameters
+        ----------
+        grid : str, optional
+            Grid layout in format ``'rows x cols'`` (e.g. ``'2x2'``,
+            ``'1x3'``).  When provided, each spectrum is placed in its
+            own subplot.
+        filter : str or list of str, optional
+            Tag or list of tags selecting a subset of spectra to plot.
+        **kwargs
+            Forwarded to the underlying plotting function (e.g.
+            ``xlim``, ``labels``, ``color``, ``contour_start``).
 
-        Returns:
-            The result from the underlying plotting function.
+        Returns
+        -------
+        tuple or dict or None
+            The return value of the underlying plotting function.
+            Pass ``return_fig=True`` to receive ``(fig, axes)``.
         """
         subplot_dims = None
         if grid:
@@ -245,8 +307,12 @@ class SpinCollection:
 
         spectra = [spin.spectrum for spin in spins_to_plot.values()]
 
-        if "labels" not in kwargs:
-            kwargs["labels"] = list(spins_to_plot.keys())
+        if subplot_dims is not None:
+            if "titles" not in kwargs:
+                kwargs["titles"] = list(spins_to_plot.keys())
+        else:
+            if "labels" not in kwargs:
+                kwargs["labels"] = list(spins_to_plot.keys())
 
         match (self.provider, self.ndim, subplot_dims):
             case ("bruker", 1, None):
@@ -258,17 +324,21 @@ class SpinCollection:
                     spectra, subplot_dims=subplot_dims, **kwargs
                 )
             case ("bruker", 2, tuple()):
-                raise ValueError("Grid layout is not supported for 2D spectra.")
+                return spinplot.bruker2d_grid(
+                    spectra, subplot_dims=subplot_dims, **kwargs
+                )
             case ("dmfit", 1, None):
-                if len(spins_to_plot) > 1:
-                    raise ValueError(
-                        "DMFit plots can only handle one spectrum at a time."
-                    )
-                return spinplot.dmfit1d(list(self.spins.values())[0], **kwargs)
+                return spinplot.dmfit1d(spectra, **kwargs)
             case ("dmfit", 1, tuple()):
-                raise ValueError("Grid layout is not supported for DMFit spectra.")
+                return spinplot.dmfit1d_grid(
+                    spectra, subplot_dims=subplot_dims, **kwargs
+                )
             case ("dmfit", 2, None):
-                return spinplot.dmfit2d(self, **kwargs)
+                return spinplot.dmfit2d(spectra, **kwargs)
+            case ("dmfit", 2, tuple()):
+                return spinplot.dmfit2d_grid(
+                    spectra, subplot_dims=subplot_dims, **kwargs
+                )
             case _:
                 raise ValueError(
                     f"Plotting not supported for provider: {self.provider} with ndim={self.ndim}"

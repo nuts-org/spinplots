@@ -1,0 +1,49 @@
+cff-version: 1.2.0
+title: SpinPlots
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Carlos
+    family-names: Bornes
+    affiliation: >-
+      Department of Physical and Macromolecular Chemistry,
+      Faculty of Science, Charles University in Prague, 128
+      43, Prague, Czech Republic
+    orcid: 'https://orcid.org/0000-0002-0325-2356'
+  - given-names: Daniel
+    family-names: Pereira
+    affiliation: >-
+      Department of Chemistry & CICECO−Aveiro Institute of
+      Materials, University of Aveiro, 3810-193, Aveiro,
+      Portugal
+    orcid: 'https://orcid.org/0000-0001-7329-2516'
+  - given-names: Márcio
+    family-names: Soares
+    affiliation: >-
+      Department of Chemistry & CICECO−Aveiro Institute of
+      Materials, University of Aveiro, 3810-193, Aveiro,
+      Portugal
+    orcid: 'https://orcid.org/0000-0001-8012-2662'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.14041925
+repository-code: 'https://github.com/nuts-org/spinplots'
+url: 'https://nuts-org.github.io/spinplots/'
+abstract: >-
+  SpinPlots simplifies NMR spectroscopy visualization in
+  Python. It provides one-line plotting for 1D and 2D Bruker
+  and DMFit spectra with automatic axis labelling,
+  publication-ready defaults, and support for overlays,
+  stacking, and grid layouts.
+keywords:
+  - NMR
+  - spectroscopy
+  - visualization
+  - Bruker
+  - DMFit
+  - Python
+license: MIT
+version: v0.2.2
+date-released: '2025-02-06'

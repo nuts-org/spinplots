@@ -58,6 +58,7 @@ dmypy.json
 
 # Editors ignores
 .vscode*
+.claude/
 
 # Environments
 .env

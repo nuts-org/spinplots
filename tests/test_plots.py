@@ -1,11 +1,21 @@
 from __future__ import annotations
 
+import warnings
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pytest
 
 from spinplots.io import read_nmr
-from spinplots.plot import bruker1d, bruker1d_grid, bruker2d, df2d, dmfit1d, dmfit2d
+from spinplots.plot import (
+    bruker1d,
+    bruker1d_grid,
+    bruker2d,
+    df2d,
+    dmfit1d,
+    dmfit1d_grid,
+    dmfit2d,
+)
 from spinplots.utils import nmr_df
 
 DATA_DIR_1D_1 = "data/1D/glycine/pdata/1"
@@ -71,24 +81,25 @@ def test_df2d():
 
 def test_dmfit1d():
     spin = read_nmr(DATA_DIR_DM, provider="dmfit")
-    fig = dmfit1d(spin, return_fig=True)
+    fig = dmfit1d(spin.spectrum, return_fig=True)
     assert fig is not None
 
 
 def test_dmfit2d():
     spin = read_nmr(DATA_DIR_DM_2D, provider="dmfit")
-    fig = dmfit2d(spin, return_fig=True)
+    fig = dmfit2d([spin.spectrum], return_fig=True)
     assert fig is not None
 
 
 def test_dmfit2d_col():
-    spin = read_nmr([DATA_DIR_DM_2D, DATA_DIR_DM_2D_fit], provider="dmfit")
+    coll = read_nmr([DATA_DIR_DM_2D, DATA_DIR_DM_2D_fit], provider="dmfit")
+    spectra = [s.spectrum for s in coll.spins.values()]
     fig = dmfit2d(
-        spin,
+        spectra,
         contour_start=10,
         contour_num=5,
         contour_factor=1.5,
-        colors=["black", "red"],
+        color=["black", "red"],
         return_fig=True,
     )
     assert fig is not None
@@ -103,3 +114,34 @@ def test_bruker1d_valerror():
     spin = read_nmr(DATA_DIR_2D, "bruker")
     with pytest.raises(ValueError, match="All spectra must be 1-dimensional"):
         bruker1d([spin.spectrum])
+
+
+def test_unknown_kwarg_warns():
+    """Unknown kwargs should produce a UserWarning, not be silently ignored."""
+    spin = read_nmr(DATA_DIR_1D_1, "bruker")
+    with pytest.warns(UserWarning, match="unexpected keyword argument"):
+        bruker1d([spin.spectrum], return_fig=True, line_width=2)
+
+
+def test_valid_kwargs_no_warning():
+    """Valid kwargs should not produce a warning."""
+    spin = read_nmr(DATA_DIR_1D_1, "bruker")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        _fig, _ax = bruker1d([spin.spectrum], return_fig=True, linewidth=2)
+
+
+def test_dmfit1d_stacked():
+    spin1 = read_nmr(DATA_DIR_DM, provider="dmfit")
+    spin2 = read_nmr(DATA_DIR_DM, provider="dmfit")
+    out = dmfit1d([spin1.spectrum, spin2.spectrum], stacked=True, return_fig=True)
+    assert out is not None
+
+
+def test_dmfit1d_grid():
+    spin1 = read_nmr(DATA_DIR_DM, provider="dmfit")
+    spin2 = read_nmr(DATA_DIR_DM, provider="dmfit")
+    out = dmfit1d_grid(
+        [spin1.spectrum, spin2.spectrum], subplot_dims=(1, 2), return_fig=True
+    )
+    assert out is not None
