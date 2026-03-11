@@ -1309,7 +1309,7 @@ def dmfit1d(
 
         n_lines = sum(col.startswith("Line#") for col in dmfit_df.columns)
 
-        c = color[i] if isinstance(color, list) and i < len(color) else color
+        c = color[i % len(color)] if isinstance(color, list) else color
 
         # Compute stack offset
         spectrum_data = dmfit_df["Spectrum"].to_numpy().copy()
@@ -1357,7 +1357,7 @@ def dmfit1d(
                 if deconv_color is not None:
                     # Support per-line colors (list) or single color (str)
                     dc = (
-                        deconv_color[j - 1]
+                        deconv_color[(j - 1) % len(deconv_color)]
                         if isinstance(deconv_color, list)
                         else deconv_color
                     )
@@ -1821,7 +1821,7 @@ def dmfit1d_grid(
             for j in range(1, n_lines + 1):
                 if deconv_color is not None:
                     dc = (
-                        deconv_color[j - 1]
+                        deconv_color[(j - 1) % len(deconv_color)]
                         if isinstance(deconv_color, list)
                         else deconv_color
                     )
