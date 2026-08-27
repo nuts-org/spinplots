@@ -29,7 +29,7 @@ classifiers = [
     "Operating System :: MacOS",
 ]
 requires-python = ">=3.10"
-dependencies = ["numpy", "nmrglue", "pandas", "matplotlib"]
+dependencies = ["numpy", "nmrglue>=0.12", "pandas", "matplotlib"]
 
 [project.optional-dependencies]
 dev = [
