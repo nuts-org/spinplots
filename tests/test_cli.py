@@ -4,12 +4,6 @@ import logging
 import subprocess
 import sys
 
-import numpy as np
-import pandas as pd
-
-from spinplots import calculate_projections
-from spinplots.cli import main
-
 DATA_DIR_1D = "data/1D/glycine/pdata/1"
 
 
