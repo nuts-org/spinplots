@@ -28,11 +28,11 @@ def nmr_df(data_path, hz=False, export=False, filename=None):
         nuclei = udic[0]["label"]
         uc = ng.fileiobase.uc_from_udic(udic, dim=0)
         ppm = uc.ppm_scale()
-        hz = uc.hz_scale()
+        hz_scale = uc.hz_scale()
         ndata = data / np.max(data)
         df_nmr = pd.DataFrame(
             {
-                "hz": hz,
+                "hz": hz_scale,
                 "ppm": ppm,
                 "intensity": data,
                 "norm_intensity": ndata,
@@ -74,13 +74,9 @@ def nmr_df(data_path, hz=False, export=False, filename=None):
         raise ValueError("Only 1D and 2D NMR data are supported.")
 
     if export:
-        if filename is None:
-            filename = "nmr_data.csv"
-        df_nmr.to_csv(filename, index=False)
+        df_nmr.to_csv(filename or "nmr_data.csv", index=False)
         return None
-    elif not export:
-        return df_nmr
-    return None
+    return df_nmr
 
 
 # Function to calculte projections from CSV or DataFrame

@@ -1,7 +1,45 @@
 from __future__ import annotations
 
+import sys
+import warnings
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
+
+_PACKAGE_DIR = Path(__file__).resolve().parent
+
+
+def _in_package(filename, package_dir=_PACKAGE_DIR):
+    """Whether ``filename`` is a file of the package or of one of its subpackages.
+
+    Pseudo-filenames such as ``<string>`` (used by the interactive interpreter,
+    ``exec`` and some notebook front ends) never belong to the package.
+    """
+    if filename.startswith("<") and filename.endswith(">"):
+        return False
+    return package_dir in Path(filename).resolve().parents
+
+
+def _warn(message, category=UserWarning):
+    """Issue a warning attributed to the first stack frame outside spinplots.
+
+    The warning then points at the line in the user's own code, whether a plot
+    function was called directly or through ``Spin.plot`` / ``SpinCollection.plot``.
+
+    Parameters
+    ----------
+    message : str
+        The warning message.
+    category : type[Warning], optional
+        The warning category. Defaults to ``UserWarning``.
+    """
+    stacklevel = 2  # 1 would be this line, 2 is the caller of _warn
+    frame = sys._getframe(1)
+    while frame is not None and _in_package(frame.f_code.co_filename):
+        frame = frame.f_back
+        stacklevel += 1
+    warnings.warn(message, category, stacklevel=stacklevel)
 
 
 def _save_figure(fig, save, filename, format, default_name):
@@ -107,13 +145,11 @@ def _resolve_per_subplot(value, idx):
     return None
 
 
-def _handle_show_return(_fig, return_value, return_fig, save):
+def _handle_show_return(return_value, return_fig, save):
     """Handle the common show/return/save logic at end of plot functions.
 
     Parameters
     ----------
-    fig : matplotlib.figure.Figure
-        The figure object.
     return_value : any
         The value to return if return_fig is True.
     return_fig : bool

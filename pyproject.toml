@@ -126,7 +126,6 @@ lint.select = [
 lint.extend-ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
-  "B028",   # No explicit stacklevel
   "EM101",  # Exception must not use a string literal
   "EM102",  # Exception must not use an f-string literal
   "G004",   # f-string in Logging statement
@@ -134,7 +133,6 @@ lint.extend-ignore = [
   "RET505", # Unnecessary `elif` after `return`
   "ISC001",
 ]
-lint.typing-modules = ["mypackage._compat.typing"]
 lint.unfixable = [
   "T20",  # Removes print statements
   "F841", # Removes unused variables
@@ -157,3 +155,6 @@ namespace_packages = true
 explicit_package_bases = true
 no_implicit_optional = false
 disable_error_code = "annotation-unchecked"
+
+[tool.ruff.lint.per-file-ignores]
+"src/spinplots/cli.py" = ["T201"]

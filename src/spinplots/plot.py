@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import warnings
-
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,6 +15,7 @@ from spinplots._helpers import (
     _parse_nucleus,
     _resolve_per_subplot,
     _save_figure,
+    _warn,
 )
 from spinplots.utils import calculate_projections
 
@@ -25,12 +24,10 @@ def _validate_kwargs(kwargs, defaults, func_name):
     """Warn about unrecognized keyword arguments that will be silently ignored."""
     unknown = set(kwargs) - set(defaults)
     if unknown:
-        warnings.warn(
+        _warn(
             f"{func_name}() got unexpected keyword argument(s): "
             f"{', '.join(sorted(unknown))}. "
             f"Valid options are: {', '.join(sorted(defaults))}.",
-            UserWarning,
-            stacklevel=3,
         )
 
 
@@ -210,9 +207,8 @@ def bruker2d(
                 cmap = [cmap]
 
             if len(cmap) > 1:
-                warnings.warn(
-                    "Warning: Consider using colors instead of cmap"
-                    "when overlapping spectra."
+                _warn(
+                    "Consider using `color` instead of `cmap` when overlapping spectra."
                 )
 
             cmap_i = plt.get_cmap(cmap[i % len(cmap)])
@@ -369,7 +365,7 @@ def bruker2d(
             ax["b"].set_ylim(ylim)
 
     _save_figure(fig, save, filename, format, "2d_nmr_spectrum")
-    return _handle_show_return(fig, ax, return_fig, save)
+    return _handle_show_return(ax, return_fig, save)
 
 
 def bruker2d_grid(
@@ -665,7 +661,7 @@ def bruker2d_grid(
         axes.append({"main": ax_main, "top": ax_top, "left": ax_left})
 
     _save_figure(fig, save, filename, format, "bruker_2d_grid")
-    return _handle_show_return(fig, (fig, axes), return_fig, save)
+    return _handle_show_return((fig, axes), return_fig, save)
 
 
 def bruker1d(
@@ -750,17 +746,15 @@ def bruker1d(
         if normalize == "max":
             data_to_plot = spectrum.get("norm_max")
             if data_to_plot is None:
-                warnings.warn(
+                _warn(
                     f"Pre-calculated 'norm_max' data not found for {spectrum['path']}. Plotting raw data.",
-                    UserWarning,
                 )
                 data_to_plot = spectrum["data"]
         elif normalize == "scans":
             data_to_plot = spectrum.get("norm_scans")
             if data_to_plot is None:
-                warnings.warn(
+                _warn(
                     f"Pre-calculated 'norm_scans' data not found or calculation failed for {spectrum['path']}. Plotting raw data.",
-                    UserWarning,
                 )
                 data_to_plot = spectrum["data"]
         elif normalize is None or normalize is False:
@@ -854,7 +848,7 @@ def bruker1d(
         ax.set_ylim(ylim)
 
     _save_figure(fig, save, filename, format, "1d_nmr_spectrum")
-    return _handle_show_return(fig, (fig, ax), return_fig, save)
+    return _handle_show_return((fig, ax), return_fig, save)
 
 
 def bruker1d_grid(
@@ -963,9 +957,8 @@ def bruker1d_grid(
         elif normalize_option == "scans":
             data = spectrum.get("norm_scans")
             if data is None:
-                warnings.warn(
+                _warn(
                     f"Pre-calculated 'norm_scans' data not found for {spectrum['path']}. Using raw data.",
-                    UserWarning,
                 )
                 data = spectrum["data"]
         else:
@@ -1052,7 +1045,7 @@ def bruker1d_grid(
     plt.tight_layout()
 
     _save_figure(fig, save, filename, format, "1d_nmr_spectra")
-    return _handle_show_return(fig, (fig, axes), return_fig, save)
+    return _handle_show_return((fig, axes), return_fig, save)
 
 
 # Plot 2D NMR data from CSV or DataFrame
@@ -1180,7 +1173,7 @@ def df2d(
         ax["b"].set_ylim(ylim)
 
     _save_figure(ax["A"].figure, save, filename, format, "2d_nmr_spectrum")
-    return _handle_show_return(ax["A"].figure, ax, return_fig, save)
+    return _handle_show_return(ax, return_fig, save)
 
 
 # Functions for DMFit
@@ -1421,7 +1414,7 @@ def dmfit1d(
         ax.yaxis.set_ticklabels([])
 
     _save_figure(fig, save, filename, format, "dmfit_1d_spectrum")
-    return _handle_show_return(fig, (fig, ax), return_fig, save)
+    return _handle_show_return((fig, ax), return_fig, save)
 
 
 def dmfit2d(
@@ -1693,7 +1686,7 @@ def dmfit2d(
     plt.tight_layout(pad=0.5)
 
     _save_figure(fig, save, filename, format, "dmfit_2d_projections")
-    return _handle_show_return(fig, ax_dict, return_fig, save)
+    return _handle_show_return(ax_dict, return_fig, save)
 
 
 def dmfit1d_grid(
@@ -1888,7 +1881,7 @@ def dmfit1d_grid(
     plt.tight_layout()
 
     _save_figure(fig, save, filename, format, "1d_dmfit_spectra")
-    return _handle_show_return(fig, (fig, axes), return_fig, save)
+    return _handle_show_return((fig, axes), return_fig, save)
 
 
 def dmfit2d_grid(
@@ -2176,4 +2169,4 @@ def dmfit2d_grid(
 
     # Save or show
     _save_figure(fig, save, filename, format, "dmfit_2d_grid")
-    return _handle_show_return(fig, (fig, axes), return_fig, save)
+    return _handle_show_return((fig, axes), return_fig, save)

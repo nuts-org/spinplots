@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import warnings
-
 import spinplots.plot as spinplot
+from spinplots._helpers import _warn
 
 
 class Spin:
@@ -205,7 +204,7 @@ class SpinCollection:
                 tag = spin.tag
             else:
                 tag = f"Spin{self.size}"
-                warnings.warn(f"No tag provided. Using default tag: {tag}", UserWarning)
+                _warn(f"No tag provided. Using default tag: {tag}")
             if tag in self.spins:
                 raise ValueError(
                     f"Spin with tag '{tag}' already exists in the collection."

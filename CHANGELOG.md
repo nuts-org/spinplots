@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `bruker2csv` supports `--help` and prints where the file was written.
+
+### Changed
+- Warnings now point at the line of your own code that triggers them, instead of pointing at spinplots' internal files like before
+- Argument errors of `bruker2csv` now come from `argparse`.
+
+### Fixed
+- `bruker2csv` wrote 2D data with an extra unnamed index column, so `calculate_projections` could not read the file back. Now start with the F1/F2 axis columns
+- `cmap` warning in `bruker2d` ran two words together ("cmapwhen") and referred to a `colors` argument that was renamed `color`
+
 ## [0.2.2]
 
 ### Added
