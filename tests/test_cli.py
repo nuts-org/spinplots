@@ -4,6 +4,12 @@ import logging
 import subprocess
 import sys
 
+import numpy as np
+import pandas as pd
+
+from spinplots import calculate_projections
+from spinplots.cli import main
+
 DATA_DIR_1D = "data/1D/glycine/pdata/1"
 
 
@@ -26,7 +32,7 @@ def test_bruker2csv_wrong_args():
     cmd = [sys.executable, "-m", "spinplots.cli", DATA_DIR_1D]
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     assert result.returncode != 0
-    assert "Usage: bruker2csv" in result.stderr
+    assert "usage: bruker2csv" in result.stderr
 
 
 def test_bruker2csv_bad_input_path(tmp_path):
@@ -37,3 +43,23 @@ def test_bruker2csv_bad_input_path(tmp_path):
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     assert result.returncode != 0
     assert "An error occurred" in result.stderr
+
+
+def test_bruker2csv_prints_confirmation(tmp_path):
+    """A successful run says where the file was written."""
+    output_csv = tmp_path / "output.csv"
+    cmd = [sys.executable, "-m", "spinplots.cli", DATA_DIR_1D, str(output_csv)]
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+
+    assert result.returncode == 0
+    assert f"Data written to {output_csv}" in result.stdout
+
+
+def test_bruker2csv_help():
+    """--help prints the usage and exits successfully."""
+    cmd = [sys.executable, "-m", "spinplots.cli", "--help"]
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+
+    assert result.returncode == 0
+    assert "usage: bruker2csv" in result.stdout
+    assert "path_to_data" in result.stdout

@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 import re
-import warnings
 from pathlib import Path
 
 import nmrglue as ng
 import numpy as np
 import pandas as pd
 
+from spinplots._helpers import _warn
 from spinplots.spin import Spin, SpinCollection
 from spinplots.utils import calculate_projections
 
@@ -95,14 +95,12 @@ def _read_bruker_data(path: str, **kwargs) -> dict:
             if ns is not None and ns > 0:
                 norm_scans_data = data / ns
             else:
-                warnings.warn(
+                _warn(
                     f"NS parameter is zero or missing in {path}. Cannot normalize by scans.",
-                    UserWarning,
                 )
         except KeyError:
-            warnings.warn(
+            _warn(
                 f"'acqus' or 'NS' key missing in metadata for {path}. Cannot normalize by scans.",
-                UserWarning,
             )
 
     spectrum_data = {
@@ -216,15 +214,13 @@ def _read_dmfit_data(path: str, **kwargs) -> dict:
 
         expected_points = n_f1 * n_f2
         if len(data_values) < expected_points:
-            warnings.warn(
+            _warn(
                 f"Expected {expected_points} data points, but found {len(data_values)}. Padding with zeros.",
-                UserWarning,
             )
             data_values.extend([0.0] * (expected_points - len(data_values)))
         elif len(data_values) > expected_points:
-            warnings.warn(
+            _warn(
                 f"Found {len(data_values)} data points, but expected {expected_points}. Trimming extra values.",
-                UserWarning,
             )
             data_values = data_values[:expected_points]
 
