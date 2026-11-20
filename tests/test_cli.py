@@ -64,9 +64,8 @@ def test_bruker2csv_help():
     assert "usage: bruker2csv" in result.stdout
     assert "path_to_data" in result.stdout
 
-def test_2d_csv_no_index_column_and_be_read(
-    tmp_path, monkeypatch, capsys
-):
+
+def test_2d_csv_no_index_column_and_be_read(tmp_path, monkeypatch, capsys):
     """2D CSVs must start with the F1 and F2 axes."""
 
     f1, f2 = np.meshgrid(np.linspace(0, 30, 4), np.linspace(0, 10, 6), indexing="ij")
