@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `bruker2csv` supports `--help` and prints where the file was written.
 
 ### Changed
-- Warnings now point at the line of your own code that trigger it, instead of poiting at spinplots' internal files like before
+- Warnings now point at the line of your own code that triggers them, instead of pointing at spinplots' internal files like before
 - Argument errors of `bruker2csv` now come from `argparse`.
 
 ### Fixed
